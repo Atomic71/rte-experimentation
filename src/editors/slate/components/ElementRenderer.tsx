@@ -1,9 +1,17 @@
+import React from 'react'
 import { RenderElementProps } from 'slate-react'
 
 export const renderElement = (props: RenderElementProps) => {
   const { attributes, children, element } = props
-
-  const style = { textAlign: (element as any).align }
+  
+  const elementWithDirection = element as any
+  const direction = elementWithDirection.direction
+  
+  const style: React.CSSProperties = { 
+    textAlign: elementWithDirection.align || (direction === 'rtl' ? 'right' : direction === 'ltr' ? 'left' : 'start'),
+    direction: direction === 'auto' ? undefined : direction,
+    unicodeBidi: direction === 'auto' ? 'plaintext' : undefined
+  }
 
   switch (element.type) {
     case 'heading-one':

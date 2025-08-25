@@ -1,7 +1,6 @@
 import React from 'react'
 import { SlateEditor } from './editors/slate'
 import { LexicalEditor } from './editors/lexical'
-import { QuillEditorWrapper } from './editors/quill/QuillEditorWrapper'
 import HomePage from './HomePage'
 import './toolbar.css'
 
@@ -32,8 +31,6 @@ const EditorRouter: React.FC = () => {
           </div>
         </div>
       )
-    case 'quill':
-      return <QuillEditorWrapper />
     default:
       return <SlateEditor />
   }

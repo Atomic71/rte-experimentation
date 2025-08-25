@@ -48,6 +48,32 @@ const editorConfig = {
     AutoLinkNode,
     // BeautifulMentionNode,
   ],
+  editorState: () => {
+    const { $getRoot, $createParagraphNode, $createTextNode } = require('lexical')
+    const { $createHeadingNode } = require('@lexical/rich-text')
+    
+    const root = $getRoot()
+    
+    // Welcome paragraph in English
+    const welcomeParagraph = $createParagraphNode()
+    welcomeParagraph.append($createTextNode('Welcome to Lexical Editor with RTL support! Try typing Arabic text or use the direction buttons.'))
+    
+    // Arabic paragraph
+    const arabicParagraph = $createParagraphNode()
+    arabicParagraph.setDirection('rtl')
+    arabicParagraph.append($createTextNode('مرحبا بكم في محرر Lexical! جرب كتابة النص العربي أو استخدام أزرار الاتجاه.'))
+    
+    // Mixed content paragraph
+    const mixedParagraph = $createParagraphNode()
+    mixedParagraph.append($createTextNode('Mixed content: This is English مع النص العربي في نفس الفقرة.'))
+    
+    // RTL Heading
+    const rtlHeading = $createHeadingNode('h2')
+    rtlHeading.setDirection('rtl')
+    rtlHeading.append($createTextNode('عنوان باللغة العربية'))
+    
+    root.append(welcomeParagraph, arabicParagraph, mixedParagraph, rtlHeading)
+  },
 }
 
 export class LexicalEditorWrapper implements BaseEditor {

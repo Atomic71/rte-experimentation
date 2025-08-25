@@ -10,9 +10,8 @@ editors/
 │   ├── types.ts     # Common TypeScript interfaces
 │   └── webview-bridge.ts  # Unified WebView communication
 ├── slate/           # Slate.js implementation
-├── lexical/         # Lexical implementation (planned)
-├── draft/           # Draft.js implementation (planned)
-└── quill/           # Quill implementation (planned)
+├── lexical/         # Lexical implementation
+└── draft/           # Draft.js implementation (planned)
 ```
 
 ## Unified WebView API
@@ -109,7 +108,6 @@ file:///path/to/index.html?editor=lexical
 
 ## Current Status
 
-- ✅ **Slate.js** - Fully implemented with all features
-- 🚧 **Lexical** - Planned
+- ✅ **Slate.js** - Fully implemented with RTL/LTR support, formatting, lists, headings
+- ✅ **Lexical** - Fully implemented with automatic RTL/LTR detection, rich formatting
 - 🚧 **Draft.js** - Planned
-- 🚧 **Quill** - Planned

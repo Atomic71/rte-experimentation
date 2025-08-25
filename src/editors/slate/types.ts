@@ -7,11 +7,13 @@ export type CustomEditor = BaseEditor & ReactEditor & HistoryEditor
 export type ParagraphElement = {
   type: 'paragraph'
   children: CustomText[]
+  direction?: 'ltr' | 'rtl' | 'auto'
 }
 
 export type HeadingElement = {
   type: 'heading-one' | 'heading-two' | 'heading-three'
   children: CustomText[]
+  direction?: 'ltr' | 'rtl' | 'auto'
 }
 
 export type CodeBlockElement = {
@@ -32,6 +34,7 @@ export type NumberedListElement = {
 export type ListItemElement = {
   type: 'list-item'
   children: CustomText[]
+  direction?: 'ltr' | 'rtl' | 'auto'
 }
 
 export type LinkElement = {

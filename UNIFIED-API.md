@@ -21,10 +21,9 @@ npm run build
 
 ### Via URL Parameters (Recommended for WebView)
 ```
-?editor=slate     # Slate.js editor
-?editor=lexical   # Lexical editor (planned)
+?editor=slate     # Slate.js editor with RTL/LTR support
+?editor=lexical   # Lexical editor with auto RTL detection
 ?editor=draft     # Draft.js editor (planned)
-?editor=quill     # Quill.js editor
 ```
 
 ### Via Path (Development)
@@ -32,7 +31,6 @@ npm run build
 /slate     # Slate.js editor
 /lexical   # Lexical editor
 /draft     # Draft.js editor
-/quill     # Quill.js editor
 ```
 
 ## Unified Message Protocol

@@ -16,6 +16,7 @@ import {
   INSERT_CHECK_LIST_COMMAND,
 } from '@lexical/list'
 import { $toggleLink } from '@lexical/link'
+import { DirectionPlugin } from './DirectionPlugin'
 
 export const ToolbarPlugin: React.FC = () => {
   const [editor] = useLexicalComposerContext()
@@ -248,6 +249,10 @@ export const ToolbarPlugin: React.FC = () => {
       >
         ↷
       </button>
+
+      <div style={{ width: '1px', height: '24px', backgroundColor: '#ccc', margin: '0 4px' }} />
+
+      <DirectionPlugin />
     </div>
   )
 }

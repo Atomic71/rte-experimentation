@@ -4,6 +4,7 @@ import { Slate, Editable, withReact } from 'slate-react'
 import { withHistory } from 'slate-history'
 import { withFormatting } from './plugins/formatting'
 import { withBlocks } from './plugins/blocks'
+import { withDirection } from './plugins/direction'
 import { Toolbar } from './components/Toolbar'
 import { renderElement } from './components/ElementRenderer'
 import { renderLeaf } from './components/LeafRenderer'
@@ -18,6 +19,24 @@ const initialValue: Descendant[] = [
     children: [
       {
         text: 'Welcome to the Slate.js editor! Try using the toolbar or keyboard shortcuts to format your text.',
+      },
+    ],
+  },
+  {
+    type: 'paragraph',
+    direction: 'auto',
+    children: [
+      {
+        text: 'مرحبا بكم في محرر Slate.js! جرب استخدام شريط الأدوات أو اختصارات لوحة المفاتيح لتنسيق النص الخاص بك.',
+      },
+    ],
+  },
+  {
+    type: 'paragraph',
+    direction: 'auto',
+    children: [
+      {
+        text: 'Mixed text: This is English مع النص العربي in the same paragraph.',
       },
     ],
   },
@@ -74,7 +93,7 @@ export class SlateEditorWrapper implements BaseEditor {
 
 export const SlateEditor: React.FC = () => {
   const editor = useMemo(
-    () => withBlocks(withFormatting(withHistory(withReact(createEditor())))),
+    () => withDirection(withBlocks(withFormatting(withHistory(withReact(createEditor()))))),
     []
   )
 

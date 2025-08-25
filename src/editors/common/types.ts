@@ -1,7 +1,7 @@
 // Common types for all editors
 
 export interface EditorContent {
-  format: 'slate' | 'lexical' | 'draft' | 'quill' | 'html' | 'markdown'
+  format: 'slate' | 'lexical' | 'draft' | 'html' | 'markdown'
   data: any
 }
 
@@ -13,12 +13,12 @@ export interface EditorMessage {
 }
 
 export interface EditorCommand {
-  action: 'bold' | 'italic' | 'underline' | 'strikethrough' | 'heading' | 'list' | 'link' | 'undo' | 'redo'
+  action: 'bold' | 'italic' | 'underline' | 'strikethrough' | 'heading' | 'list' | 'link' | 'undo' | 'redo' | 'direction'
   value?: any
 }
 
 export interface EditorConfig {
-  editorType: 'slate' | 'lexical' | 'draft' | 'quill'
+  editorType: 'slate' | 'lexical' | 'draft'
   features?: {
     bold?: boolean
     italic?: boolean

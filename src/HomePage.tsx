@@ -2,9 +2,8 @@ import React from 'react'
 
 const HomePage: React.FC = () => {
   const editors = [
-    { name: 'Slate.js', path: '/slate', status: 'implemented', features: 'Full formatting, lists, headings, keyboard shortcuts' },
-    { name: 'Quill.js', path: '/quill', status: 'implemented', features: 'Full formatting, lists, headings, code blocks, mentions, keyboard shortcuts' },
-    { name: 'Lexical', path: '/lexical', status: 'planned', features: 'Coming soon' },
+    { name: 'Slate.js', path: '/slate', status: 'implemented', features: 'Full formatting, lists, headings, keyboard shortcuts, RTL/LTR support' },
+    { name: 'Lexical', path: '/lexical', status: 'implemented', features: 'Full formatting, lists, headings, auto RTL/LTR detection' },
     { name: 'Draft.js', path: '/draft', status: 'planned', features: 'Coming soon' },
   ]
 

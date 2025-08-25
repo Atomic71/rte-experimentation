@@ -2,6 +2,7 @@ import React from 'react'
 import { useSlate } from 'slate-react'
 import { isMarkActive, toggleMark } from '../plugins/formatting'
 import { isBlockActive, toggleBlock } from '../plugins/blocks'
+import { isDirectionActive, toggleDirection, setDirection } from '../plugins/direction'
 
 interface ToolbarButtonProps {
   active: boolean
@@ -58,6 +59,33 @@ const BlockButton: React.FC<BlockButtonProps> = ({ format, icon }) => {
   )
 }
 
+interface DirectionButtonProps {
+  direction: 'ltr' | 'rtl' | 'auto'
+  icon: string
+  title: string
+}
+
+const DirectionButton: React.FC<DirectionButtonProps> = ({ direction, icon, title }) => {
+  const editor = useSlate()
+  const isActive = direction === 'auto' ? false : isDirectionActive(editor, direction)
+  
+  return (
+    <ToolbarButton
+      active={isActive}
+      onMouseDown={(event) => {
+        event.preventDefault()
+        if (direction === 'auto') {
+          setDirection(editor, 'auto')
+        } else {
+          toggleDirection(editor, direction)
+        }
+      }}
+    >
+      <span title={title}>{icon}</span>
+    </ToolbarButton>
+  )
+}
+
 export const Toolbar: React.FC = () => {
   return (
     <div className="toolbar">
@@ -85,6 +113,13 @@ export const Toolbar: React.FC = () => {
       
       {/* Code block */}
       <BlockButton format="code-block" icon="{ }" />
+      
+      <div className="toolbar-separator" />
+      
+      {/* Text direction */}
+      <DirectionButton direction="ltr" icon="←→" title="Left to Right" />
+      <DirectionButton direction="rtl" icon="→←" title="Right to Left (Arabic/Hebrew)" />
+      <DirectionButton direction="auto" icon="↔" title="Auto-detect direction" />
     </div>
   )
 }

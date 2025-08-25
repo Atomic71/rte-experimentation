@@ -159,3 +159,66 @@
 .bmMention:hover {
   background-color: #bbdefb;
 }
+
+/* RTL Support Styles */
+[dir="rtl"] {
+  text-align: right;
+  direction: rtl;
+}
+
+[dir="ltr"] {
+  text-align: left;
+  direction: ltr;
+}
+
+/* RTL lists */
+[dir="rtl"] .editor-list-ol,
+[dir="rtl"] .editor-list-ul {
+  padding-left: 0;
+  padding-right: 32px;
+}
+
+[dir="rtl"] .editor-nested-listitem {
+  margin-left: 0;
+  margin-right: 24px;
+}
+
+/* Auto direction support for mixed content */
+.editor-paragraph[dir="auto"],
+.editor-heading-h1[dir="auto"],
+.editor-heading-h2[dir="auto"],
+.editor-heading-h3[dir="auto"],
+.editor-heading-h4[dir="auto"],
+.editor-heading-h5[dir="auto"],
+.editor-heading-h6[dir="auto"] {
+  unicode-bidi: plaintext;
+  text-align: start;
+}
+
+/* Ensure proper text alignment for RTL content */
+p[dir="rtl"],
+h1[dir="rtl"],
+h2[dir="rtl"],
+h3[dir="rtl"],
+h4[dir="rtl"],
+h5[dir="rtl"],
+h6[dir="rtl"] {
+  text-align: right;
+  direction: rtl;
+}
+
+p[dir="ltr"],
+h1[dir="ltr"],
+h2[dir="ltr"],
+h3[dir="ltr"],
+h4[dir="ltr"],
+h5[dir="ltr"],
+h6[dir="ltr"] {
+  text-align: left;
+  direction: ltr;
+}
+
+/* Direction transition */
+* {
+  transition: text-align 0.1s ease, direction 0.1s ease;
+}
