@@ -15,6 +15,7 @@
     "react-dom": "^19.1.1",
     "slate": "^0.118.0",
     "slate-dom": "^0.117.4",
+    "slate-history": "^0.113.1",
     "slate-react": "^0.117.4",
     "yalc": "^1.0.0-pre.53"
   },

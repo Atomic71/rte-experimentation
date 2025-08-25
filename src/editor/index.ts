@@ -1,0 +1,6 @@
+export { EditorRoot } from './components/EditorRoot'
+export * from './types'
+export * from './utils/webview-bridge'
+export * from './utils/serialization'
+export * from './plugins/formatting'
+export * from './plugins/blocks'
