@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebView Bridge Test</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .section {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .message-log {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .message-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+        }
+        .html-preview {
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            background: white;
+            min-height: 200px;
+            border-radius: 4px;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        .timestamp {
+            color: #666;
+            font-size: 11px;
+        }
+        .type {
+            font-weight: bold;
+            color: #0066cc;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebView Bridge HTML Export Test</h1>
+    
+    <div class="container">
+        <div class="section">
+            <h2>Editor</h2>
+            <iframe id="editor-frame" src="/"></iframe>
+        </div>
+        
+        <div class="section">
+            <h2>Bridge Messages</h2>
+            <div id="message-log" class="message-log">
+                <div style="color: #999;">Waiting for messages...</div>
+            </div>
+            
+            <h2 style="margin-top: 20px;">HTML Preview</h2>
+            <div id="html-preview" class="html-preview">
+                <div style="color: #999;">No HTML content yet...</div>
+            </div>
+            
+            <h2 style="margin-top: 20px;">Raw HTML</h2>
+            <pre id="html-raw" style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 12px;">
+No HTML content yet...
+            </pre>
+        </div>
+    </div>
+
+    <script>
+        const messageLog = document.getElementById('message-log');
+        const htmlPreview = document.getElementById('html-preview');
+        const htmlRaw = document.getElementById('html-raw');
+        const editorFrame = document.getElementById('editor-frame');
+        
+        // Mock ReactNativeWebView for testing
+        window.ReactNativeWebView = {
+            postMessage: function(message) {
+                try {
+                    const parsed = JSON.parse(message);
+                    logMessage(parsed);
+                    
+                    // Update HTML preview if message contains HTML
+                    if (parsed.type === 'CHANGE' && parsed.payload) {
+                        if (parsed.payload.data && parsed.payload.data.html) {
+                            updateHtmlPreview(parsed.payload.data.html);
+                        }
+                    }
+                    
+                    if (parsed.type === 'EXPORT_HTML' && parsed.payload && parsed.payload.html) {
+                        updateHtmlPreview(parsed.payload.html);
+                    }
+                } catch (error) {
+                    console.error('Failed to parse message:', error);
+                }
+            }
+        };
+        
+        function logMessage(message) {
+            const timestamp = new Date(message.timestamp || Date.now()).toLocaleTimeString();
+            const messageItem = document.createElement('div');
+            messageItem.className = 'message-item';
+            
+            let content = `
+                <div class="timestamp">${timestamp}</div>
+                <div class="type">Type: ${message.type}</div>
+                <div>Editor: ${message.editor || 'unknown'}</div>
+            `;
+            
+            if (message.payload) {
+                content += `<div style="margin-top: 5px;">Payload: ${JSON.stringify(message.payload, null, 2).substring(0, 200)}...</div>`;
+            }
+            
+            messageItem.innerHTML = content;
+            
+            // Clear initial message
+            if (messageLog.children[0]?.style?.color === '#999') {
+                messageLog.innerHTML = '';
+            }
+            
+            messageLog.insertBefore(messageItem, messageLog.firstChild);
+            
+            // Keep only last 20 messages
+            while (messageLog.children.length > 20) {
+                messageLog.removeChild(messageLog.lastChild);
+            }
+        }
+        
+        function updateHtmlPreview(html) {
+            htmlPreview.innerHTML = html;
+            htmlRaw.textContent = html;
+        }
+        
+        // Send test messages to the editor
+        function sendMessageToEditor(message) {
+            editorFrame.contentWindow.postMessage(JSON.stringify(message), '*');
+        }
+        
+        // Test buttons
+        setTimeout(() => {
+            console.log('WebView Bridge Test Ready');
+        }, 2000);
+    </script>
+</body>
+</html>

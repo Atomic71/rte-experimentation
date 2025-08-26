@@ -30,26 +30,27 @@ const serializeNode = (node: Descendant): string => {
   }
 
   const children = node.children.map(n => serializeNode(n)).join('')
+  const direction = (node as any).direction ? ` dir="${(node as any).direction}"` : ''
 
   switch (node.type) {
     case 'paragraph':
-      return `<p>${children}</p>`
+      return `<p${direction}>${children}</p>`
     case 'heading-one':
-      return `<h1>${children}</h1>`
+      return `<h1${direction}>${children}</h1>`
     case 'heading-two':
-      return `<h2>${children}</h2>`
+      return `<h2${direction}>${children}</h2>`
     case 'heading-three':
-      return `<h3>${children}</h3>`
+      return `<h3${direction}>${children}</h3>`
     case 'code-block':
-      return `<pre><code>${children}</code></pre>`
+      return `<pre${direction}><code>${children}</code></pre>`
     case 'bulleted-list':
-      return `<ul>${children}</ul>`
+      return `<ul${direction}>${children}</ul>`
     case 'numbered-list':
-      return `<ol>${children}</ol>`
+      return `<ol${direction}>${children}</ol>`
     case 'list-item':
-      return `<li>${children}</li>`
+      return `<li${direction}>${children}</li>`
     case 'link':
-      return `<a href="${escapeHtml((node as any).url)}">${children}</a>`
+      return `<a href="${escapeHtml((node as any).url)}"${direction}>${children}</a>`
     default:
       return children
   }
