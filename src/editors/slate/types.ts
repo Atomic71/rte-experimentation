@@ -43,6 +43,14 @@ export type LinkElement = {
   children: CustomText[]
 }
 
+export type MentionElement = {
+  type: 'mention'
+  userId: string
+  userName: string
+  username: string
+  children: [{ text: '' }]
+}
+
 export type CustomElement = 
   | ParagraphElement 
   | HeadingElement 
@@ -51,6 +59,7 @@ export type CustomElement =
   | NumberedListElement 
   | ListItemElement 
   | LinkElement
+  | MentionElement
 
 export type FormattedText = {
   text: string

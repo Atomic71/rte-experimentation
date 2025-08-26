@@ -10,11 +10,8 @@ import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import { AutoLinkPlugin } from '@lexical/react/LexicalAutoLinkPlugin';
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { registerCodeHighlighting } from '@lexical/code';
 // import LexicalClickableLinkPlugin from '@lexical/react/LexicalClickableLinkPlugin'
-import { HeadingNode, QuoteNode } from '@lexical/rich-text';
 import { ListItemNode, ListNode } from '@lexical/list';
-import { CodeNode, CodeHighlightNode } from '@lexical/code';
 import { LinkNode, AutoLinkNode } from '@lexical/link';
 // import { BeautifulMentionNode } from 'lexical-beautiful-mentions'
 import type { LexicalEditor as LexicalEditorType } from 'lexical';
@@ -46,12 +43,8 @@ const editorConfig = {
   theme: EditorTheme,
   onError: (error: Error) => console.error('Lexical error:', error),
   nodes: [
-    HeadingNode,
     ListNode,
     ListItemNode,
-    QuoteNode,
-    CodeNode,
-    CodeHighlightNode,
     LinkNode,
     AutoLinkNode,
     BeautifulMentionNode,
@@ -62,41 +55,18 @@ const editorConfig = {
       $createParagraphNode,
       $createTextNode,
     } = require('lexical');
-    const { $createHeadingNode } = require('@lexical/rich-text');
 
     const root = $getRoot();
 
-    // Welcome paragraph in English
+    // Welcome paragraph
     const welcomeParagraph = $createParagraphNode();
     welcomeParagraph.append(
       $createTextNode(
-        'Welcome to Lexical Editor with RTL support! Try typing Arabic text or use the direction buttons.'
+        'Start typing to begin. Use @ to mention someone.'
       )
     );
 
-    // Arabic paragraph
-    const arabicParagraph = $createParagraphNode();
-    arabicParagraph.setDirection('rtl');
-    arabicParagraph.append(
-      $createTextNode(
-        'مرحبا بكم في محرر Lexical! جرب كتابة النص العربي أو استخدام أزرار الاتجاه.'
-      )
-    );
-
-    // Mixed content paragraph
-    const mixedParagraph = $createParagraphNode();
-    mixedParagraph.append(
-      $createTextNode(
-        'Mixed content: This is English مع النص العربي في نفس الفقرة.'
-      )
-    );
-
-    // RTL Heading
-    const rtlHeading = $createHeadingNode('h2');
-    rtlHeading.setDirection('rtl');
-    rtlHeading.append($createTextNode('عنوان باللغة العربية'));
-
-    root.append(welcomeParagraph, arabicParagraph, mixedParagraph, rtlHeading);
+    root.append(welcomeParagraph);
   },
 };
 
@@ -254,7 +224,6 @@ const EditorInitializer: React.FC<{ wrapper: LexicalEditorWrapper }> = ({
   useEffect(() => {
     wrapper.setEditor(editor);
     wrapper.initialize();
-    return registerCodeHighlighting(editor);
   }, [editor, wrapper]);
 
   return null;

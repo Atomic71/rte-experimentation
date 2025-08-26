@@ -21,9 +21,5 @@ export const renderLeaf = (props: RenderLeafProps) => {
     element = <del>{element}</del>
   }
 
-  if (leaf.code) {
-    element = <code>{element}</code>
-  }
-
   return element
 }

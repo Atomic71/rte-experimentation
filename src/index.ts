@@ -6,18 +6,16 @@ export type {
   EditorContent,
   EditorCommand,
   BaseEditor,
-  EditorType
-} from './editors/common/types'
+  EditorType,
+} from './editors/common/types';
 
 // WebView Bridge
-export { webViewBridge } from './editors/common/webview-bridge'
+export { webViewBridge } from './editors/common/webview-bridge';
 
 // Slate utilities
-export { serialize, deserialize } from './editors/slate/utils/serialization'
-export { SlateEditorWrapper } from './editors/slate/SlateEditor'
-
+export { serialize, deserialize } from './editors/slate/utils/serialization';
 // Slate types
-export type { CustomElement, CustomText } from './editors/slate/types'
+export type { CustomElement, CustomText } from './editors/slate/types';
 
 // Mention utilities for Slate
 export const slateUtils = {
@@ -25,53 +23,55 @@ export const slateUtils = {
    * Convert Slate nodes to plain text
    */
   toPlainText: (nodes: any[]): string => {
-    let result = ''
-    
+    let result = '';
+
     const extractText = (node: any): string => {
       if (node.text !== undefined) {
-        return node.text
+        return node.text;
       }
-      
+
       if (node.type === 'mention') {
-        return node.label || node.value || ''
+        return node.label || node.value || '';
       }
-      
+
       if (node.children) {
-        return node.children.map(extractText).join('')
+        return node.children.map(extractText).join('');
       }
-      
-      return ''
-    }
-    
+
+      return '';
+    };
+
     nodes.forEach((node, index) => {
-      result += extractText(node)
+      result += extractText(node);
       if (node.type && node.type !== 'mention' && index < nodes.length - 1) {
-        result += '\n'
+        result += '\n';
       }
-    })
-    
-    return result.trim()
+    });
+
+    return result.trim();
   },
 
   /**
    * Extract mentions from Slate document
    */
-  extractMentions: (nodes: any[]): Array<{
-    id: string
-    label: string
-    value: string
-    position: { start: number; end: number }
+  extractMentions: (
+    nodes: any[]
+  ): Array<{
+    id: string;
+    label: string;
+    value: string;
+    position: { start: number; end: number };
   }> => {
     const mentions: Array<{
-      id: string
-      label: string
-      value: string
-      position: { start: number; end: number }
-    }> = []
-    
+      id: string;
+      label: string;
+      value: string;
+      position: { start: number; end: number };
+    }> = [];
+
     const findMentions = (node: any, offset: number = 0): number => {
-      let currentOffset = offset
-      
+      let currentOffset = offset;
+
       if (node.type === 'mention') {
         mentions.push({
           id: node.id,
@@ -79,28 +79,28 @@ export const slateUtils = {
           value: node.value || node.label,
           position: {
             start: currentOffset,
-            end: currentOffset + node.label.length
-          }
-        })
-        return currentOffset + node.label.length
+            end: currentOffset + node.label.length,
+          },
+        });
+        return currentOffset + node.label.length;
       }
-      
+
       if (node.children) {
         node.children.forEach((child: any) => {
-          currentOffset = findMentions(child, currentOffset)
-        })
+          currentOffset = findMentions(child, currentOffset);
+        });
       } else if (node.text) {
-        currentOffset += node.text.length
+        currentOffset += node.text.length;
       }
-      
-      return currentOffset
-    }
-    
+
+      return currentOffset;
+    };
+
     nodes.forEach((node) => {
-      findMentions(node, 0)
-    })
-    
-    return mentions
+      findMentions(node, 0);
+    });
+
+    return mentions;
   },
 
   /**
@@ -112,8 +112,8 @@ export const slateUtils = {
       id,
       label,
       value: value || label,
-      children: [{ text: '' }]
-    }
+      children: [{ text: '' }],
+    };
   },
 
   /**
@@ -122,10 +122,10 @@ export const slateUtils = {
   createParagraph: (text: string = ''): any => {
     return {
       type: 'paragraph',
-      children: [{ text }]
-    }
-  }
-}
+      children: [{ text }],
+    };
+  },
+};
 
 // Constants for message types
 export const MESSAGE_TYPES = {
@@ -136,16 +136,16 @@ export const MESSAGE_TYPES = {
   EXPORT_HTML: 'EXPORT_HTML',
   COMMAND: 'COMMAND',
   UPDATE_MENTIONS: 'UPDATE_MENTIONS',
-  
+
   // From WebView to React Native
   READY: 'READY',
   CHANGE: 'CHANGE',
   ERROR: 'ERROR',
   MENTION_ADD: 'MENTION_ADD',
-  MENTION_REMOVE: 'MENTION_REMOVE'
-} as const
+  MENTION_REMOVE: 'MENTION_REMOVE',
+} as const;
 
 // Re-export React components for web usage
-export { SlateEditor } from './editors/slate/SlateEditor'
-export { LexicalEditor } from './editors/lexical'
-export { default as EditorRouter } from './App'
+export { SlateEditor } from './editors/slate/SlateEditor';
+export { LexicalEditor } from './editors/lexical';
+export { default as EditorRouter } from './App';

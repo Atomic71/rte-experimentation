@@ -14,30 +14,6 @@ export const renderElement = (props: RenderElementProps) => {
   }
 
   switch (element.type) {
-    case 'heading-one':
-      return (
-        <h1 {...attributes} style={style}>
-          {children}
-        </h1>
-      )
-    case 'heading-two':
-      return (
-        <h2 {...attributes} style={style}>
-          {children}
-        </h2>
-      )
-    case 'heading-three':
-      return (
-        <h3 {...attributes} style={style}>
-          {children}
-        </h3>
-      )
-    case 'code-block':
-      return (
-        <pre {...attributes}>
-          <code>{children}</code>
-        </pre>
-      )
     case 'bulleted-list':
       return (
         <ul {...attributes} style={style}>
@@ -61,6 +37,26 @@ export const renderElement = (props: RenderElementProps) => {
         <a {...attributes} href={(element as any).url} style={style}>
           {children}
         </a>
+      )
+    case 'mention':
+      return (
+        <span
+          {...attributes}
+          contentEditable={false}
+          style={{
+            padding: '2px 4px',
+            margin: '0 2px',
+            backgroundColor: '#e8f4fd',
+            borderRadius: '3px',
+            color: '#1976d2',
+            cursor: 'pointer',
+            userSelect: 'none'
+          }}
+          data-mention-id={(element as any).userId}
+          data-mention-name={(element as any).userName}
+        >
+          {children}
+        </span>
       )
     default:
       return (
