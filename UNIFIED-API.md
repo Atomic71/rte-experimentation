@@ -71,7 +71,7 @@ interface EditorMessage {
 
 ```typescript
 interface EditorContent {
-  format: 'slate' | 'lexical' | 'draft' | 'quill' | 'html' | 'markdown'
+  format: 'slate' | 'lexical' | 'html' | 'markdown'
   data: any  // Format-specific data
 }
 
@@ -187,17 +187,6 @@ interface BaseEditor {
   destroy(): void
 }
 ```
-
-## Current Implementation Status
-
-| Editor | Status | Features |
-|--------|--------|----------|
-| Slate.js | ✅ Complete | Full formatting, lists, headings, keyboard shortcuts |
-| Quill.js | ✅ Complete | Full formatting, lists, headings, code blocks, mentions, keyboard shortcuts |
-| Lexical | 🚧 Planned | - |
-| Draft.js | 🚧 Planned | - |
-
-## Benefits of Unified API
 
 1. **Easy Editor Switching**: Change editors without modifying React Native code
 2. **Consistent Interface**: Same message protocol across all editors
