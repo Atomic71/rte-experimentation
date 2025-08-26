@@ -1,7 +1,9 @@
 // Common types for all editors
 
+export type EditorType = 'slate' | 'lexical' | 'draft'
+
 export interface EditorContent {
-  format: 'slate' | 'lexical' | 'draft' | 'html' | 'markdown'
+  format: 'slate' | 'lexical' | 'draft' | 'html' | 'markdown' | 'text'
   data: any
 }
 

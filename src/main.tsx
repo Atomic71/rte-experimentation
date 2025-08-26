@@ -1,4 +1,10 @@
 import { createRoot } from 'react-dom/client';
 import EditorRouter from './App';
 
-createRoot(document.getElementById('root')!).render(<EditorRouter />);
+const element = document.getElementById('root');
+
+if (!element) {
+  throw new Error('Root element not found');
+}
+
+createRoot(element).render(<EditorRouter />);

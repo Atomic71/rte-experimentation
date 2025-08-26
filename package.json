@@ -6,9 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && node scripts/make-html-export.mjs",
+    "build:web": "vite build && node scripts/make-html-export.mjs",
+    "build:lib": "tsc -p tsconfig.lib.json",
     "lint": "eslint .",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build:lib",
+    "yalc:publish": "npm run build:lib && yalc publish",
+    "link:local": "npm run build:lib && yalc publish --push"
   },
   "dependencies": {
     "@lexical/code": "^0.34.0",
@@ -43,11 +48,24 @@
     "vite": "^7.1.3",
     "vite-plugin-singlefile": "^2.3.0"
   },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "dist/index.html"
+    "src"
   ],
   "exports": {
-    "./dist/index.html": "./dist/index.html"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./dist/index.html": "./dist/index.html",
+    "./utils": {
+      "types": "./dist/utils.d.ts",
+      "import": "./dist/utils.js",
+      "require": "./dist/utils.js"
+    }
   }
 }
