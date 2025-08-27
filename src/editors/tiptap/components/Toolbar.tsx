@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Editor } from '@tiptap/react'
+import { LinkPopup } from '../../common/LinkPopup'
 
 interface ToolbarProps {
   editor: Editor
@@ -23,14 +24,47 @@ const ToolbarButton: React.FC<{
 )
 
 export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
-  const addLink = () => {
-    const url = window.prompt('Enter URL:')
+  const [showLinkPopup, setShowLinkPopup] = useState(false)
+  const [linkData, setLinkData] = useState({ text: '', url: '' })
+
+  const handleLinkClick = () => {
+    const { href } = editor.getAttributes('link')
+    const selectedText = editor.state.doc.textBetween(
+      editor.state.selection.from,
+      editor.state.selection.to,
+      ' '
+    )
+
+    if (href) {
+      // Editing existing link
+      setLinkData({
+        text: selectedText || href,
+        url: href
+      })
+    } else {
+      // Creating new link
+      setLinkData({
+        text: selectedText,
+        url: ''
+      })
+    }
+
+    setShowLinkPopup(true)
+  }
+
+  const handleSaveLink = (text: string, url: string) => {
     if (url) {
-      editor.chain().focus().setLink({ href: url }).run()
+      // If we have selected text, just add the link
+      if (editor.state.selection.from !== editor.state.selection.to) {
+        editor.chain().focus().setLink({ href: url }).run()
+      } else {
+        // Insert text with link
+        editor.chain().focus().insertContent(`<a href="${url}">${text}</a>`).run()
+      }
     }
   }
 
-  const removeLink = () => {
+  const handleRemoveLink = () => {
     editor.chain().focus().unsetLink().run()
   }
 
@@ -66,30 +100,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
           <s>S</s>
         </ToolbarButton>
       </div>
-
-      <div className="toolbar-group">
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          isActive={editor.isActive('heading', { level: 1 })}
-          title="Heading 1"
-        >
-          H1
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          isActive={editor.isActive('heading', { level: 2 })}
-          title="Heading 2"
-        >
-          H2
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          isActive={editor.isActive('heading', { level: 3 })}
-          title="Heading 3"
-        >
-          H3
-        </ToolbarButton>
-      </div>
+      
+      <div className="toolbar-separator" />
 
       <div className="toolbar-group">
         <ToolbarButton
@@ -97,85 +109,37 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
           isActive={editor.isActive('bulletList')}
           title="Bullet List"
         >
-          • List
+          •
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           isActive={editor.isActive('orderedList')}
           title="Numbered List"
         >
-          1. List
+          1.
+        </ToolbarButton>
+      </div>
+      
+      <div className="toolbar-separator" />
+      
+      <div className="toolbar-group">
+        <ToolbarButton 
+          onClick={handleLinkClick} 
+          isActive={editor.isActive('link')}
+          title="Link"
+        >
+          🔗
         </ToolbarButton>
       </div>
 
-      <div className="toolbar-group">
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          isActive={editor.isActive('blockquote')}
-          title="Blockquote"
-        >
-          "
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-          isActive={editor.isActive('codeBlock')}
-          title="Code Block"
-        >
-          {'</>'}
-        </ToolbarButton>
-      </div>
-
-      <div className="toolbar-group">
-        {editor.isActive('link') ? (
-          <ToolbarButton onClick={removeLink} title="Remove Link">
-            🔗✕
-          </ToolbarButton>
-        ) : (
-          <ToolbarButton onClick={addLink} title="Add Link">
-            🔗
-          </ToolbarButton>
-        )}
-      </div>
-
-      <div className="toolbar-group">
-        <ToolbarButton
-          onClick={() => editor.chain().focus().setTextDirection('ltr').run()}
-          isActive={editor.isActive({ textDirection: 'ltr' })}
-          title="Left to Right"
-        >
-          LTR
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().setTextDirection('rtl').run()}
-          isActive={editor.isActive({ textDirection: 'rtl' })}
-          title="Right to Left"
-        >
-          RTL
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().unsetTextDirection().run()}
-          title="Auto Direction"
-        >
-          Auto
-        </ToolbarButton>
-      </div>
-
-      <div className="toolbar-group">
-        <ToolbarButton
-          onClick={() => editor.chain().focus().undo().run()}
-          disabled={!editor.can().undo()}
-          title="Undo"
-        >
-          ↶
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().redo().run()}
-          disabled={!editor.can().redo()}
-          title="Redo"
-        >
-          ↷
-        </ToolbarButton>
-      </div>
+      <LinkPopup
+        isOpen={showLinkPopup}
+        onClose={() => setShowLinkPopup(false)}
+        onSave={handleSaveLink}
+        onRemove={handleRemoveLink}
+        initialText={linkData.text}
+        initialUrl={linkData.url}
+      />
     </div>
   )
 }
