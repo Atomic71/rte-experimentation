@@ -1,26 +1,14 @@
 // Common types for all editors
 
-export type EditorType = 'slate' | 'lexical' | 'draft';
+export type EditorType = 'slate' | 'lexical';
 
 export interface EditorContent {
-  format: 'slate' | 'lexical' | 'draft' | 'html' | 'markdown' | 'text';
+  format: 'slate' | 'lexical' | 'html' | 'markdown' | 'text';
   data: any;
 }
 
-export interface EditorMessage {
-  type:
-    | 'READY'
-    | 'CHANGE'
-    | 'SET_CONTENT'
-    | 'COMMAND'
-    | 'ERROR'
-    | 'GET_CONTENT'
-    | 'EXPORT_HTML'
-    | 'IMPORT_HTML';
-  payload?: any;
-  editor?: string;
-  timestamp?: number;
-}
+// Re-export WebViewMessage from bridge for backward compatibility
+export type { WebViewMessage as EditorMessage, EditorCallbacks } from './webview-bridge'
 
 export interface EditorCommand {
   action:
@@ -38,7 +26,7 @@ export interface EditorCommand {
 }
 
 export interface EditorConfig {
-  editorType: 'slate' | 'lexical' | 'draft';
+  editorType: 'slate' | 'lexical';
   features?: {
     bold?: boolean;
     italic?: boolean;

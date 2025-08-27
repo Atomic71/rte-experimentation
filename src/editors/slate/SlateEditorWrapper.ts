@@ -1,6 +1,5 @@
 import { Descendant } from 'slate';
 import { serialize, deserialize } from './utils/serialization';
-import { webViewBridge } from '../common/webview-bridge';
 import { BaseEditor, EditorContent, EditorCommand } from '../common/types';
 
 const initialValue: Descendant[] = [
@@ -19,8 +18,7 @@ export class SlateEditorWrapper implements BaseEditor {
   private changeCallback?: (content: Descendant[]) => void;
 
   initialize(): void {
-    webViewBridge.setEditorType('slate');
-    webViewBridge.notifyReady();
+    // Initialization is now handled in useWebViewBridge hook
   }
 
   getContent(): EditorContent {

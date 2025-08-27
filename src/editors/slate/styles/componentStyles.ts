@@ -1,7 +1,7 @@
-import React from 'react';
+import type { CSSProperties } from 'react';
 
 // Element renderer styles
-export const mentionElementStyle: React.CSSProperties = {
+export const mentionElementStyle: CSSProperties = {
   background: '#e8f4fd',
   color: '#1976d2',
   padding: '2px 4px',

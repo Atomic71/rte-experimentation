@@ -14,7 +14,7 @@ import { $setBlocksType } from '@lexical/selection';
 import { $createHeadingNode } from '@lexical/rich-text';
 import { $toggleLink } from '@lexical/link';
 import { BaseEditor, EditorContent, EditorCommand } from '../common/types';
-import { simplifiedBridge } from '../common/simplified-bridge';
+import { webViewBridge, EditorCallbacks } from '../common/webview-bridge';
 import {
   serializeToHtml,
   deserializeFromHtml,
@@ -27,29 +27,32 @@ export class LexicalEditorWrapper implements BaseEditor {
 
   setEditor(editor: LexicalEditorType) {
     this.editor = editor;
-    this.setupWebViewHandlers();
+    this.setupWebViewBridge();
   }
 
-  private setupWebViewHandlers() {
-    const handleGetContent = () => {
-      const content = this.getContent();
-      const html = typeof content.data === 'object' ? content.data.html : '';
-      simplifiedBridge.sendContent(html || '');
-    };
-
-    const handleSetContent = (event: CustomEvent) => {
-      const html = event.detail;
-      if (html && this.editor) {
+  private setupWebViewBridge() {
+    const callbacks: EditorCallbacks = {
+      onSetContent: (content) => {
+        this.setContent(content);
+      },
+      onGetContent: () => this.getContent(),
+      onExecuteCommand: (command) => {
+        this.executeCommand(command);
+      },
+      onExportHTML: () => this.exportHTML(),
+      onImportHTML: (html) => {
         this.importHTML(html);
+      },
+      onError: (error) => {
+        console.error('Lexical WebView Bridge Error:', error);
       }
     };
 
-    window.addEventListener('webview-get-content', handleGetContent as any);
-    window.addEventListener('webview-set-content', handleSetContent as any);
+    webViewBridge.initialize('lexical', callbacks);
   }
 
   initialize(): void {
-    simplifiedBridge.notifyReady();
+    // Initialization is handled in setupWebViewBridge
   }
 
   getContent(): EditorContent {
@@ -139,6 +142,7 @@ export class LexicalEditorWrapper implements BaseEditor {
   }
 
   destroy(): void {
+    webViewBridge.destroy();
     this.editor = null;
   }
 }

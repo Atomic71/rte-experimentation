@@ -1,10 +1,10 @@
-import React from 'react';
+import type { CSSProperties } from 'react';
 
-export const editorContainerStyle: React.CSSProperties = {
+export const editorContainerStyle: CSSProperties = {
   fontFamily: 'system-ui, -apple-system, sans-serif',
 };
 
-export const editorStyle: React.CSSProperties = {
+export const editorStyle: CSSProperties = {
   minHeight: '300px',
   padding: '16px',
   fontSize: '16px',
@@ -12,7 +12,7 @@ export const editorStyle: React.CSSProperties = {
   outline: 'none',
 };
 
-export const placeholderStyle: React.CSSProperties = {
+export const placeholderStyle: CSSProperties = {
   position: 'absolute',
   top: '16px',
   left: '16px',
@@ -21,13 +21,13 @@ export const placeholderStyle: React.CSSProperties = {
   pointerEvents: 'none',
 };
 
-export const editorWrapperStyle: React.CSSProperties = {
+export const editorWrapperStyle: CSSProperties = {
   position: 'relative',
   border: '1px solid #e5e5e5',
   borderTop: 'none',
 };
 
-export const toolbarStyle: React.CSSProperties = {
+export const toolbarStyle: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   gap: '8px',
@@ -37,7 +37,7 @@ export const toolbarStyle: React.CSSProperties = {
   flexWrap: 'wrap',
 };
 
-export const buttonStyle: React.CSSProperties = {
+export const buttonStyle: CSSProperties = {
   padding: '6px 12px',
   border: '1px solid #ddd',
   backgroundColor: '#fff',
@@ -48,20 +48,20 @@ export const buttonStyle: React.CSSProperties = {
   color: '#333',
 };
 
-export const activeButtonStyle: React.CSSProperties = {
+export const activeButtonStyle: CSSProperties = {
   ...buttonStyle,
   backgroundColor: '#007acc',
   color: '#fff',
   borderColor: '#007acc',
 };
 
-export const directionContainerStyle: React.CSSProperties = {
+export const directionContainerStyle: CSSProperties = {
   display: 'flex',
   gap: '4px',
   alignItems: 'center',
 };
 
-export const directionButtonStyle: React.CSSProperties = {
+export const directionButtonStyle: CSSProperties = {
   padding: '4px 8px',
   border: '1px solid #ddd',
   backgroundColor: '#fff',
@@ -71,7 +71,7 @@ export const directionButtonStyle: React.CSSProperties = {
   color: '#666',
 };
 
-export const activeDirectionButtonStyle: React.CSSProperties = {
+export const activeDirectionButtonStyle: CSSProperties = {
   ...directionButtonStyle,
   backgroundColor: '#007acc',
   color: '#fff',

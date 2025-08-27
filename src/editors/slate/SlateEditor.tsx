@@ -6,7 +6,7 @@ import { renderElement } from './components/ElementRenderer';
 import { renderLeaf } from './components/LeafRenderer';
 import { handleKeyDown as handleEditorKeyDown } from './utils/keyboard-shortcuts';
 import { serialize } from './utils/serialization';
-import { simplifiedBridge } from '../common/simplified-bridge';
+import { webViewBridge, EditorCallbacks } from '../common/webview-bridge';
 import { MentionsDropdown } from '../common/MentionsDropdown';
 import { useSlateEditor } from './hooks/useSlateEditor';
 import { useMentions } from './hooks/useMentions';
@@ -35,34 +35,52 @@ export const SlateEditor: React.FC = () => {
     handleMentionKeyDown,
   } = useMentions(editor);
 
-  // Set up simplified WebView bridge
+  // Set up unified WebView bridge
   useEffect(() => {
-    const handleGetContent = () => {
-      const html = serialize(value);
-      simplifiedBridge.sendContent(html);
+    const callbacks: EditorCallbacks = {
+      onSetContent: (content) => {
+        if (content.format === 'slate') {
+          setValue(content.data.slate || content.data);
+        } else if (content.format === 'html') {
+          const htmlContent = typeof content.data === 'string' ? content.data : content.data.html;
+          setValue(deserialize(htmlContent));
+        }
+      },
+      onGetContent: () => ({
+        format: 'slate',
+        data: {
+          slate: value,
+          html: serialize(value)
+        }
+      }),
+      onExportHTML: () => serialize(value),
+      onImportHTML: (html) => {
+        setValue(deserialize(html));
+      },
+      onError: (error) => {
+        console.error('Slate Editor Error:', error);
+      }
     };
 
-    const handleSetContent = (event: CustomEvent) => {
-      const html = event.detail;
-      const newValue = deserialize(html);
-      setValue(newValue);
-    };
-
-    window.addEventListener('webview-get-content', handleGetContent as any);
-    window.addEventListener('webview-set-content', handleSetContent as any);
-    
-    // Notify that editor is ready
-    simplifiedBridge.notifyReady();
+    webViewBridge.initialize('slate', callbacks);
 
     return () => {
-      window.removeEventListener('webview-get-content', handleGetContent as any);
-      window.removeEventListener('webview-set-content', handleSetContent as any);
+      webViewBridge.destroy();
     };
   }, [value]);
 
   const handleChange = useCallback((newValue: Descendant[]) => {
     setValue(newValue);
     handleMentionTrigger();
+    
+    // Notify WebView of content changes
+    webViewBridge.notifyContentChange({
+      format: 'slate',
+      data: {
+        slate: newValue,
+        html: serialize(newValue)
+      }
+    });
   }, [handleMentionTrigger]);
 
 

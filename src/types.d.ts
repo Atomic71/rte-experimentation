@@ -10,7 +10,7 @@ export interface EditorPlaygroundMessage {
 }
 
 export interface EditorPlaygroundContent {
-  format: 'slate' | 'lexical' | 'draft' | 'html' | 'markdown' | 'text'
+  format: 'slate' | 'lexical' | 'html' | 'markdown' | 'text'
   data: any
 }
 

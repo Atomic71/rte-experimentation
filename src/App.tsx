@@ -22,15 +22,6 @@ const EditorRouter: React.FC = () => {
       return <SlateEditor />
     case 'lexical':
       return <LexicalEditor />
-    case 'draft':
-      return (
-        <div className="editor-container">
-          <div style={{ padding: '20px', textAlign: 'center' }}>
-            <h2>Draft.js Editor</h2>
-            <p>Draft.js editor will be implemented here</p>
-          </div>
-        </div>
-      )
     default:
       return <SlateEditor />
   }

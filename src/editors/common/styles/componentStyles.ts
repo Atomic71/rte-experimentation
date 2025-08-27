@@ -1,7 +1,7 @@
-import React from 'react';
+import type { CSSProperties } from 'react';
 
 // LinkPopup styles
-export const popupBaseStyle: React.CSSProperties = {
+export const popupBaseStyle: CSSProperties = {
   backgroundColor: '#fff',
   border: '1px solid #ccc',
   borderRadius: '8px',
@@ -11,7 +11,7 @@ export const popupBaseStyle: React.CSSProperties = {
   minWidth: '300px',
 };
 
-export const popupCenteredStyle: React.CSSProperties = {
+export const popupCenteredStyle: CSSProperties = {
   ...popupBaseStyle,
   position: 'fixed',
   top: '50%',
@@ -19,13 +19,13 @@ export const popupCenteredStyle: React.CSSProperties = {
   transform: 'translate(-50%, -50%)',
 };
 
-export const popupPositionedStyle: React.CSSProperties = {
+export const popupPositionedStyle: CSSProperties = {
   ...popupBaseStyle,
   position: 'absolute',
   transform: 'translateY(-100%)',
 };
 
-export const inputStyle: React.CSSProperties = {
+export const inputStyle: CSSProperties = {
   width: '100%',
   padding: '8px',
   border: '1px solid #ddd',
@@ -34,7 +34,7 @@ export const inputStyle: React.CSSProperties = {
   fontSize: '14px',
 };
 
-export const buttonStyle: React.CSSProperties = {
+export const buttonStyle: CSSProperties = {
   padding: '8px 16px',
   border: '1px solid #ddd',
   backgroundColor: '#fff',
@@ -43,14 +43,14 @@ export const buttonStyle: React.CSSProperties = {
   fontSize: '14px',
 };
 
-export const primaryButtonStyle: React.CSSProperties = {
+export const primaryButtonStyle: CSSProperties = {
   ...buttonStyle,
   backgroundColor: '#007acc',
   color: '#fff',
   borderColor: '#007acc',
 };
 
-export const dangerButtonStyle: React.CSSProperties = {
+export const dangerButtonStyle: CSSProperties = {
   ...buttonStyle,
   backgroundColor: '#dc3545',
   color: '#fff',
@@ -58,7 +58,7 @@ export const dangerButtonStyle: React.CSSProperties = {
 };
 
 // MentionsDropdown styles
-export const dropdownBaseStyle: React.CSSProperties = {
+export const dropdownBaseStyle: CSSProperties = {
   backgroundColor: 'white',
   border: '1px solid #e0e0e0',
   borderRadius: '4px',
@@ -69,7 +69,7 @@ export const dropdownBaseStyle: React.CSSProperties = {
   minWidth: '200px',
 };
 
-export const itemStyle: React.CSSProperties = {
+export const itemStyle: CSSProperties = {
   padding: '8px 12px',
   cursor: 'pointer',
   borderBottom: '1px solid #eee',
@@ -78,33 +78,33 @@ export const itemStyle: React.CSSProperties = {
   backgroundColor: '#fff',
 };
 
-export const selectedItemStyle: React.CSSProperties = {
+export const selectedItemStyle: CSSProperties = {
   ...itemStyle,
   backgroundColor: '#f0f0f0',
 };
 
-export const nameStyle: React.CSSProperties = {
+export const nameStyle: CSSProperties = {
   fontWeight: 'bold',
   fontSize: '14px',
 };
 
-export const usernameStyle: React.CSSProperties = {
+export const usernameStyle: CSSProperties = {
   color: '#666',
   fontSize: '12px',
 };
 
 // Layout styles
-export const flexContainerStyle: React.CSSProperties = {
+export const flexContainerStyle: CSSProperties = {
   display: 'flex',
   justifyContent: 'space-between',
 };
 
-export const marginBottomStyle: React.CSSProperties = {
+export const marginBottomStyle: CSSProperties = {
   marginBottom: '16px',
   fontWeight: 'bold',
 };
 
-export const centerTextStyle: React.CSSProperties = {
+export const centerTextStyle: CSSProperties = {
   padding: '20px',
   textAlign: 'center',
 };
