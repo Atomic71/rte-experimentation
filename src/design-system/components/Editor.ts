@@ -36,6 +36,7 @@ export const toolbar = {
     padding: tokens.spacing.md,
     borderBottom: `1px solid ${tokens.colors.gray[200]}`,
     backgroundColor: tokens.colors.gray[50],
+    overflowX: 'scroll',
   }),
 
   divider: createStyle({

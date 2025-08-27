@@ -1,10 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import {
-  $getSelection,
-  $isRangeSelection,
-  FORMAT_TEXT_COMMAND,
-} from 'lexical';
+import { $getSelection, $isRangeSelection, FORMAT_TEXT_COMMAND } from 'lexical';
 import {
   INSERT_UNORDERED_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
@@ -29,7 +25,6 @@ export const ToolbarPlugin: React.FC = () => {
       setIsItalic(selection.hasFormat('italic'));
       setIsUnderline(selection.hasFormat('underline'));
       setIsStrikethrough(selection.hasFormat('strikethrough'));
-
     }
   }, [editor]);
 
@@ -47,24 +42,23 @@ export const ToolbarPlugin: React.FC = () => {
     editor.dispatchCommand(FORMAT_TEXT_COMMAND, format);
   };
 
-
   const handleLinkClick = () => {
     editor.getEditorState().read(() => {
       const selection = $getSelection();
       if ($isRangeSelection(selection)) {
         const node = selection.anchor.getNode();
         const parent = node.getParent();
-        
+
         // Check if we're in a link
         if ($isLinkNode(parent)) {
           setLinkData({
             text: parent.getTextContent(),
-            url: parent.getURL()
+            url: parent.getURL(),
           });
         } else if ($isLinkNode(node)) {
           setLinkData({
             text: node.getTextContent(),
-            url: node.getURL()
+            url: node.getURL(),
           });
         } else {
           // Get selected text
@@ -84,98 +78,96 @@ export const ToolbarPlugin: React.FC = () => {
     editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
   };
 
-
-
   return (
-    <div style={toolbar.container}>
-      <button
-        style={isBold ? button.active : button.default}
-        onClick={() => formatText('bold')}
-        title='Bold'
-      >
-        <strong>B</strong>
-      </button>
+    <div>
+      <div style={toolbar.container}>
+        <button
+          style={isBold ? button.active : button.default}
+          onClick={() => formatText('bold')}
+          title='Bold'
+        >
+          <strong>B</strong>
+        </button>
 
-      <button
-        style={isItalic ? button.active : button.default}
-        onClick={() => formatText('italic')}
-        title='Italic'
-      >
-        <em>I</em>
-      </button>
+        <button
+          style={isItalic ? button.active : button.default}
+          onClick={() => formatText('italic')}
+          title='Italic'
+        >
+          <em>I</em>
+        </button>
 
-      <button
-        style={isUnderline ? button.active : button.default}
-        onClick={() => formatText('underline')}
-        title='Underline'
-      >
-        <u>U</u>
-      </button>
+        <button
+          style={isUnderline ? button.active : button.default}
+          onClick={() => formatText('underline')}
+          title='Underline'
+        >
+          <u>U</u>
+        </button>
 
-      <button
-        style={isStrikethrough ? button.active : button.default}
-        onClick={() => formatText('strikethrough')}
-        title='Strikethrough'
-      >
-        <s>S</s>
-      </button>
+        <button
+          style={isStrikethrough ? button.active : button.default}
+          onClick={() => formatText('strikethrough')}
+          title='Strikethrough'
+        >
+          <s>S</s>
+        </button>
 
-      <div
-        style={{
-          width: '1px',
-          height: '24px',
-          backgroundColor: '#ccc',
-          margin: '0 4px',
-        }}
-      />
+        <div
+          style={{
+            width: '1px',
+            height: '24px',
+            backgroundColor: '#ccc',
+            margin: '0 4px',
+          }}
+        />
 
-      <button
-        style={button.default}
-        onClick={() =>
-          editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
-        }
-        title='Bullet List'
-      >
-        •
-      </button>
+        <button
+          style={button.default}
+          onClick={() =>
+            editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
+          }
+          title='Bullet List'
+        >
+          •
+        </button>
 
-      <button
-        style={button.default}
-        onClick={() =>
-          editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
-        }
-        title='Numbered List'
-      >
-        1.
-      </button>
+        <button
+          style={button.default}
+          onClick={() =>
+            editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
+          }
+          title='Numbered List'
+        >
+          1.
+        </button>
 
+        <button
+          style={button.default}
+          onClick={handleLinkClick}
+          title='Insert Link'
+        >
+          🔗
+        </button>
 
-      <button
-        style={button.default}
-        onClick={handleLinkClick}
-        title='Insert Link'
-      >
-        🔗
-      </button>
-      
-      <LinkPopup
-        isOpen={showLinkPopup}
-        onClose={() => setShowLinkPopup(false)}
-        onSave={handleSaveLink}
-        onRemove={handleRemoveLink}
-        initialText={linkData.text}
-        initialUrl={linkData.url}
-      />
+        <LinkPopup
+          isOpen={showLinkPopup}
+          onClose={() => setShowLinkPopup(false)}
+          onSave={handleSaveLink}
+          onRemove={handleRemoveLink}
+          initialText={linkData.text}
+          initialUrl={linkData.url}
+        />
 
-      <div
-        style={{
-          width: '1px',
-          height: '24px',
-          backgroundColor: '#ccc',
-          margin: '0 4px',
-        }}
-      />
-
+        <div
+          style={{
+            width: '1px',
+            height: '24px',
+            backgroundColor: '#ccc',
+            margin: '0 4px',
+          }}
+        />
+      </div>
     </div>
   );
 };
