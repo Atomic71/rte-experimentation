@@ -4,7 +4,6 @@ import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
-import TextDirection from 'tiptap-text-direction'
 import { EditorContent as EditorContentType, EditorCommand } from '../common/types'
 import { Toolbar } from './components/Toolbar'
 import { configureMention, MentionUser } from './extensions/configureMention'
@@ -42,10 +41,6 @@ const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
         }),
         Placeholder.configure({
           placeholder: placeholder || 'Start typing...',
-        }),
-        TextDirection.configure({
-          types: ['heading', 'paragraph'],
-          defaultDirection: 'ltr',
         }),
         configureMention(mentionUsers || []),
       ],
@@ -130,15 +125,6 @@ const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
           undo: () => chain.undo().run(),
           redo: () => chain.redo().run(),
           
-          direction: () => {
-            if (command.value === 'rtl') {
-              return chain.setTextDirection('rtl').run()
-            } else if (command.value === 'ltr') {
-              return chain.setTextDirection('ltr').run()
-            } else {
-              return chain.unsetTextDirection().run()
-            }
-          }
         }
 
         const commandHandler = commandMap[command.action as keyof typeof commandMap]

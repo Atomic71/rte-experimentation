@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "yalc:publish": "npm run build:lib && yalc publish",
-    "link:local": "npm run build:lib && yalc publish --push"
+    "link:local": "npm run build:lib && yalc publish --private --push"
   },
   "dependencies": {
     "@lexical/code": "^0.34.0",
@@ -40,7 +40,6 @@
     "slate-history": "^0.113.1",
     "slate-react": "^0.117.4",
     "tippy.js": "^6.3.7",
-    "tiptap-text-direction": "^0.3.2",
     "yalc": "^1.0.0-pre.53"
   },
   "devDependencies": {
