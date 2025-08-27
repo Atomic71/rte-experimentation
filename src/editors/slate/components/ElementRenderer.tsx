@@ -55,6 +55,7 @@ export const renderElement = (props: RenderElementProps) => {
           data-mention-id={(element as any).userId}
           data-mention-name={(element as any).userName}
         >
+          {(element as any).username}
           {children}
         </span>
       )
