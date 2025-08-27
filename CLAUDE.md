@@ -30,35 +30,35 @@ This is a unified rich text editor playground that provides multiple editor impl
 
 ### Key Architecture Concepts
 
-- **Dual Editor Support**: Both Slate.js (`/src/editors/slate/`) and Lexical (`/src/editors/lexical/`) implementations
+- **Dual Editor Support**: Both [Slate.js](src/editors/slate/) and [Lexical](src/editors/lexical/) implementations
 - **Unified WebView API**: All editors implement the same message protocol for React Native WebView communication
 - **Editor Selection**: Via URL parameters (`?editor=slate` or `?editor=lexical`) or path-based routing
-- **Shared Bridge**: Common WebView communication layer in `/src/editors/common/webview-bridge.ts`
+- **Shared Bridge**: Common WebView communication layer in [`/src/editors/common/webview-bridge.ts`](src/editors/common/webview-bridge.ts)
 
 ### Directory Structure
 
 ```
 src/
-├── editors/
-│   ├── common/          # Shared WebView bridge and types
-│   ├── slate/           # Slate.js implementation with plugins
-│   └── lexical/         # Lexical implementation with plugins
-├── data/                # Static data (users for mentions)
-└── routes/              # App routing
+├── [editors/](src/editors/)
+│   ├── [common/](src/editors/common/)          # Shared WebView bridge and types
+│   ├── [slate/](src/editors/slate/)           # Slate.js implementation with plugins
+│   └── [lexical/](src/editors/lexical/)         # Lexical implementation with plugins
+├── [data/](src/data/)                # Static data (users for mentions)
+└── [routes/](src/routes/)              # App routing
 ```
 
 ### WebView Integration
 
-The primary use case is React Native WebView integration. The built `dist/index.html` file can be loaded in a WebView with editor selection via URL parameters. All editors implement the same message protocol:
+The primary use case is React Native WebView integration. The built [`dist/index.html`](dist/index.html) file can be loaded in a WebView with editor selection via URL parameters. All editors implement the same message protocol:
 
 - **Web → React Native**: `READY`, `CHANGE`, `GET_CONTENT`, `EXPORT_HTML`, `ERROR`
 - **React Native → Web**: `SET_CONTENT`, `COMMAND`, `GET_CONTENT`, `EXPORT_HTML`, `IMPORT_HTML`
 
 ### Build Outputs
 
-- `dist/index.html` - Single-file build for WebView integration
+- [`dist/index.html`](dist/index.html) - Single-file build for WebView integration
 - `dist/index.js|mjs` - Library exports for npm consumption
-- Library can be consumed via npm or linked locally with yalc
+- Library can be consumed via npm or linked locally with [yalc](https://github.com/wclr/yalc)
 
 ### Key Features
 

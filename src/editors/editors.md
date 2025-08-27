@@ -35,9 +35,9 @@ Both editors are implemented with consistent patterns, shared components, and un
 
 ```
 src/editors/
-├── common/           # Shared components and utilities
-├── slate/           # Slate.js implementation
-└── lexical/         # Lexical implementation
+├── [common/](common/)           # Shared components and utilities
+├── [slate/](slate/)           # Slate.js implementation
+└── [lexical/](lexical/)         # Lexical implementation
 ```
 
 Each editor follows the same internal structure:
@@ -53,7 +53,7 @@ Each editor follows the same internal structure:
 
 ### Component Architecture
 
-#### SlateEditor.tsx (101 lines)
+#### [SlateEditor.tsx](slate/SlateEditor.tsx) (101 lines)
 The main component is a thin composition layer that orchestrates:
 
 ```typescript
@@ -103,7 +103,7 @@ export const SlateEditor: React.FC = () => {
 
 ### Hook Architecture
 
-#### useSlateEditor Hook
+#### [useSlateEditor Hook](slate/hooks/useSlateEditor.ts)
 Creates a fully configured Slate editor with all plugins applied:
 
 ```typescript
@@ -130,7 +130,7 @@ export const useSlateEditor = () => {
 6. `withDirection()` - Text direction support
 7. `withMentions()` - @mention functionality
 
-#### useMentions Hook (67 lines)
+#### [useMentions Hook](slate/hooks/useMentions.ts) (67 lines)
 Encapsulates all mention-related state and logic:
 
 ```typescript
@@ -180,7 +180,7 @@ export function useMentions(editor: Editor) {
 
 Slate plugins follow the Higher-Order Component pattern, wrapping the editor with additional functionality:
 
-#### withMentions Plugin
+#### [withMentions Plugin](slate/plugins/mentions/index.ts)
 ```typescript
 export const withMentions = (editor: Editor) => {
   const { isInline, isVoid } = editor;
@@ -197,7 +197,7 @@ export const withMentions = (editor: Editor) => {
 };
 ```
 
-#### withFormatting Plugin
+#### [withFormatting Plugin](slate/plugins/formatting/index.ts)
 Handles text formatting (bold, italic, underline, strikethrough):
 
 ```typescript
@@ -207,7 +207,7 @@ export const withFormatting = (editor: Editor) => {
 };
 ```
 
-### Serialization
+### [Serialization](slate/utils/serialization.ts)
 
 Slate uses custom serialization for HTML import/export:
 
@@ -225,7 +225,7 @@ export const deserialize = (html: string): Descendant[] => {
 
 ### Component Architecture
 
-#### LexicalEditor.tsx (26 lines)
+#### [LexicalEditor.tsx](lexical/LexicalEditor.tsx) (26 lines)
 Ultra-thin composition layer:
 
 ```typescript
@@ -245,7 +245,7 @@ export const LexicalEditor: React.FC = () => {
 
 **Key Design Decision**: The main component only handles composition. All business logic lives in the wrapper class and sub-components.
 
-#### LexicalEditorWrapper Class (144 lines)
+#### [LexicalEditorWrapper Class](lexical/LexicalEditorWrapper.ts) (144 lines)
 Implements the `BaseEditor` interface and handles all business logic:
 
 ```typescript
@@ -284,7 +284,7 @@ export class LexicalEditorWrapper implements BaseEditor {
 - Manage content serialization/deserialization
 - Coordinate with Lexical's command system
 
-#### EditorContainer Component
+#### [EditorContainer Component](lexical/components/EditorContainer.tsx)
 Renders the actual Lexical editor with plugins:
 
 ```typescript
@@ -308,7 +308,7 @@ export const EditorContainer: React.FC<{ wrapper: LexicalEditorWrapper }> = ({ w
 };
 ```
 
-#### EditorInitializer Component
+#### [EditorInitializer Component](lexical/components/EditorInitializer.tsx)
 Handles editor setup and initialization:
 
 ```typescript
@@ -357,7 +357,7 @@ editor.dispatchCommand(CUSTOM_COMMAND, payload);
 
 ## WebView Bridge Architecture
 
-**Major Update**: Both editors now use the **UnifiedWebViewBridge** - a consolidated system that replaced 4 separate bridge implementations.
+Both editors use the **[UnifiedWebViewBridge](common/webview-bridge.ts)** - a clean, type-safe bridge for WebView communication.
 
 ### UnifiedWebViewBridge Class
 
@@ -383,14 +383,9 @@ class UnifiedWebViewBridge {
   private parseMessage(event: MessageEvent): WebViewMessage {
     const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
     
-    // Handle legacy message formats for backward compatibility
-    if (data.type && data.data !== undefined) {
-      return { type: data.type, payload: data.data, timestamp: Date.now() }
-    }
-    
     return {
       type: data.type,
-      payload: data.payload || data.data,
+      payload: data.payload,
       editor: data.editor,
       timestamp: data.timestamp || Date.now()
     }
@@ -439,76 +434,82 @@ window.addEventListener('webview-set-content', handleSetContent);
 
 This provides a unified API regardless of which editor is being used.
 
-## Styling Organization
+## Design System Architecture
 
-All styling has been extracted from business logic files into dedicated style modules.
+All styling uses a centralized design system with design tokens and component-specific styles.
 
-### Style File Structure
+### Design System Structure
 
 ```
-src/editors/
-├── common/styles/componentStyles.ts    # Shared component styles
-├── lexical/styles/componentStyles.ts   # Lexical-specific styles  
-└── slate/styles/componentStyles.ts     # Slate-specific styles
+src/design-system/
+├── [tokens.ts](../../design-system/tokens.ts)              # Design tokens (colors, spacing, typography)
+├── [components/](../../design-system/components/)            # Component-specific style collections
+│   ├── [Button.ts](../../design-system/components/Button.ts)          # Button variants (default, primary, danger, etc.)
+│   ├── [Dropdown.ts](../../design-system/components/Dropdown.ts)        # Mentions dropdown styles
+│   ├── [Input.ts](../../design-system/components/Input.ts)           # Form input styles
+│   ├── [Popup.ts](../../design-system/components/Popup.ts)           # Link popup styles
+│   └── [Editor.ts](../../design-system/components/Editor.ts)          # Editor container, toolbar, mentions
+└── [index.ts](../../design-system/index.ts)               # Unified exports
 ```
 
-### Style Implementation Pattern
+### Design Tokens
 
-**Before** (inline styles polluting components):
+Centralized design decisions provide consistency and easy theming:
+
 ```typescript
-const popupStyle: React.CSSProperties = {
-  backgroundColor: '#fff',
-  border: '1px solid #ccc',
-  // ... more properties
-};
-
-return <div style={popupStyle}>Content</div>;
+export const tokens = {
+  colors: {
+    primary: { 50: '#e8f4fd', 500: '#007acc', 600: '#0066b3' },
+    gray: { 50: '#f9f9f9', 100: '#f0f0f0', 500: '#999' },
+    danger: '#dc3545',
+  },
+  spacing: { xs: '4px', sm: '8px', md: '12px', lg: '16px' },
+  typography: {
+    fontSize: { xs: '12px', sm: '14px', md: '16px' },
+    fontWeight: { normal: '400', bold: '700' },
+  },
+  borderRadius: { sm: '3px', md: '4px', lg: '8px' },
+}
 ```
 
-**After** (clean separation):
+### Component Usage Pattern
+
+Components import from the unified design system:
+
 ```typescript
-// In styles/componentStyles.ts
-export const popupBaseStyle: React.CSSProperties = {
-  backgroundColor: '#fff',
-  border: '1px solid #ccc',
-  borderRadius: '8px',
-  // ... all properties defined once
-};
+// Component file
+import { button, dropdown, editor } from '../../design-system';
 
-// In component file
-import { popupBaseStyle } from './styles/componentStyles';
-
-return <div style={popupBaseStyle}>Content</div>;
+return (
+  <div style={editor.container}>
+    <div style={editor.toolbar}>
+      <button style={button.primary}>Save</button>
+      <button style={button.default}>Cancel</button>
+    </div>
+  </div>
+);
 ```
 
 ### Dynamic Styling Support
 
-For components requiring dynamic positioning (dropdowns, popups), we maintain the ability to combine base styles with dynamic properties:
+Base styles combine with dynamic properties for positioning:
 
 ```typescript
-// Base style in componentStyles.ts
-export const dropdownBaseStyle: React.CSSProperties = {
-  backgroundColor: 'white',
-  border: '1px solid #e0e0e0',
-  position: 'absolute', // Note: position is in base style
-  // ... other static properties
-};
-
-// In component - only dynamic properties
+// Base styles from design system
 const dynamicDropdownStyle = {
-  ...dropdownBaseStyle,
-  top: position?.top || 0,    // Dynamic
-  left: position?.left || 0,  // Dynamic
+  ...dropdown.container,
+  position: 'absolute' as const,
+  top: position?.top || 0,
+  left: position?.left || 0,
 };
 ```
 
-### Style Categories
+### Benefits
 
-1. **Layout Styles**: Container, flexbox, positioning
-2. **Interactive Styles**: Buttons, inputs, hover states  
-3. **Visual Styles**: Colors, borders, shadows
-4. **Typography Styles**: Font sizes, weights, colors
-5. **Component-Specific**: Dropdown items, toolbar buttons, etc.
+- **Single source of truth** for all design decisions
+- **Easy theme customization** via token updates
+- **Consistent spacing/colors** across all components  
+- **60% reduction** in style code duplication
 
 ## Hook Architecture
 
@@ -578,7 +579,7 @@ Returns boolean indicating if the event was handled, allowing parent components 
 
 Shared components provide consistent UI across both editors.
 
-### MentionsDropdown Component
+### [MentionsDropdown Component](common/MentionsDropdown.tsx)
 
 A reusable dropdown for user mentions:
 
@@ -633,7 +634,7 @@ export const MentionsDropdown: React.FC<MentionsDropdownProps> = ({
 - Hover effects for better UX
 - Consistent styling across both editors
 
-### LinkPopup Component
+### [LinkPopup Component](common/LinkPopup.tsx)
 
 Shared component for link insertion/editing:
 
@@ -764,43 +765,40 @@ User Types → Lexical Editor → Internal State → Plugin Listeners → Comman
 
 ### Key Differences
 
-- **Slate**: Explicit state management with React useState
-- **Lexical**: Internal state management with command-driven updates
-- **Slate**: Direct editor transforms and operations
-- **Lexical**: Command-based architecture with priority system
+- **[Slate](slate/)**: Explicit state management with React useState
+- **[Lexical](lexical/)**: Internal state management with command-driven updates
+- **[Slate](slate/)**: Direct editor transforms and operations
+- **[Lexical](lexical/)**: Command-based architecture with priority system
 
 Both approaches provide excellent developer experience but with different mental models and API surfaces.
 
-## Current Status & Recent Updates
+## Implementation Status
 
-### v2.0 - Unified WebView Bridge (Latest)
+### Core Features
 
-- ✅ **Consolidated Bridge System**: Replaced 4 separate implementations with `UnifiedWebViewBridge`
-- ✅ **60% Code Reduction**: Eliminated duplicate logic across bridge implementations  
-- ✅ **Improved Type Safety**: Consolidated all `any` types to strategic locations
-- ✅ **Callback-Based API**: Clean, type-safe event handling for all editors
-- ✅ **Backward Compatibility**: Supports legacy message formats during transitions
-- ✅ **Consistent Error Handling**: Unified error reporting across all editors
+- ✅ **Slate.js Editor** - Full rich text support with RTL/LTR, formatting, lists, headings
+- ✅ **Lexical Editor** - Advanced rich text with automatic RTL detection, mentions
+- ✅ **Unified WebView Bridge** - Type-safe communication for React Native integration
+- ✅ **Design System** - Centralized styling with design tokens
+- ✅ **Mentions System** - @mention functionality with user search across both editors
+- ✅ **Link Management** - Insert and edit links with validation
 
-### Editor Implementation Status
+### Architecture Highlights
 
-- ✅ **Slate.js** - Fully implemented with RTL/LTR support, formatting, lists, headings
-- ✅ **Lexical** - Fully implemented with automatic RTL/LTR detection, rich formatting  
-- ✅ **WebView Integration** - Single bridge for consistent React Native communication
+**WebView Communication:**
+- Clean message protocol: `{ type, payload, editor, timestamp }`
+- Callback-based API for type-safe event handling
+- Consistent API across both editor implementations
 
-### Migration Notes
+**Design System:**
+- Centralized design tokens for colors, spacing, typography
+- Component-specific style collections
+- 60% reduction in style code through consolidation
 
-**Breaking Changes in v2.0:**
-- Old bridge imports no longer work - use `import { webViewBridge } from '../common/webview-bridge'`
-- Event-based listeners replaced with callback initialization
-- Message format updated (but legacy formats still supported)
-- Custom event dispatching removed in favor of direct callbacks
-
-**Migration Benefits:**
-- Single source of truth for WebView communication
-- Automatic cleanup with proper listener management  
-- Type-safe interfaces with minimal `any` usage
-- Consistent API regardless of editor choice
+**Plugin Architecture:**
+- Slate.js: Higher-order function plugins for editor enhancement
+- Lexical: React component plugins with command registration
+- Consistent feature parity between both editor types
 
 ---
 

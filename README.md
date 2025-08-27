@@ -55,21 +55,21 @@ The project features a consolidated WebView bridge system that replaced 4 separa
 
 - **Single Bridge Class**: `UnifiedWebViewBridge` handles all editor communication
 - **Consistent API**: Callback-based interface for all editors
-- **Type Safety**: Consolidated type definitions with minimal `any` usage
-- **Backward Compatibility**: Supports legacy message formats during transitions
+- **Type Safety**: Clean type definitions with minimal `any` usage
+- **Clean Message Protocol**: `{ type, payload, editor, timestamp }` format
 
 ### Editor Selection
 
 Choose your editor via URL parameters:
 
-- **Slate.js**: `http://localhost:5173?editor=slate`
-- **Lexical**: `http://localhost:5173?editor=lexical`
+- **[Slate.js](src/editors/slate/)**: `http://localhost:5173?editor=slate`
+- **[Lexical](src/editors/lexical/)**: `http://localhost:5173?editor=lexical`
 
 Or use path-based routing in your implementation.
 
 ## WebView Integration
 
-The built `dist/index.html` file can be loaded in a React Native WebView:
+The built [`dist/index.html`](dist/index.html) file can be loaded in a React Native WebView:
 
 ```javascript
 <WebView
@@ -108,19 +108,19 @@ The built `dist/index.html` file can be loaded in a React Native WebView:
 
 ```
 src/
-├── editors/
-│   ├── common/          # Shared WebView bridge and types
-│   ├── slate/           # Slate.js implementation with plugins
-│   └── lexical/         # Lexical implementation with plugins
-├── data/                # Static data (users for mentions)
-└── routes/              # App routing
+├── [editors/](src/editors/)
+│   ├── [common/](src/editors/common/)          # Shared WebView bridge and types
+│   ├── [slate/](src/editors/slate/)           # Slate.js implementation with plugins
+│   └── [lexical/](src/editors/lexical/)         # Lexical implementation with plugins
+├── [data/](src/data/)                # Static data (users for mentions)
+└── [routes/](src/routes/)              # App routing
 ```
 
 ## Build Outputs
 
-- `dist/index.html` - Single-file build for WebView integration
+- [`dist/index.html`](dist/index.html) - Single-file build for WebView integration
 - `dist/index.js|mjs` - Library exports for npm consumption
-- Library can be consumed via npm or linked locally with yalc
+- Library can be consumed via npm or linked locally with [yalc](https://github.com/wclr/yalc)
 
 ## Contributing
 
