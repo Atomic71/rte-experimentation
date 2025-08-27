@@ -2,44 +2,69 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Commands
+## Development Commands
 
-### Development
-- `npm run dev` - Start development server on port 5173 with LAN access
-- `npm run build` - Build for production (TypeScript compilation + Vite build + HTML export)
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run typecheck` - Run TypeScript compiler without emitting files
+```bash
+# Development server - opens at http://localhost:5173
+npm run dev
 
-### Build Process
-The build process has three steps:
-1. `tsc` - TypeScript compilation
-2. `vite build` - Vite bundling with single-file output
-3. `node scripts/make-html-export.mjs` - Exports HTML as JavaScript module
+# Type checking without emitting files
+npm run typecheck
 
-## Architecture
+# Linting
+npm run lint
 
-This is a React + Slate.js rich text editor designed to run in WebView environments (React Native, mobile apps). Key architectural patterns:
+# Production builds
+npm run build        # Full build: tsc + vite + HTML export
+npm run build:web    # Web only: vite + HTML export
+npm run build:lib    # Library only: tsc with lib config
+
+# Package management for local development
+npm run yalc:publish    # Build library and publish with yalc
+npm run link:local      # Build library and push to linked projects
+```
+
+## Architecture Overview
+
+This is a unified rich text editor playground that provides multiple editor implementations (Slate.js and Lexical) with a consistent WebView communication API for React Native integration.
+
+### Key Architecture Concepts
+
+- **Dual Editor Support**: Both Slate.js (`/src/editors/slate/`) and Lexical (`/src/editors/lexical/`) implementations
+- **Unified WebView API**: All editors implement the same message protocol for React Native WebView communication
+- **Editor Selection**: Via URL parameters (`?editor=slate` or `?editor=lexical`) or path-based routing
+- **Shared Bridge**: Common WebView communication layer in `/src/editors/common/webview-bridge.ts`
+
+### Directory Structure
+
+```
+src/
+├── editors/
+│   ├── common/          # Shared WebView bridge and types
+│   ├── slate/           # Slate.js implementation with plugins
+│   └── lexical/         # Lexical implementation with plugins
+├── data/                # Static data (users for mentions)
+└── routes/              # App routing
+```
 
 ### WebView Integration
-- Main entry point: `src/main.tsx` (not App.tsx)
-- Uses `window.ReactNativeWebView.postMessage()` for communication with native app
-- Listens for messages on both `window` and `document` for cross-platform compatibility
-- Posts `READY` event on mount and `CHANGE` events on content updates
 
-### Rich Text Editor
-- Built with Slate.js framework (`slate`, `slate-react`, `slate-dom`)
-- Single editor instance with React state management
-- Supports external content updates via `SET_CONTENT` messages
+The primary use case is React Native WebView integration. The built `dist/index.html` file can be loaded in a WebView with editor selection via URL parameters. All editors implement the same message protocol:
 
-### Build Configuration
-- Vite with `vite-plugin-singlefile` for single HTML file output
-- All assets inlined (100MB limit) for WebView compatibility
-- Base path set to `./` for `file://` protocol loading
-- ES2018 target for broader compatibility
-- No source maps in production
+- **Web → React Native**: `READY`, `CHANGE`, `GET_CONTENT`, `EXPORT_HTML`, `ERROR`
+- **React Native → Web**: `SET_CONTENT`, `COMMAND`, `GET_CONTENT`, `EXPORT_HTML`, `IMPORT_HTML`
 
-### Styling
-- Global dark theme with light mode fallback
-- System fonts with fallbacks
-- Responsive design starting at 320px minimum width
+### Build Outputs
+
+- `dist/index.html` - Single-file build for WebView integration
+- `dist/index.js|mjs` - Library exports for npm consumption
+- Library can be consumed via npm or linked locally with yalc
+
+### Key Features
+
+- RTL/LTR text direction support
+- Rich text formatting (bold, italic, underline, etc.)
+- Mentions support with dropdown
+- Link insertion and editing
+- HTML import/export
+- Consistent API across editor types
