@@ -1,5 +1,6 @@
 import React from 'react'
 import { RenderElementProps } from 'slate-react'
+import { mention } from '../../../design-system'
 
 export const renderElement = (props: RenderElementProps) => {
   const { attributes, children, element } = props
@@ -14,30 +15,6 @@ export const renderElement = (props: RenderElementProps) => {
   }
 
   switch (element.type) {
-    case 'heading-one':
-      return (
-        <h1 {...attributes} style={style}>
-          {children}
-        </h1>
-      )
-    case 'heading-two':
-      return (
-        <h2 {...attributes} style={style}>
-          {children}
-        </h2>
-      )
-    case 'heading-three':
-      return (
-        <h3 {...attributes} style={style}>
-          {children}
-        </h3>
-      )
-    case 'code-block':
-      return (
-        <pre {...attributes}>
-          <code>{children}</code>
-        </pre>
-      )
     case 'bulleted-list':
       return (
         <ul {...attributes} style={style}>
@@ -61,6 +38,22 @@ export const renderElement = (props: RenderElementProps) => {
         <a {...attributes} href={(element as any).url} style={style}>
           {children}
         </a>
+      )
+    case 'mention':
+      return (
+        <span
+          {...attributes}
+          contentEditable={false}
+          style={{
+            ...mention.element,
+            margin: '0 2px',
+          }}
+          data-mention-id={(element as any).userId}
+          data-mention-name={(element as any).userName}
+        >
+          {(element as any).username}
+          {children}
+        </span>
       )
     default:
       return (

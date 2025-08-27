@@ -4,19 +4,14 @@ import {
   $getSelection,
   $isRangeSelection,
   FORMAT_TEXT_COMMAND,
-  UNDO_COMMAND,
-  REDO_COMMAND,
 } from 'lexical';
-import { $setBlocksType } from '@lexical/selection';
-import { $createHeadingNode, HeadingTagType } from '@lexical/rich-text';
-import { $createParagraphNode } from 'lexical';
 import {
   INSERT_UNORDERED_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
-  INSERT_CHECK_LIST_COMMAND,
 } from '@lexical/list';
-import { $toggleLink } from '@lexical/link';
-import { DirectionPlugin } from './DirectionPlugin';
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
+import { LinkPopup } from '../../common/LinkPopup';
+import { toolbar, button } from '../../../design-system';
 
 export const ToolbarPlugin: React.FC = () => {
   const [editor] = useLexicalComposerContext();
@@ -24,7 +19,8 @@ export const ToolbarPlugin: React.FC = () => {
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
   const [isStrikethrough, setIsStrikethrough] = useState(false);
-  const [blockType, setBlockType] = useState('paragraph');
+  const [showLinkPopup, setShowLinkPopup] = useState(false);
+  const [linkData, setLinkData] = useState({ text: '', url: '' });
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -34,26 +30,6 @@ export const ToolbarPlugin: React.FC = () => {
       setIsUnderline(selection.hasFormat('underline'));
       setIsStrikethrough(selection.hasFormat('strikethrough'));
 
-      const anchorNode = selection.anchor.getNode();
-      const element =
-        anchorNode.getKey() === 'root'
-          ? anchorNode
-          : anchorNode.getTopLevelElementOrThrow();
-
-      const elementKey = element.getKey();
-      const elementDOM = editor.getElementByKey(elementKey);
-
-      if (elementDOM !== null) {
-        if (elementDOM.tagName === 'H1') setBlockType('h1');
-        else if (elementDOM.tagName === 'H2') setBlockType('h2');
-        else if (elementDOM.tagName === 'H3') setBlockType('h3');
-        else if (elementDOM.tagName === 'H4') setBlockType('h4');
-        else if (elementDOM.tagName === 'H5') setBlockType('h5');
-        else if (elementDOM.tagName === 'H6') setBlockType('h6');
-        else if (elementDOM.tagName === 'UL') setBlockType('ul');
-        else if (elementDOM.tagName === 'OL') setBlockType('ol');
-        else setBlockType('paragraph');
-      }
     }
   }, [editor]);
 
@@ -71,68 +47,49 @@ export const ToolbarPlugin: React.FC = () => {
     editor.dispatchCommand(FORMAT_TEXT_COMMAND, format);
   };
 
-  const formatHeading = (headingSize: HeadingTagType) => {
-    editor.update(() => {
+
+  const handleLinkClick = () => {
+    editor.getEditorState().read(() => {
       const selection = $getSelection();
       if ($isRangeSelection(selection)) {
-        $setBlocksType(selection, () => $createHeadingNode(headingSize));
+        const node = selection.anchor.getNode();
+        const parent = node.getParent();
+        
+        // Check if we're in a link
+        if ($isLinkNode(parent)) {
+          setLinkData({
+            text: parent.getTextContent(),
+            url: parent.getURL()
+          });
+        } else if ($isLinkNode(node)) {
+          setLinkData({
+            text: node.getTextContent(),
+            url: node.getURL()
+          });
+        } else {
+          // Get selected text
+          const text = selection.getTextContent();
+          setLinkData({ text, url: '' });
+        }
       }
     });
+    setShowLinkPopup(true);
   };
 
-  const insertLink = () => {
-    const url = prompt('Enter URL:');
-    if (url) {
-      editor.update(() => {
-        const selection = $getSelection();
-        if ($isRangeSelection(selection)) {
-          $toggleLink(url);
-        }
-      });
-    }
+  const handleSaveLink = (_text: string, url: string) => {
+    editor.dispatchCommand(TOGGLE_LINK_COMMAND, url);
   };
 
-  const toolbarStyle: React.CSSProperties = {
-    display: 'flex',
-    gap: '8px',
-    padding: '12px',
-    borderBottom: '1px solid #e5e5e5',
-    backgroundColor: '#f8f9fa',
-    alignItems: 'center',
-    overflow: 'scroll',
+  const handleRemoveLink = () => {
+    editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
   };
 
-  const buttonStyle: React.CSSProperties = {
-    padding: '6px 12px',
-    border: '1px solid #ccc',
-    backgroundColor: '#fff',
-    cursor: 'pointer',
-    borderRadius: '4px',
-    fontSize: '14px',
-    display: 'flex',
-    width: '100%',
-    wordBreak: 'keep-all',
-  };
 
-  const activeButtonStyle: React.CSSProperties = {
-    ...buttonStyle,
-    backgroundColor: '#007bff',
-    color: 'white',
-    borderColor: '#007bff',
-  };
-
-  const selectStyle: React.CSSProperties = {
-    padding: '6px 12px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    fontSize: '14px',
-    cursor: 'pointer',
-  };
 
   return (
-    <div style={toolbarStyle}>
+    <div style={toolbar.container}>
       <button
-        style={isBold ? activeButtonStyle : buttonStyle}
+        style={isBold ? button.active : button.default}
         onClick={() => formatText('bold')}
         title='Bold'
       >
@@ -140,7 +97,7 @@ export const ToolbarPlugin: React.FC = () => {
       </button>
 
       <button
-        style={isItalic ? activeButtonStyle : buttonStyle}
+        style={isItalic ? button.active : button.default}
         onClick={() => formatText('italic')}
         title='Italic'
       >
@@ -148,7 +105,7 @@ export const ToolbarPlugin: React.FC = () => {
       </button>
 
       <button
-        style={isUnderline ? activeButtonStyle : buttonStyle}
+        style={isUnderline ? button.active : button.default}
         onClick={() => formatText('underline')}
         title='Underline'
       >
@@ -156,7 +113,7 @@ export const ToolbarPlugin: React.FC = () => {
       </button>
 
       <button
-        style={isStrikethrough ? activeButtonStyle : buttonStyle}
+        style={isStrikethrough ? button.active : button.default}
         onClick={() => formatText('strikethrough')}
         title='Strikethrough'
       >
@@ -172,43 +129,8 @@ export const ToolbarPlugin: React.FC = () => {
         }}
       />
 
-      <select
-        style={selectStyle}
-        value={blockType}
-        onChange={(e) => {
-          const value = e.target.value;
-          if (value === 'paragraph') {
-            editor.update(() => {
-              const selection = $getSelection();
-              if ($isRangeSelection(selection)) {
-                $setBlocksType(selection, () => $createParagraphNode());
-              }
-            });
-          } else if (value.startsWith('h')) {
-            formatHeading(value as HeadingTagType);
-          }
-        }}
-      >
-        <option value='paragraph'>Normal</option>
-        <option value='h1'>Heading 1</option>
-        <option value='h2'>Heading 2</option>
-        <option value='h3'>Heading 3</option>
-        <option value='h4'>Heading 4</option>
-        <option value='h5'>Heading 5</option>
-        <option value='h6'>Heading 6</option>
-      </select>
-
-      <div
-        style={{
-          width: '1px',
-          height: '24px',
-          backgroundColor: '#ccc',
-          margin: '0 4px',
-        }}
-      />
-
       <button
-        style={buttonStyle}
+        style={button.default}
         onClick={() =>
           editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
         }
@@ -218,7 +140,7 @@ export const ToolbarPlugin: React.FC = () => {
       </button>
 
       <button
-        style={buttonStyle}
+        style={button.default}
         onClick={() =>
           editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
         }
@@ -227,23 +149,23 @@ export const ToolbarPlugin: React.FC = () => {
         1.
       </button>
 
-      <button
-        style={buttonStyle}
-        onClick={() =>
-          editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined)
-        }
-        title='Checklist'
-      >
-        ☐
-      </button>
 
       <button
-        style={buttonStyle}
-        onClick={insertLink}
+        style={button.default}
+        onClick={handleLinkClick}
         title='Insert Link'
       >
-        Link
+        🔗
       </button>
+      
+      <LinkPopup
+        isOpen={showLinkPopup}
+        onClose={() => setShowLinkPopup(false)}
+        onSave={handleSaveLink}
+        onRemove={handleRemoveLink}
+        initialText={linkData.text}
+        initialUrl={linkData.url}
+      />
 
       <div
         style={{
@@ -254,32 +176,6 @@ export const ToolbarPlugin: React.FC = () => {
         }}
       />
 
-      <button
-        style={buttonStyle}
-        onClick={() => editor.dispatchCommand(UNDO_COMMAND, undefined)}
-        title='Undo'
-      >
-        ↶
-      </button>
-
-      <button
-        style={buttonStyle}
-        onClick={() => editor.dispatchCommand(REDO_COMMAND, undefined)}
-        title='Redo'
-      >
-        ↷
-      </button>
-
-      <div
-        style={{
-          width: '1px',
-          height: '24px',
-          backgroundColor: '#ccc',
-          margin: '0 4px',
-        }}
-      />
-
-      <DirectionPlugin hideDirectionOptions />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { Text as SlateText, Descendant } from 'slate'
 import { CustomElement, CustomText } from '../types'
+import { mention } from '../../../design-system'
 
 // Serialize Slate value to HTML
 export const serialize = (nodes: Descendant[]): string => {
@@ -51,6 +52,9 @@ const serializeNode = (node: Descendant): string => {
       return `<li${direction}>${children}</li>`
     case 'link':
       return `<a href="${escapeHtml((node as any).url)}"${direction}>${children}</a>`
+    case 'mention':
+      const mentionNode = node as any
+      return `<span data-mention-id="${escapeHtml(mentionNode.userId)}" data-mention-name="${escapeHtml(mentionNode.userName)}" data-mention-username="${escapeHtml(mentionNode.username)}" contenteditable="false" style="${mention.inlineStyle}">${escapeHtml(mentionNode.username)}</span>`
     default:
       return children
   }
@@ -144,6 +148,21 @@ const deserializeNode = (node: ChildNode): Descendant | null => {
       return deserializeMarks(children, { strikethrough: true })
     case 'code':
       return deserializeMarks(children, { code: true })
+    case 'span':
+      // Check if it's a mention
+      if (element.hasAttribute('data-mention-id')) {
+        return {
+          type: 'mention',
+          userId: element.getAttribute('data-mention-id') || '',
+          userName: element.getAttribute('data-mention-name') || '',
+          username: element.getAttribute('data-mention-username') || element.textContent || '',
+          children: [{ text: '' }]
+        } as CustomElement
+      }
+      return children.length === 1 ? children[0] : {
+        type: 'paragraph',
+        children,
+      } as CustomElement
     default:
       return children.length === 1 ? children[0] : {
         type: 'paragraph',

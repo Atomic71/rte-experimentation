@@ -1,113 +1,57 @@
 # Editor Implementations
 
-This directory contains different rich text editor implementations that share a common WebView communication API.
+Rich text editor implementations with shared WebView communication.
 
 ## Structure
 
 ```
 editors/
-├── common/           # Shared code for all editors
-│   ├── types.ts     # Common TypeScript interfaces
-│   └── webview-bridge.ts  # Unified WebView communication
+├── common/           # Shared components and bridge
 ├── slate/           # Slate.js implementation
-├── lexical/         # Lexical implementation
-└── draft/           # Draft.js implementation (planned)
+└── lexical/         # Lexical implementation
 ```
 
-## Unified WebView API
+## WebView Bridge
 
-All editors implement the same WebView messaging protocol for React Native communication:
+All editors use [`UnifiedWebViewBridge`](common/webview-bridge.ts) for React Native communication.
 
-### Message Types
-
-#### From Web to React Native:
-- `READY` - Editor initialized and ready
-- `CHANGE` - Content changed
-- `GET_CONTENT` - Sending current content (response)
-- `EXPORT_HTML` - Sending HTML export (response)
-- `ERROR` - Error occurred
-
-#### From React Native to Web:
-- `SET_CONTENT` - Set editor content
-- `COMMAND` - Execute editor command
-- `GET_CONTENT` - Request current content
-- `EXPORT_HTML` - Request HTML export
-- `IMPORT_HTML` - Import HTML content
-
-### Message Format
-
-```typescript
-interface EditorMessage {
-  type: string
-  payload?: any
-  editor?: string  // Editor type (slate, lexical, etc.)
-  timestamp?: number
-}
-```
+See **[WebView Integration](../webview-integration.md)** for complete protocol documentation.
 
 ## Adding a New Editor
 
-1. Create a new directory under `editors/` with your editor name
-2. Implement the `BaseEditor` interface from `common/types.ts`
-3. Use `webViewBridge` from `common/webview-bridge.ts` for communication
-4. Add your editor to the router in `src/App.tsx`
+1. Create directory under `editors/` with your editor name
+2. Implement [`BaseEditor`](common/types.ts) interface  
+3. Use [`webViewBridge`](common/webview-bridge.ts) for communication
+4. Add editor to router in [`src/App.tsx`](../App.tsx)
 
 ### Example Implementation
 
 ```typescript
-import { webViewBridge } from '../common/webview-bridge'
-import { BaseEditor, EditorContent } from '../common/types'
+import { webViewBridge, EditorCallbacks } from '../common/webview-bridge'
+import { BaseEditor } from '../common/types'
 
 export class MyEditorWrapper implements BaseEditor {
   initialize(): void {
-    webViewBridge.setEditorType('myeditor')
-    webViewBridge.notifyReady()
+    const callbacks: EditorCallbacks = {
+      onSetContent: (content) => this.setContent(content),
+      onGetContent: () => this.getContent(),
+      onExecuteCommand: (command) => this.executeCommand(command),
+      onExportHTML: () => this.exportHTML(),
+      onImportHTML: (html) => this.importHTML(html)
+    }
+
+    webViewBridge.initialize('myeditor', callbacks)
   }
   
-  // ... implement other BaseEditor methods
+  destroy(): void {
+    webViewBridge.destroy()
+  }
 }
 ```
 
-## Usage in WebView
+## Current Editors
 
-### React Native WebView
+- **[Slate.js](slate/)** - Plugin-based architecture
+- **[Lexical](lexical/)** - Command-based architecture
 
-```javascript
-// Send message to editor
-webViewRef.current.injectJavaScript(`
-  window.postMessage(JSON.stringify({
-    type: "SET_CONTENT",
-    payload: { format: "html", data: "<p>Hello</p>" }
-  }), "*");
-`)
-
-// Receive messages from editor
-<WebView
-  onMessage={(event) => {
-    const message = JSON.parse(event.nativeEvent.data)
-    switch (message.type) {
-      case 'READY':
-        console.log(`${message.editor} editor ready`)
-        break
-      case 'CHANGE':
-        console.log('Content changed:', message.payload)
-        break
-    }
-  }}
-/>
-```
-
-### URL Parameters
-
-When loading the editor in a WebView, specify the editor type:
-
-```
-file:///path/to/index.html?editor=slate
-file:///path/to/index.html?editor=lexical
-```
-
-## Current Status
-
-- ✅ **Slate.js** - Fully implemented with RTL/LTR support, formatting, lists, headings
-- ✅ **Lexical** - Fully implemented with automatic RTL/LTR detection, rich formatting
-- 🚧 **Draft.js** - Planned
+See individual editor documentation for implementation details.

@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useSlate } from 'slate-react'
+import { Editor, Transforms, Range, Element as SlateElement } from 'slate'
 import { isMarkActive, toggleMark } from '../plugins/formatting'
 import { isBlockActive, toggleBlock } from '../plugins/blocks'
-import { isDirectionActive, toggleDirection, setDirection } from '../plugins/direction'
+import { LinkPopup } from '../../common/LinkPopup'
 
 interface ToolbarButtonProps {
   active: boolean
@@ -59,30 +60,97 @@ const BlockButton: React.FC<BlockButtonProps> = ({ format, icon }) => {
   )
 }
 
-interface DirectionButtonProps {
-  direction: 'ltr' | 'rtl' | 'auto'
-  icon: string
-  title: string
-}
-
-const DirectionButton: React.FC<DirectionButtonProps> = ({ direction, icon, title }) => {
+const LinkButton: React.FC = () => {
   const editor = useSlate()
-  const isActive = direction === 'auto' ? false : isDirectionActive(editor, direction)
-  
+  const [showPopup, setShowPopup] = useState(false)
+  const [linkData, setLinkData] = useState({ text: '', url: '' })
+
+  const isLinkActive = () => {
+    const [link] = Editor.nodes(editor, {
+      match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === 'link'
+    })
+    return !!link
+  }
+
+  const handleLinkClick = (event: React.MouseEvent) => {
+    event.preventDefault()
+    
+    const { selection } = editor
+    if (!selection) return
+
+    // Check if we're in a link
+    const [link] = Editor.nodes(editor, {
+      match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === 'link'
+    })
+
+    if (link) {
+      const [node] = link
+      setLinkData({
+        text: Editor.string(editor, link[1]),
+        url: (node as any).url || ''
+      })
+    } else if (!Range.isCollapsed(selection)) {
+      // Get selected text
+      const text = Editor.string(editor, selection)
+      setLinkData({ text, url: '' })
+    } else {
+      setLinkData({ text: '', url: '' })
+    }
+
+    setShowPopup(true)
+  }
+
+  const handleSaveLink = (text: string, url: string) => {
+    const { selection } = editor
+    if (!selection) return
+
+    // Remove existing link if any
+    Transforms.unwrapNodes(editor, {
+      match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === 'link'
+    })
+
+    const isCollapsed = Range.isCollapsed(selection)
+
+    if (isCollapsed) {
+      // Insert new text with link
+      Transforms.insertNodes(editor, {
+        type: 'link',
+        url,
+        children: [{ text }]
+      } as any)
+    } else {
+      // Wrap selection in link
+      Transforms.wrapNodes(editor, {
+        type: 'link',
+        url,
+        children: []
+      } as any, { split: true })
+    }
+  }
+
+  const handleRemoveLink = () => {
+    Transforms.unwrapNodes(editor, {
+      match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === 'link'
+    })
+  }
+
   return (
-    <ToolbarButton
-      active={isActive}
-      onMouseDown={(event) => {
-        event.preventDefault()
-        if (direction === 'auto') {
-          setDirection(editor, 'auto')
-        } else {
-          toggleDirection(editor, direction)
-        }
-      }}
-    >
-      <span title={title}>{icon}</span>
-    </ToolbarButton>
+    <>
+      <ToolbarButton
+        active={isLinkActive()}
+        onMouseDown={handleLinkClick}
+      >
+        🔗
+      </ToolbarButton>
+      <LinkPopup
+        isOpen={showPopup}
+        onClose={() => setShowPopup(false)}
+        onSave={handleSaveLink}
+        onRemove={handleRemoveLink}
+        initialText={linkData.text}
+        initialUrl={linkData.url}
+      />
+    </>
   )
 }
 
@@ -94,14 +162,6 @@ export const Toolbar: React.FC = () => {
       <MarkButton format="italic" icon="I" />
       <MarkButton format="underline" icon="U" />
       <MarkButton format="strikethrough" icon="S" />
-      <MarkButton format="code" icon="&lt;/&gt;" />
-      
-      <div className="toolbar-separator" />
-      
-      {/* Block types */}
-      <BlockButton format="heading-one" icon="H1" />
-      <BlockButton format="heading-two" icon="H2" />
-      <BlockButton format="heading-three" icon="H3" />
       
       <div className="toolbar-separator" />
       
@@ -111,15 +171,8 @@ export const Toolbar: React.FC = () => {
       
       <div className="toolbar-separator" />
       
-      {/* Code block */}
-      <BlockButton format="code-block" icon="{ }" />
-      
-      <div className="toolbar-separator" />
-      
-      {/* Text direction */}
-      <DirectionButton direction="ltr" icon="←→" title="Left to Right" />
-      <DirectionButton direction="rtl" icon="→←" title="Right to Left (Arabic/Hebrew)" />
-      <DirectionButton direction="auto" icon="↔" title="Auto-detect direction" />
+      {/* Link - will trigger popup */}
+      <LinkButton />
     </div>
   )
 }
