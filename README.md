@@ -1,134 +1,63 @@
 # Rich Text Editor Playground
 
-A unified rich text editor playground that provides multiple editor implementations (Slate.js and Lexical) with a consistent WebView communication API for React Native integration.
-
-## Features
-
-- **Dual Editor Support**: Both Slate.js and Lexical implementations
-- **Unified WebView API**: Consistent message protocol for React Native WebView communication
-- **Rich Text Formatting**: Bold, italic, underline, strikethrough, headings, lists
-- **RTL/LTR Support**: Automatic text direction detection and support
-- **Mentions System**: @mention functionality with user search
-- **Link Management**: Insert and edit links with validation
-- **HTML Import/Export**: Convert between editor formats and HTML
-- **TypeScript**: Full type safety throughout the codebase
+Rich text editor implementations (Slate.js and Lexical) with React Native WebView integration.
 
 ## Quick Start
 
 ```bash
-# Install dependencies
 npm install
-
-# Start development server
 npm run dev
-
-# Open browser to http://localhost:5173
+# Open http://localhost:5173?editor=slate
 ```
 
 ## Development Commands
 
 ```bash
-# Development server - opens at http://localhost:5173
-npm run dev
-
-# Type checking without emitting files
-npm run typecheck
-
-# Linting
-npm run lint
-
-# Production builds
-npm run build        # Full build: tsc + vite + HTML export
-npm run build:web    # Web only: vite + HTML export
-npm run build:lib    # Library only: tsc with lib config
-
-# Package management for local development
-npm run yalc:publish    # Build library and publish with yalc
-npm run link:local      # Build library and push to linked projects
+npm run dev          # Development server
+npm run typecheck    # Type checking
+npm run lint         # Linting
+npm run build        # Full build for WebView
 ```
 
-## Architecture
+## Documentation
 
-### Unified WebView Bridge
+- **[Editor Implementations](src/editors/editors.md)** - Architecture overview
+- **[Slate.js Implementation](src/editors/slate.md)** - Plugin-based editor
+- **[Lexical Implementation](src/editors/lexical.md)** - Command-based editor
+- **[WebView Integration](webview-integration.md)** - React Native protocol
+- **[Design System](src/design-system/)** - Styling system
 
-The project features a consolidated WebView bridge system that replaced 4 separate implementations:
+## Editor Selection
 
-- **Single Bridge Class**: `UnifiedWebViewBridge` handles all editor communication
-- **Consistent API**: Callback-based interface for all editors
-- **Type Safety**: Consolidated type definitions with minimal `any` usage
-- **Backward Compatibility**: Supports legacy message formats during transitions
+```
+http://localhost:5173?editor=slate
+http://localhost:5173?editor=lexical
+```
 
-### Editor Selection
+## WebView Usage
 
-Choose your editor via URL parameters:
-
-- **Slate.js**: `http://localhost:5173?editor=slate`
-- **Lexical**: `http://localhost:5173?editor=lexical`
-
-Or use path-based routing in your implementation.
-
-## WebView Integration
-
-The built `dist/index.html` file can be loaded in a React Native WebView:
+Load built `dist/index.html` in React Native WebView:
 
 ```javascript
 <WebView
   source={{ uri: 'file:///path/to/dist/index.html?editor=slate' }}
   onMessage={(event) => {
     const message = JSON.parse(event.nativeEvent.data)
-    switch (message.type) {
-      case 'READY':
-        console.log(`${message.editor} editor ready`)
-        break
-      case 'CHANGE':
-        console.log('Content changed:', message.payload)
-        break
-    }
+    console.log('Editor message:', message.type, message.payload)
   }}
 />
 ```
 
-### Message Protocol
-
-**Web → React Native:**
-- `READY` - Editor initialized
-- `CHANGE` - Content changed
-- `CONTENT_RESPONSE` - Current content (response to GET_CONTENT)
-- `EXPORT_HTML` - HTML export (response to request)
-- `ERROR` - Error occurred
-
-**React Native → Web:**
-- `SET_CONTENT` - Set editor content
-- `GET_CONTENT` - Request current content
-- `EXECUTE_COMMAND` - Execute editor command
-- `EXPORT_HTML` - Request HTML export
-- `IMPORT_HTML` - Import HTML content
-
-## Directory Structure
-
-```
-src/
-├── editors/
-│   ├── common/          # Shared WebView bridge and types
-│   ├── slate/           # Slate.js implementation with plugins
-│   └── lexical/         # Lexical implementation with plugins
-├── data/                # Static data (users for mentions)
-└── routes/              # App routing
-```
-
 ## Build Outputs
 
-- `dist/index.html` - Single-file build for WebView integration
-- `dist/index.js|mjs` - Library exports for npm consumption
-- Library can be consumed via npm or linked locally with yalc
+- `dist/index.html` - Single-file WebView build
+- `dist/index.js` - Library export for npm
 
-## Contributing
+## Features
 
-1. Fork the repository
-2. Create a feature branch
-3. Run `npm run typecheck` and `npm run lint` to ensure code quality
-4. Submit a pull request
-
-## License
-
-MIT License - see LICENSE file for details.
+- Rich text formatting (bold, italic, underline, lists, headings)
+- @mention system with user search  
+- Link insertion and editing
+- RTL/LTR text direction support
+- HTML import/export
+- TypeScript support
