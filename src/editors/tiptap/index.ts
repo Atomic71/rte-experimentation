@@ -1,0 +1,5 @@
+export { default as TipTapEditor } from './TipTapEditor'
+export type { TipTapEditorHandle } from './TipTapEditor'
+export { TipTapEditorWrapper, tiptapEditorWrapper } from './TipTapEditorWrapper'
+export { MentionExtension } from './extensions/MentionExtension'
+export type { MentionUser } from './extensions/MentionExtension'

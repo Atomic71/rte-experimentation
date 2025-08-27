@@ -1,6 +1,7 @@
 import React from 'react'
 import { SlateEditor } from './editors/slate'
 import { LexicalEditor } from './editors/lexical'
+import TipTapRoute from './editors/tiptap/TipTapRoute'
 import HomePage from './HomePage'
 import './toolbar.css'
 
@@ -22,6 +23,8 @@ const EditorRouter: React.FC = () => {
       return <SlateEditor />
     case 'lexical':
       return <LexicalEditor />
+    case 'tiptap':
+      return <TipTapRoute />
     default:
       return <SlateEditor />
   }

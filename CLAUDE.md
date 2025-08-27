@@ -26,13 +26,13 @@ npm run link:local      # Build library and push to linked projects
 
 ## Architecture Overview
 
-Rich text editor playground with multiple implementations (Slate.js and Lexical) and WebView communication API for React Native integration.
+Rich text editor playground with multiple implementations (Slate.js, Lexical, and TipTap) and WebView communication API for React Native integration.
 
 ### Key Architecture Concepts
 
-- **Dual Editor Support**: Both [Slate.js](src/editors/slate/) and [Lexical](src/editors/lexical/) implementations
+- **Triple Editor Support**: [Slate.js](src/editors/slate/), [Lexical](src/editors/lexical/), and [TipTap](src/editors/tiptap/) implementations
 - **WebView API**: All editors implement the same message protocol for React Native WebView communication
-- **Editor Selection**: Via URL parameters (`?editor=slate` or `?editor=lexical`) or path-based routing
+- **Editor Selection**: Via URL parameters (`?editor=slate`, `?editor=lexical`, or `?editor=tiptap`) or path-based routing
 - **Shared Bridge**: Common WebView communication layer in [`/src/editors/common/webview-bridge.ts`](src/editors/common/webview-bridge.ts)
 
 ### Directory Structure
@@ -42,7 +42,8 @@ src/
 ├── editors/
 │   ├── common/          # Shared WebView bridge and types
 │   ├── slate/           # Slate.js implementation with plugins
-│   └── lexical/         # Lexical implementation with plugins
+│   ├── lexical/         # Lexical implementation with plugins
+│   └── tiptap/          # TipTap implementation with extensions
 ├── data/                # Static data (users for mentions)
 └── routes/              # App routing
 ```

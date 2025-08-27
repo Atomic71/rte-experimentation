@@ -15,6 +15,12 @@ const HomePage: React.FC = () => {
       status: 'implemented',
       features: 'Full formatting, lists, headings, auto RTL/LTR detection',
     },
+    {
+      name: 'TipTap',
+      path: '/tiptap',
+      status: 'implemented',
+      features: 'Full formatting, mentions, RTL/LTR, extensible plugin system',
+    },
   ];
 
   return (

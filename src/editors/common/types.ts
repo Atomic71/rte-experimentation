@@ -1,9 +1,9 @@
 // Common types for all editors
 
-export type EditorType = 'slate' | 'lexical';
+export type EditorType = 'slate' | 'lexical' | 'tiptap';
 
 export interface EditorContent {
-  format: 'slate' | 'lexical' | 'html' | 'markdown' | 'text';
+  format: 'slate' | 'lexical' | 'tiptap' | 'html' | 'markdown' | 'text';
   data: any;
 }
 
@@ -26,7 +26,7 @@ export interface EditorCommand {
 }
 
 export interface EditorConfig {
-  editorType: 'slate' | 'lexical';
+  editorType: 'slate' | 'lexical' | 'tiptap';
   features?: {
     bold?: boolean;
     italic?: boolean;
