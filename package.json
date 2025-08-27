@@ -5,13 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && node scripts/make-html-export.mjs",
-    "build:web": "vite build && node scripts/make-html-export.mjs",
+    "build": "vite build && node scripts/make-html-export.mjs",
     "build:lib": "tsc -p tsconfig.lib.json",
     "lint": "eslint .",
-    "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run build:lib",
     "yalc:publish": "npm run build:lib && yalc publish",
     "link:local": "npm run build:lib && yalc publish --push"
   },
