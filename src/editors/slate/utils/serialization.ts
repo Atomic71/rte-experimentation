@@ -51,6 +51,9 @@ const serializeNode = (node: Descendant): string => {
       return `<li${direction}>${children}</li>`
     case 'link':
       return `<a href="${escapeHtml((node as any).url)}"${direction}>${children}</a>`
+    case 'mention':
+      const mention = node as any
+      return `<span data-mention-id="${escapeHtml(mention.userId)}" data-mention-name="${escapeHtml(mention.userName)}" data-mention-username="${escapeHtml(mention.username)}" contenteditable="false" style="background: #e8f4fd; color: #1976d2; padding: 2px 4px; border-radius: 3px; cursor: pointer;">${escapeHtml(mention.username)}</span>`
     default:
       return children
   }
@@ -144,6 +147,21 @@ const deserializeNode = (node: ChildNode): Descendant | null => {
       return deserializeMarks(children, { strikethrough: true })
     case 'code':
       return deserializeMarks(children, { code: true })
+    case 'span':
+      // Check if it's a mention
+      if (element.hasAttribute('data-mention-id')) {
+        return {
+          type: 'mention',
+          userId: element.getAttribute('data-mention-id') || '',
+          userName: element.getAttribute('data-mention-name') || '',
+          username: element.getAttribute('data-mention-username') || element.textContent || '',
+          children: [{ text: '' }]
+        } as CustomElement
+      }
+      return children.length === 1 ? children[0] : {
+        type: 'paragraph',
+        children,
+      } as CustomElement
     default:
       return children.length === 1 ? children[0] : {
         type: 'paragraph',
