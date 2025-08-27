@@ -52,6 +52,7 @@ export class MyEditorWrapper implements BaseEditor {
 ## Current Editors
 
 - **[Slate.js](slate/)** - Plugin-based architecture
-- **[Lexical](lexical/)** - Command-based architecture
+- **[Lexical](lexical/)** - Command-based architecture  
+- **[TipTap](tiptap/)** - Extension-based architecture
 
 See individual editor documentation for implementation details.

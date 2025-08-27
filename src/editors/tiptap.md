@@ -94,21 +94,12 @@ editor.chain().focus().toggleItalic().run()
 editor.chain().focus().toggleUnderline().run()
 
 // Structure
-editor.chain().focus().setHeading({ level: 2 }).run()
 editor.chain().focus().toggleBulletList().run()
 editor.chain().focus().toggleOrderedList().run()
 
 // Links
 editor.chain().focus().setLink({ href: url }).run()
 editor.chain().focus().unsetLink().run()
-
-// Text Direction
-editor.chain().focus().setTextDirection('rtl').run()
-editor.chain().focus().setTextDirection('ltr').run()
-
-// History
-editor.chain().focus().undo().run()
-editor.chain().focus().redo().run()
 ```
 
 ### Mentions Implementation
@@ -175,11 +166,11 @@ export class TipTapEditorWrapper implements BaseEditor {
       case 'bold':
         this.editorRef?.getEditor()?.chain().focus().toggleBold().run()
         break
-      case 'heading':
-        this.editorRef?.getEditor()?.chain()
-          .focus()
-          .toggleHeading({ level: command.value?.level || 2 })
-          .run()
+      case 'italic':
+        this.editorRef?.getEditor()?.chain().focus().toggleItalic().run()
+        break
+      case 'underline':
+        this.editorRef?.getEditor()?.chain().focus().toggleUnderline().run()
         break
       // ... other commands
     }
@@ -218,17 +209,12 @@ export class TipTapEditorWrapper implements BaseEditor {
 ### Rich Text Formatting
 
 - **Text Styles**: Bold, italic, underline, strikethrough
-- **Headings**: H1, H2, H3 with proper semantic markup
 - **Lists**: Bulleted and numbered lists with nesting
-- **Blockquotes**: Quote formatting with visual styling
-- **Code**: Inline code and code blocks with syntax highlighting
 
 ### Advanced Features
 
 - **@Mentions**: User tagging with real-time search and dropdown
-- **Links**: URL insertion with validation and editing
-- **Text Direction**: RTL/LTR support with automatic detection
-- **Undo/Redo**: Full history management with keyboard shortcuts
+- **Links**: URL insertion with validation and editing using shared LinkPopup component
 - **Placeholder**: Contextual placeholder text
 
 ### Accessibility

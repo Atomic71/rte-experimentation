@@ -38,13 +38,12 @@ editors/
 
 ## Common Features
 
-Both editors support:
+All three editors support:
 
 - Rich text formatting (bold, italic, underline, strikethrough)
-- Headings (H1, H2, H3) and lists (bulleted, numbered)
+- Lists (bulleted, numbered)
 - @mention system with user search
-- Link insertion and editing
-- RTL/LTR text direction detection
+- Link insertion and editing using shared LinkPopup component
 - HTML import/export
 - WebView communication protocol
 
