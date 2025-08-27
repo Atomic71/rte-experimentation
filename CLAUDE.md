@@ -39,12 +39,12 @@ This is a unified rich text editor playground that provides multiple editor impl
 
 ```
 src/
-├── [editors/](src/editors/)
-│   ├── [common/](src/editors/common/)          # Shared WebView bridge and types
-│   ├── [slate/](src/editors/slate/)           # Slate.js implementation with plugins
-│   └── [lexical/](src/editors/lexical/)         # Lexical implementation with plugins
-├── [data/](src/data/)                # Static data (users for mentions)
-└── [routes/](src/routes/)              # App routing
+├── editors/
+│   ├── common/          # Shared WebView bridge and types
+│   ├── slate/           # Slate.js implementation with plugins
+│   └── lexical/         # Lexical implementation with plugins
+├── data/                # Static data (users for mentions)
+└── routes/              # App routing
 ```
 
 ### WebView Integration

@@ -35,9 +35,9 @@ Both editors are implemented with consistent patterns, shared components, and un
 
 ```
 src/editors/
-├── [common/](common/)           # Shared components and utilities
-├── [slate/](slate/)           # Slate.js implementation
-└── [lexical/](lexical/)         # Lexical implementation
+├── common/           # Shared components and utilities
+├── slate/           # Slate.js implementation
+└── lexical/         # Lexical implementation
 ```
 
 Each editor follows the same internal structure:
@@ -73,7 +73,7 @@ export const SlateEditor: React.FC = () => {
   useEffect(() => {
     const handleGetContent = () => {
       const html = serialize(value);
-      simplifiedBridge.sendContent(html);
+      webViewBridge.sendContent(html);
     };
     // ... event listeners
   }, [value]);
@@ -261,7 +261,7 @@ export class LexicalEditorWrapper implements BaseEditor {
     const handleGetContent = () => {
       const content = this.getContent();
       const html = typeof content.data === 'object' ? content.data.html : '';
-      simplifiedBridge.sendContent(html || '');
+      webViewBridge.sendContent(html || '');
     };
 
     window.addEventListener('webview-get-content', handleGetContent as any);
@@ -397,12 +397,12 @@ class UnifiedWebViewBridge {
 
 1. **Inbound Messages** (React Native → WebView):
    ```
-   React Native → MessageEvent → SimplifiedBridge → CustomEvent → Editor
+   React Native → MessageEvent → UnifiedWebViewBridge → CustomEvent → Editor
    ```
 
 2. **Outbound Messages** (WebView → React Native):
    ```
-   Editor → SimplifiedBridge → ReactNativeWebView.postMessage → React Native
+   Editor → UnifiedWebViewBridge → ReactNativeWebView.postMessage → React Native
    ```
 
 ### Event Types
@@ -420,7 +420,7 @@ Both editors listen for the same custom events:
 // Setup in both Slate and Lexical
 const handleGetContent = () => {
   const html = /* get current content */;
-  simplifiedBridge.sendContent(html);
+  webViewBridge.sendContent(html);
 };
 
 const handleSetContent = (event: CustomEvent) => {
@@ -442,14 +442,14 @@ All styling uses a centralized design system with design tokens and component-sp
 
 ```
 src/design-system/
-├── [tokens.ts](../../design-system/tokens.ts)              # Design tokens (colors, spacing, typography)
-├── [components/](../../design-system/components/)            # Component-specific style collections
-│   ├── [Button.ts](../../design-system/components/Button.ts)          # Button variants (default, primary, danger, etc.)
-│   ├── [Dropdown.ts](../../design-system/components/Dropdown.ts)        # Mentions dropdown styles
-│   ├── [Input.ts](../../design-system/components/Input.ts)           # Form input styles
-│   ├── [Popup.ts](../../design-system/components/Popup.ts)           # Link popup styles
-│   └── [Editor.ts](../../design-system/components/Editor.ts)          # Editor container, toolbar, mentions
-└── [index.ts](../../design-system/index.ts)               # Unified exports
+├── tokens.ts              # Design tokens (colors, spacing, typography)
+├── components/            # Component-specific style collections
+│   ├── Button.ts          # Button variants (default, primary, danger, etc.)
+│   ├── Dropdown.ts        # Mentions dropdown styles
+│   ├── Input.ts           # Form input styles
+│   ├── Popup.ts           # Link popup styles
+│   └── Editor.ts          # Editor container, toolbar, mentions
+└── index.ts               # Unified exports
 ```
 
 ### Design Tokens

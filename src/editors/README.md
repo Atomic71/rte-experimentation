@@ -6,11 +6,11 @@ This directory contains different rich text editor implementations that share a 
 
 ```
 editors/
-├── [common/](common/)           # Shared code for all editors
-│   ├── [types.ts](common/types.ts)     # Common TypeScript interfaces
-│   └── [webview-bridge.ts](common/webview-bridge.ts)  # Unified WebView communication bridge
-├── [slate/](slate/)           # Slate.js implementation
-└── [lexical/](lexical/)         # Lexical implementation
+├── common/           # Shared code for all editors
+│   ├── types.ts     # Common TypeScript interfaces
+│   └── webview-bridge.ts  # Unified WebView communication bridge
+├── slate/           # Slate.js implementation
+└── lexical/         # Lexical implementation
 ```
 
 ## Unified WebView Bridge
