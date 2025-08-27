@@ -30,7 +30,7 @@
   border-right: none;
 }
 
-.tiptap-toolbar button {
+.toolbar-button {
   padding: 4px 8px;
   border: 1px solid transparent;
   border-radius: 4px;
@@ -46,18 +46,18 @@
   justify-content: center;
 }
 
-.tiptap-toolbar button:hover:not(:disabled) {
+.toolbar-button:hover:not(:disabled) {
   background: #edf2f7;
   border-color: #cbd5e0;
 }
 
-.tiptap-toolbar button.active {
+.toolbar-button.active {
   background: #4a5568;
   color: white;
   border-color: #2d3748;
 }
 
-.tiptap-toolbar button:disabled {
+.toolbar-button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }

@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
-import { MentionUser } from '../extensions/MentionExtension'
+import { MentionUser } from '../extensions/configureMention'
 
 export interface MentionListProps {
   items: MentionUser[]

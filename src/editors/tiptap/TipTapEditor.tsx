@@ -7,7 +7,7 @@ import Placeholder from '@tiptap/extension-placeholder'
 import TextDirection from 'tiptap-text-direction'
 import { EditorContent as EditorContentType, EditorCommand } from '../common/types'
 import { Toolbar } from './components/Toolbar'
-import { configureMention } from './extensions/configureMention'
+import { configureMention, MentionUser } from './extensions/configureMention'
 import './styles/editor.css'
 
 export interface TipTapEditorHandle {
@@ -25,7 +25,7 @@ interface TipTapEditorProps {
   onContentChange?: (content: EditorContentType) => void
   onReady?: (editor: Editor) => void
   readOnly?: boolean
-  mentionUsers?: Array<{ id: string; name: string; avatar?: string }>
+  mentionUsers?: MentionUser[]
 }
 
 const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
@@ -96,61 +96,54 @@ const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
       (command: EditorCommand) => {
         if (!editor) return
 
-        switch (command.action) {
-          case 'bold':
-            editor.chain().focus().toggleBold().run()
-            break
-          case 'italic':
-            editor.chain().focus().toggleItalic().run()
-            break
-          case 'underline':
-            editor.chain().focus().toggleUnderline().run()
-            break
-          case 'strikethrough':
-            editor.chain().focus().toggleStrike().run()
-            break
-          case 'heading':
+        const chain = editor.chain().focus()
+
+        const commandMap = {
+          bold: () => chain.toggleBold().run(),
+          italic: () => chain.toggleItalic().run(),
+          underline: () => chain.toggleUnderline().run(),
+          strikethrough: () => chain.toggleStrike().run(),
+          
+          heading: () => {
             const level = command.value?.level || 2
-            if (command.value?.toggle) {
-              editor.chain().focus().toggleHeading({ level }).run()
-            } else {
-              editor.chain().focus().setHeading({ level }).run()
-            }
-            break
-          case 'list':
+            return command.value?.toggle 
+              ? chain.toggleHeading({ level }).run()
+              : chain.setHeading({ level }).run()
+          },
+          
+          list: () => {
             if (command.value === 'bullet' || command.value === 'unordered') {
-              editor.chain().focus().toggleBulletList().run()
+              return chain.toggleBulletList().run()
             } else if (command.value === 'ordered' || command.value === 'numbered') {
-              editor.chain().focus().toggleOrderedList().run()
+              return chain.toggleOrderedList().run()
             }
-            break
-          case 'link':
+          },
+          
+          link: () => {
             if (command.value?.url) {
-              editor
-                .chain()
-                .focus()
-                .extendMarkRange('link')
-                .setLink({ href: command.value.url })
-                .run()
+              return chain.extendMarkRange('link').setLink({ href: command.value.url }).run()
             } else {
-              editor.chain().focus().unsetLink().run()
+              return chain.unsetLink().run()
             }
-            break
-          case 'undo':
-            editor.chain().focus().undo().run()
-            break
-          case 'redo':
-            editor.chain().focus().redo().run()
-            break
-          case 'direction':
+          },
+          
+          undo: () => chain.undo().run(),
+          redo: () => chain.redo().run(),
+          
+          direction: () => {
             if (command.value === 'rtl') {
-              editor.chain().focus().setTextDirection('rtl').run()
+              return chain.setTextDirection('rtl').run()
             } else if (command.value === 'ltr') {
-              editor.chain().focus().setTextDirection('ltr').run()
+              return chain.setTextDirection('ltr').run()
             } else {
-              editor.chain().focus().unsetTextDirection().run()
+              return chain.unsetTextDirection().run()
             }
-            break
+          }
+        }
+
+        const commandHandler = commandMap[command.action as keyof typeof commandMap]
+        if (commandHandler) {
+          commandHandler()
         }
       },
       [editor]

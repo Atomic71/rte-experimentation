@@ -21,6 +21,8 @@
     "@lexical/rich-text": "^0.34.0",
     "@lexical/selection": "^0.34.0",
     "@tippyjs/react": "^4.2.6",
+    "@tiptap/extension-bubble-menu": "^3.3.0",
+    "@tiptap/extension-floating-menu": "^3.3.0",
     "@tiptap/extension-link": "^3.3.0",
     "@tiptap/extension-mention": "^3.3.0",
     "@tiptap/extension-placeholder": "^3.3.0",
