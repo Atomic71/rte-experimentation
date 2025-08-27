@@ -1,5 +1,6 @@
 import React from 'react'
 import { RenderElementProps } from 'slate-react'
+import { mentionElementStyle } from '../styles/componentStyles'
 
 export const renderElement = (props: RenderElementProps) => {
   const { attributes, children, element } = props
@@ -44,13 +45,8 @@ export const renderElement = (props: RenderElementProps) => {
           {...attributes}
           contentEditable={false}
           style={{
-            padding: '2px 4px',
+            ...mentionElementStyle,
             margin: '0 2px',
-            backgroundColor: '#e8f4fd',
-            borderRadius: '3px',
-            color: '#1976d2',
-            cursor: 'pointer',
-            userSelect: 'none'
           }}
           data-mention-id={(element as any).userId}
           data-mention-name={(element as any).userName}

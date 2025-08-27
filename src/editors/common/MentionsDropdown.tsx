@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { User } from '../../data/users';
+import { dropdownBaseStyle, itemStyle, selectedItemStyle, nameStyle, usernameStyle } from './styles/componentStyles';
 
 interface MentionsDropdownProps {
   users: User[];
@@ -31,47 +32,16 @@ export const MentionsDropdown: React.FC<MentionsDropdownProps> = ({
 
   if (!isVisible || users.length === 0) return null;
 
-  const dropdownStyle: React.CSSProperties = {
-    position: 'absolute',
+  const dynamicDropdownStyle = {
+    ...dropdownBaseStyle,
+    position: 'absolute' as const,
     top: position?.top || 0,
     left: position?.left || 0,
-    backgroundColor: 'white',
-    border: '1px solid #e0e0e0',
-    borderRadius: '4px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-    maxHeight: '200px',
-    overflowY: 'auto',
-    zIndex: 10001,
-    minWidth: '200px',
   };
 
-  const itemStyle: React.CSSProperties = {
-    padding: '8px 12px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    display: 'flex',
-    flexDirection: 'column',
-    borderBottom: '1px solid #f0f0f0',
-  };
-
-  const selectedItemStyle: React.CSSProperties = {
-    ...itemStyle,
-    backgroundColor: '#e8f4fd',
-  };
-
-  const nameStyle: React.CSSProperties = {
-    fontWeight: '500',
-    color: '#333',
-  };
-
-  const usernameStyle: React.CSSProperties = {
-    fontSize: '12px',
-    color: '#666',
-    marginTop: '2px',
-  };
 
   return (
-    <div ref={dropdownRef} style={dropdownStyle}>
+    <div ref={dropdownRef} style={dynamicDropdownStyle}>
       {users.map((user, index) => (
         <div
           key={user.id}

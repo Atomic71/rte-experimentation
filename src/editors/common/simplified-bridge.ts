@@ -1,4 +1,3 @@
-// Simplified WebView Bridge - HTML only communication
 export class SimplifiedWebViewBridge {
   private isReactNative: boolean = false;
 
@@ -10,14 +9,17 @@ export class SimplifiedWebViewBridge {
   private setupMessageListener() {
     const handleMessage = (event: MessageEvent) => {
       try {
-        const message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-        
+        const message =
+          typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+
         if (message.type === 'GET_CONTENT') {
           // This will be handled by the editor component
           window.dispatchEvent(new CustomEvent('webview-get-content'));
         } else if (message.type === 'SET_CONTENT' && message.html) {
           // This will be handled by the editor component
-          window.dispatchEvent(new CustomEvent('webview-set-content', { detail: message.html }));
+          window.dispatchEvent(
+            new CustomEvent('webview-set-content', { detail: message.html })
+          );
         }
       } catch (error) {
         console.warn('Failed to parse message:', error);
@@ -39,7 +41,7 @@ export class SimplifiedWebViewBridge {
     const message = {
       type: 'CONTENT',
       html: html,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     try {
@@ -58,7 +60,7 @@ export class SimplifiedWebViewBridge {
 
     const message = {
       type: 'READY',
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     try {

@@ -1,5 +1,6 @@
 import { Text as SlateText, Descendant } from 'slate'
 import { CustomElement, CustomText } from '../types'
+import { mentionInlineStyle } from '../styles/componentStyles'
 
 // Serialize Slate value to HTML
 export const serialize = (nodes: Descendant[]): string => {
@@ -53,7 +54,7 @@ const serializeNode = (node: Descendant): string => {
       return `<a href="${escapeHtml((node as any).url)}"${direction}>${children}</a>`
     case 'mention':
       const mention = node as any
-      return `<span data-mention-id="${escapeHtml(mention.userId)}" data-mention-name="${escapeHtml(mention.userName)}" data-mention-username="${escapeHtml(mention.username)}" contenteditable="false" style="background: #e8f4fd; color: #1976d2; padding: 2px 4px; border-radius: 3px; cursor: pointer;">${escapeHtml(mention.username)}</span>`
+      return `<span data-mention-id="${escapeHtml(mention.userId)}" data-mention-name="${escapeHtml(mention.userName)}" data-mention-username="${escapeHtml(mention.username)}" contenteditable="false" style="${mentionInlineStyle}">${escapeHtml(mention.username)}</span>`
     default:
       return children
   }

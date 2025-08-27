@@ -9,7 +9,9 @@ import {
   INSERT_UNORDERED_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
 } from '@lexical/list';
-import { $toggleLink } from '@lexical/link';
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
+import { LinkPopup } from '../../common/LinkPopup';
+import { toolbarStyle, buttonStyle, activeButtonStyle } from '../styles/componentStyles';
 
 export const ToolbarPlugin: React.FC = () => {
   const [editor] = useLexicalComposerContext();
@@ -17,6 +19,8 @@ export const ToolbarPlugin: React.FC = () => {
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
   const [isStrikethrough, setIsStrikethrough] = useState(false);
+  const [showLinkPopup, setShowLinkPopup] = useState(false);
+  const [linkData, setLinkData] = useState({ text: '', url: '' });
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -44,46 +48,42 @@ export const ToolbarPlugin: React.FC = () => {
   };
 
 
-  const insertLink = () => {
-    const url = prompt('Enter URL:');
-    if (url) {
-      editor.update(() => {
-        const selection = $getSelection();
-        if ($isRangeSelection(selection)) {
-          $toggleLink(url);
+  const handleLinkClick = () => {
+    editor.getEditorState().read(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        const node = selection.anchor.getNode();
+        const parent = node.getParent();
+        
+        // Check if we're in a link
+        if ($isLinkNode(parent)) {
+          setLinkData({
+            text: parent.getTextContent(),
+            url: parent.getURL()
+          });
+        } else if ($isLinkNode(node)) {
+          setLinkData({
+            text: node.getTextContent(),
+            url: node.getURL()
+          });
+        } else {
+          // Get selected text
+          const text = selection.getTextContent();
+          setLinkData({ text, url: '' });
         }
-      });
-    }
+      }
+    });
+    setShowLinkPopup(true);
   };
 
-  const toolbarStyle: React.CSSProperties = {
-    display: 'flex',
-    gap: '8px',
-    padding: '12px',
-    borderBottom: '1px solid #e5e5e5',
-    backgroundColor: '#f8f9fa',
-    alignItems: 'center',
-    overflow: 'scroll',
+  const handleSaveLink = (_text: string, url: string) => {
+    editor.dispatchCommand(TOGGLE_LINK_COMMAND, url);
   };
 
-  const buttonStyle: React.CSSProperties = {
-    padding: '6px 12px',
-    border: '1px solid #ccc',
-    backgroundColor: '#fff',
-    cursor: 'pointer',
-    borderRadius: '4px',
-    fontSize: '14px',
-    display: 'flex',
-    width: '100%',
-    wordBreak: 'keep-all',
+  const handleRemoveLink = () => {
+    editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
   };
 
-  const activeButtonStyle: React.CSSProperties = {
-    ...buttonStyle,
-    backgroundColor: '#007bff',
-    color: 'white',
-    borderColor: '#007bff',
-  };
 
 
   return (
@@ -152,11 +152,20 @@ export const ToolbarPlugin: React.FC = () => {
 
       <button
         style={buttonStyle}
-        onClick={insertLink}
+        onClick={handleLinkClick}
         title='Insert Link'
       >
         🔗
       </button>
+      
+      <LinkPopup
+        isOpen={showLinkPopup}
+        onClose={() => setShowLinkPopup(false)}
+        onSave={handleSaveLink}
+        onRemove={handleRemoveLink}
+        initialText={linkData.text}
+        initialUrl={linkData.url}
+      />
 
       <div
         style={{

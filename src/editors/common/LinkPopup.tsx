@@ -1,4 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
+import {
+  popupCenteredStyle,
+  popupPositionedStyle,
+  inputStyle,
+  buttonStyle,
+  primaryButtonStyle,
+  dangerButtonStyle,
+  flexContainerStyle,
+  marginBottomStyle
+} from './styles/componentStyles';
 
 interface LinkPopupProps {
   isOpen: boolean;
@@ -68,57 +78,17 @@ export const LinkPopup: React.FC<LinkPopupProps> = ({
     }
   };
 
-  const popupStyle: React.CSSProperties = {
-    position: 'absolute',
-    top: position?.top || '50%',
-    left: position?.left || '50%',
-    transform: position ? 'translateY(-100%)' : 'translate(-50%, -50%)',
-    backgroundColor: 'white',
-    border: '1px solid #ccc',
-    borderRadius: '8px',
-    padding: '16px',
-    boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-    zIndex: 10000,
-    minWidth: '300px',
-  };
-
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '8px',
-    marginBottom: '12px',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    fontSize: '14px',
-    boxSizing: 'border-box',
-  };
-
-  const buttonStyle: React.CSSProperties = {
-    padding: '8px 16px',
-    marginRight: '8px',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    backgroundColor: '#fff',
-    cursor: 'pointer',
-    fontSize: '14px',
-  };
-
-  const primaryButtonStyle: React.CSSProperties = {
-    ...buttonStyle,
-    backgroundColor: '#007bff',
-    color: 'white',
-    borderColor: '#007bff',
-  };
-
-  const dangerButtonStyle: React.CSSProperties = {
-    ...buttonStyle,
-    backgroundColor: '#dc3545',
-    color: 'white',
-    borderColor: '#dc3545',
-  };
+  const dynamicPopupStyle = position
+    ? {
+        ...popupPositionedStyle,
+        top: position.top,
+        left: position.left,
+      }
+    : popupCenteredStyle;
 
   return (
-    <div ref={popupRef} style={popupStyle}>
-      <div style={{ marginBottom: '16px', fontWeight: 'bold' }}>
+    <div ref={popupRef} style={dynamicPopupStyle}>
+      <div style={marginBottomStyle}>
         {initialUrl ? 'Edit Link' : 'Insert Link'}
       </div>
       
@@ -144,7 +114,7 @@ export const LinkPopup: React.FC<LinkPopupProps> = ({
         }}
       />
       
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div style={flexContainerStyle}>
         <div>
           <button
             onClick={handleSave}

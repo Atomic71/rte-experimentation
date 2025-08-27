@@ -5,16 +5,15 @@ import { withHistory } from 'slate-history';
 import { withFormatting } from '../plugins/formatting';
 import { withBlocks } from '../plugins/blocks';
 import { withDirection } from '../plugins/direction';
+import { withMentions } from '../plugins/mentions';
 
-/**
- * Custom hook to create and configure a Slate editor with all plugins
- * @returns Configured Slate editor instance
- */
 export const useSlateEditor = () => {
   const editor = useMemo(
     () =>
-      withDirection(
-        withBlocks(withFormatting(withHistory(withReact(createEditor()))))
+      withMentions(
+        withDirection(
+          withBlocks(withFormatting(withHistory(withReact(createEditor()))))
+        )
       ),
     []
   );
