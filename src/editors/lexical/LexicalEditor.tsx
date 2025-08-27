@@ -5,7 +5,7 @@ import { LexicalEditorWrapper } from './LexicalEditorWrapper';
 import { EditorInitializer } from './components/EditorInitializer';
 import { EditorContainer } from './components/EditorContainer';
 import { editorConfig } from './config/editorConfig';
-import { editorContainerStyle } from './styles/componentStyles';
+import { editor } from '../../design-system';
 
 export const LexicalEditor: React.FC = () => {
   const wrapper = React.useMemo(() => new LexicalEditorWrapper(), []);
@@ -13,7 +13,7 @@ export const LexicalEditor: React.FC = () => {
   return (
     <div
       className='editor-container'
-      style={editorContainerStyle}
+      style={editor.container}
     >
       <LexicalComposer initialConfig={editorConfig}>
         <EditorInitializer wrapper={wrapper} />

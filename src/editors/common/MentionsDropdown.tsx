@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { User } from '../../data/users';
-import { dropdownBaseStyle, itemStyle, selectedItemStyle, nameStyle, usernameStyle } from './styles/componentStyles';
+import { dropdown } from '../../design-system';
 
 interface MentionsDropdownProps {
   users: User[];
@@ -33,7 +33,7 @@ export const MentionsDropdown: React.FC<MentionsDropdownProps> = ({
   if (!isVisible || users.length === 0) return null;
 
   const dynamicDropdownStyle = {
-    ...dropdownBaseStyle,
+    ...dropdown.container,
     position: 'absolute' as const,
     top: position?.top || 0,
     left: position?.left || 0,
@@ -46,19 +46,14 @@ export const MentionsDropdown: React.FC<MentionsDropdownProps> = ({
         <div
           key={user.id}
           ref={index === selectedIndex ? selectedItemRef : null}
-          style={index === selectedIndex ? selectedItemStyle : itemStyle}
+          style={{
+            ...dropdown.item,
+            ...(index === selectedIndex ? dropdown.itemSelected : {}),
+          }}
           onClick={() => onSelect(user)}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#f5f5f5';
-          }}
-          onMouseLeave={(e) => {
-            if (index !== selectedIndex) {
-              e.currentTarget.style.backgroundColor = 'white';
-            }
-          }}
         >
-          <span style={nameStyle}>{user.name}</span>
-          <span style={usernameStyle}>{user.username}</span>
+          <span style={dropdown.itemName}>{user.name}</span>
+          <span style={dropdown.itemSubtext}>{user.username}</span>
         </div>
       ))}
     </div>

@@ -1,4 +1,4 @@
-import { Editor, Transforms, Element as SlateElement } from 'slate'
+import { Editor, Transforms, Element as SlateElement, Range, Point } from 'slate'
 import { CustomEditor, CustomElement } from '../../types'
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list']
@@ -121,5 +121,3 @@ export const withBlocks = (editor: CustomEditor) => {
   return editor
 }
 
-// Import Range and Point for the block plugin
-import { Range, Point } from 'slate'

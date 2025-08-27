@@ -1,6 +1,6 @@
 import React from 'react'
 import { RenderElementProps } from 'slate-react'
-import { mentionElementStyle } from '../styles/componentStyles'
+import { mention } from '../../../design-system'
 
 export const renderElement = (props: RenderElementProps) => {
   const { attributes, children, element } = props
@@ -45,7 +45,7 @@ export const renderElement = (props: RenderElementProps) => {
           {...attributes}
           contentEditable={false}
           style={{
-            ...mentionElementStyle,
+            ...mention.element,
             margin: '0 2px',
           }}
           data-mention-id={(element as any).userId}

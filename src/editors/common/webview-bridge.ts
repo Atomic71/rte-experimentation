@@ -3,7 +3,7 @@ import type { EditorContent, EditorCommand } from './types'
 // Unified message interface that consolidates all previous formats
 export interface WebViewMessage {
   type: 'READY' | 'CHANGE' | 'SET_CONTENT' | 'GET_CONTENT' | 'EXECUTE_COMMAND' | 
-        'CONTENT_RESPONSE' | 'EXPORT_HTML' | 'IMPORT_HTML' | 'ERROR' | 'COMMAND'
+        'CONTENT_RESPONSE' | 'EXPORT_HTML' | 'IMPORT_HTML' | 'ERROR'
   payload?: any
   editor?: string
   timestamp?: number
@@ -78,20 +78,9 @@ class UnifiedWebViewBridge {
   private parseMessage(event: MessageEvent): WebViewMessage {
     const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
     
-    // Handle legacy message formats
-    if (data.type && data.data !== undefined) {
-      // Lexical format: { type, data }
-      return { 
-        type: data.type as WebViewMessage['type'], 
-        payload: data.data, 
-        timestamp: Date.now() 
-      }
-    }
-    
-    // Standard format: { type, payload } or EditorMessage format
     return {
       type: data.type as WebViewMessage['type'],
-      payload: data.payload || data.data,
+      payload: data.payload,
       editor: data.editor,
       timestamp: data.timestamp || Date.now()
     }
@@ -111,7 +100,6 @@ class UnifiedWebViewBridge {
         break
         
       case 'EXECUTE_COMMAND':
-      case 'COMMAND': // Support legacy command type
         this.callbacks.onExecuteCommand?.(message.payload)
         break
         

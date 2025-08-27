@@ -1,14 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  popupCenteredStyle,
-  popupPositionedStyle,
-  inputStyle,
-  buttonStyle,
-  primaryButtonStyle,
-  dangerButtonStyle,
-  flexContainerStyle,
-  marginBottomStyle
-} from './styles/componentStyles';
+import { popup, popupContent, input, button } from '../../design-system';
 
 interface LinkPopupProps {
   isOpen: boolean;
@@ -80,15 +71,16 @@ export const LinkPopup: React.FC<LinkPopupProps> = ({
 
   const dynamicPopupStyle = position
     ? {
-        ...popupPositionedStyle,
+        ...popup.base,
+        ...popup.positioned,
         top: position.top,
         left: position.left,
       }
-    : popupCenteredStyle;
+    : { ...popup.base, ...popup.centered };
 
   return (
     <div ref={popupRef} style={dynamicPopupStyle}>
-      <div style={marginBottomStyle}>
+      <div style={popupContent.title}>
         {initialUrl ? 'Edit Link' : 'Insert Link'}
       </div>
       
@@ -97,7 +89,7 @@ export const LinkPopup: React.FC<LinkPopupProps> = ({
         placeholder="Link text"
         value={text}
         onChange={(e) => setText(e.target.value)}
-        style={inputStyle}
+        style={input.default}
         autoFocus
       />
       
@@ -106,7 +98,7 @@ export const LinkPopup: React.FC<LinkPopupProps> = ({
         placeholder="URL (e.g., https://example.com)"
         value={url}
         onChange={(e) => setUrl(e.target.value)}
-        style={inputStyle}
+        style={input.default}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             handleSave();
@@ -114,22 +106,22 @@ export const LinkPopup: React.FC<LinkPopupProps> = ({
         }}
       />
       
-      <div style={flexContainerStyle}>
+      <div style={popupContent.buttonGroup}>
         <div>
           <button
             onClick={handleSave}
-            style={primaryButtonStyle}
+            style={button.primary}
             disabled={!url.trim()}
           >
             Save
           </button>
-          <button onClick={onClose} style={buttonStyle}>
+          <button onClick={onClose} style={button.default}>
             Cancel
           </button>
         </div>
         
         {onRemove && initialUrl && (
-          <button onClick={handleRemove} style={dangerButtonStyle}>
+          <button onClick={handleRemove} style={button.danger}>
             Remove
           </button>
         )}

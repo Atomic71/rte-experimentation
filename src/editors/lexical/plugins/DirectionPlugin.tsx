@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { directionContainerStyle, directionButtonStyle, activeDirectionButtonStyle } from '../styles/componentStyles';
+import { toolbar, button } from '../../../design-system';
 import {
   $getSelection,
   $isRangeSelection,
@@ -154,12 +154,12 @@ export const DirectionPlugin: React.FC<{ hideDirectionOptions?: boolean }> = ({
 
   if (hideDirectionOptions) return null;
   return (
-    <div style={directionContainerStyle}>
+    <div style={toolbar.group}>
       <button
         style={
           currentDirection === 'ltr' && !isAutoMode
-            ? activeDirectionButtonStyle
-            : directionButtonStyle
+            ? button.smallActive
+            : button.small
         }
         onClick={() => setDirection('ltr')}
         title='Left to Right'
@@ -170,8 +170,8 @@ export const DirectionPlugin: React.FC<{ hideDirectionOptions?: boolean }> = ({
       <button
         style={
           currentDirection === 'rtl' && !isAutoMode
-            ? activeDirectionButtonStyle
-            : directionButtonStyle
+            ? button.smallActive
+            : button.small
         }
         onClick={() => {
           console.log('rtl');
@@ -183,7 +183,7 @@ export const DirectionPlugin: React.FC<{ hideDirectionOptions?: boolean }> = ({
       </button>
 
       <button
-        style={isAutoMode ? activeDirectionButtonStyle : directionButtonStyle}
+        style={isAutoMode ? button.smallActive : button.small}
         onClick={() => setDirection('auto')}
         title='Auto-detect direction'
       >

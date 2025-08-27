@@ -11,7 +11,7 @@ import {
 } from '@lexical/list';
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
 import { LinkPopup } from '../../common/LinkPopup';
-import { toolbarStyle, buttonStyle, activeButtonStyle } from '../styles/componentStyles';
+import { toolbar, button } from '../../../design-system';
 
 export const ToolbarPlugin: React.FC = () => {
   const [editor] = useLexicalComposerContext();
@@ -87,9 +87,9 @@ export const ToolbarPlugin: React.FC = () => {
 
 
   return (
-    <div style={toolbarStyle}>
+    <div style={toolbar.container}>
       <button
-        style={isBold ? activeButtonStyle : buttonStyle}
+        style={isBold ? button.active : button.default}
         onClick={() => formatText('bold')}
         title='Bold'
       >
@@ -97,7 +97,7 @@ export const ToolbarPlugin: React.FC = () => {
       </button>
 
       <button
-        style={isItalic ? activeButtonStyle : buttonStyle}
+        style={isItalic ? button.active : button.default}
         onClick={() => formatText('italic')}
         title='Italic'
       >
@@ -105,7 +105,7 @@ export const ToolbarPlugin: React.FC = () => {
       </button>
 
       <button
-        style={isUnderline ? activeButtonStyle : buttonStyle}
+        style={isUnderline ? button.active : button.default}
         onClick={() => formatText('underline')}
         title='Underline'
       >
@@ -113,7 +113,7 @@ export const ToolbarPlugin: React.FC = () => {
       </button>
 
       <button
-        style={isStrikethrough ? activeButtonStyle : buttonStyle}
+        style={isStrikethrough ? button.active : button.default}
         onClick={() => formatText('strikethrough')}
         title='Strikethrough'
       >
@@ -130,7 +130,7 @@ export const ToolbarPlugin: React.FC = () => {
       />
 
       <button
-        style={buttonStyle}
+        style={button.default}
         onClick={() =>
           editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
         }
@@ -140,7 +140,7 @@ export const ToolbarPlugin: React.FC = () => {
       </button>
 
       <button
-        style={buttonStyle}
+        style={button.default}
         onClick={() =>
           editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
         }
@@ -151,7 +151,7 @@ export const ToolbarPlugin: React.FC = () => {
 
 
       <button
-        style={buttonStyle}
+        style={button.default}
         onClick={handleLinkClick}
         title='Insert Link'
       >

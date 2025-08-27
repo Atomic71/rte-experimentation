@@ -1,4 +1,3 @@
-export { SlateEditorWrapper } from './SlateEditorWrapper';
 export { SlateEditor } from './SlateEditor';
 export * from './types';
 export * from './utils/serialization';

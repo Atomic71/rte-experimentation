@@ -11,7 +11,7 @@ import { BeautifulMentionsPlugin } from 'lexical-beautiful-mentions';
 import { ToolbarPlugin } from '../plugins/ToolbarPlugin';
 import { LexicalEditorWrapper } from '../LexicalEditorWrapper';
 import { URL_MATCHERS } from '../config/editorConfig';
-import { editorStyle, placeholderStyle, editorWrapperStyle } from '../styles/componentStyles';
+import { editor } from '../../../design-system';
 
 interface EditorContainerProps {
   wrapper: LexicalEditorWrapper;
@@ -40,11 +40,11 @@ export const EditorContainer: React.FC<EditorContainerProps> = ({ wrapper }) => 
   return (
     <>
       <ToolbarPlugin />
-      <div style={editorWrapperStyle}>
+      <div style={editor.wrapper}>
         <RichTextPlugin
-          contentEditable={<ContentEditable style={editorStyle} />}
+          contentEditable={<ContentEditable style={editor.content} />}
           placeholder={
-            <div style={placeholderStyle}>Enter some rich text...</div>
+            <div style={editor.placeholder}>Enter some rich text...</div>
           }
           ErrorBoundary={LexicalErrorBoundary}
         />
