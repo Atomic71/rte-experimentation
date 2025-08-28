@@ -6,7 +6,7 @@ import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
 import { EditorContent as EditorContentType, EditorCommand } from '../common/types'
 import { Toolbar } from './components/Toolbar'
-import { configureMention, MentionUser } from './extensions/configureMention'
+import { configureMention } from './extensions/configureMention'
 import './styles/editor.css'
 
 export interface TipTapEditorHandle {
@@ -24,11 +24,10 @@ interface TipTapEditorProps {
   onContentChange?: (content: EditorContentType) => void
   onReady?: (editor: Editor) => void
   readOnly?: boolean
-  mentionUsers?: MentionUser[]
 }
 
 const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
-  ({ initialContent, placeholder, onContentChange, onReady, readOnly, mentionUsers }, ref) => {
+  ({ initialContent, placeholder, onContentChange, onReady, readOnly }, ref) => {
     const editor = useEditor({
       extensions: [
         StarterKit,
@@ -42,7 +41,7 @@ const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
         Placeholder.configure({
           placeholder: placeholder || 'Start typing...',
         }),
-        configureMention(mentionUsers || []),
+        configureMention(),
       ],
       content: initialContent || '<p></p>',
       editable: !readOnly,

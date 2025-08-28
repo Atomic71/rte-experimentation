@@ -29,9 +29,8 @@ export const SlateEditor: React.FC = () => {
   
   const {
     mentionState,
-    mentionUsers,
-    handleMentionTrigger,
-    handleMentionSelect,
+    detectMention,
+    insertMention,
     handleMentionKeyDown,
   } = useMentions(editor);
 
@@ -71,7 +70,7 @@ export const SlateEditor: React.FC = () => {
 
   const handleChange = useCallback((newValue: Descendant[]) => {
     setValue(newValue);
-    handleMentionTrigger();
+    detectMention();
     
     // Notify WebView of content changes
     webViewBridge.notifyContentChange({
@@ -81,7 +80,7 @@ export const SlateEditor: React.FC = () => {
         html: serialize(newValue)
       }
     });
-  }, [handleMentionTrigger]);
+  }, [detectMention]);
 
 
 
@@ -108,11 +107,11 @@ export const SlateEditor: React.FC = () => {
         />
       </Slate>
       <MentionsDropdown
-        users={mentionUsers}
-        selectedIndex={mentionState?.index || 0}
-        onSelect={handleMentionSelect}
-        isVisible={!!mentionState}
-        position={mentionState ? { top: 100, left: 100 } : undefined}
+        users={mentionState.users || []}
+        selectedIndex={mentionState.index}
+        onSelect={insertMention}
+        isVisible={mentionState.isActive}
+        position={mentionState.isActive ? { top: 100, left: 100 } : undefined}
       />
     </div>
   );

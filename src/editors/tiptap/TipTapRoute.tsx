@@ -2,7 +2,6 @@ import { useRef, useEffect } from 'react';
 import TipTapEditor from './TipTapEditor';
 import type { TipTapEditorHandle } from './TipTapEditor';
 import { tiptapEditorWrapper } from './TipTapEditorWrapper';
-import { DUMMY_USERS } from '../../data/users';
 import type { EditorContent } from '../common/types';
 import './styles/editor.css';
 
@@ -55,11 +54,6 @@ export default function TipTapRoute() {
             placeholder='Start typing... Use @ to mention users'
             onContentChange={handleContentChange}
             onReady={handleReady}
-            mentionUsers={DUMMY_USERS.map((user) => ({
-              id: user.id,
-              name: user.name,
-              avatar: undefined,
-            }))}
             initialContent='<p>Welcome to the <strong>TipTap</strong> editor! Try out the formatting options, mentions with @, and RTL/LTR text direction.</p>'
           />
         </div>

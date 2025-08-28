@@ -54,3 +54,35 @@ export interface BaseEditor {
   importHTML(html: string): void;
   destroy(): void;
 }
+
+// Mentions types
+export interface MentionUser {
+  id: string;
+  name: string;
+  username: string;
+  avatar?: string;
+}
+
+export interface MentionsConfig {
+  enabled: boolean;
+  allowedTriggers?: string[];  // ['@', '#'] for mentions and hashtags
+  maxResults?: number;
+  debounceMs?: number;
+  allowSpaces?: boolean;  // Whether to allow spaces in queries
+  minQueryLength?: number;  // Minimum chars before querying
+}
+
+export interface MentionQueryPayload {
+  query: string;
+  editorType: string;
+  trigger?: string;  // '@' or '#' etc
+}
+
+export interface MentionResultsPayload {
+  users: MentionUser[];
+  query: string;
+}
+
+export interface MentionsConfigPayload {
+  config: MentionsConfig;
+}

@@ -1,11 +1,11 @@
 import React, { useRef, useEffect } from 'react';
-import { User } from '../../data/users';
+import { MentionUser } from './types';
 import { dropdown } from '../../design-system';
 
 interface MentionsDropdownProps {
-  users: User[];
+  users: MentionUser[];
   selectedIndex: number;
-  onSelect: (user: User) => void;
+  onSelect: (user: MentionUser) => void;
   position?: { top: number; left: number };
   isVisible: boolean;
 }
@@ -53,7 +53,7 @@ export const MentionsDropdown: React.FC<MentionsDropdownProps> = ({
           onClick={() => onSelect(user)}
         >
           <span style={dropdown.itemName}>{user.name}</span>
-          <span style={dropdown.itemSubtext}>{user.username}</span>
+          <span style={dropdown.itemSubtext}>@{user.username}</span>
         </div>
       ))}
     </div>

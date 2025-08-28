@@ -7,7 +7,7 @@ import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import { AutoLinkPlugin } from '@lexical/react/LexicalAutoLinkPlugin';
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
-import { BeautifulMentionsPlugin } from 'lexical-beautiful-mentions';
+import { MentionsPlugin } from '../plugins/MentionsPlugin';
 import { ToolbarPlugin } from '../plugins/ToolbarPlugin';
 import { LexicalEditorWrapper } from '../LexicalEditorWrapper';
 import { URL_MATCHERS } from '../config/editorConfig';
@@ -23,18 +23,6 @@ export const EditorContainer: React.FC<EditorContainerProps> = ({ wrapper }) => 
     // No need to explicitly notify changes here
   }, [wrapper]);
 
-  const handleMentionSearch = useCallback(
-    async (_trigger: string, query?: string | null) => {
-      const { searchUsers } = await import('../../../data/users');
-      const users = searchUsers(query || '').slice(0, 10);
-      return users.map((user) => ({
-        value: user.username.replace('@', ''), // Remove @ since Beautiful Mentions adds it
-        id: user.id,
-        avatar: user.name,
-      }));
-    },
-    []
-  );
 
 
   return (
@@ -54,11 +42,7 @@ export const EditorContainer: React.FC<EditorContainerProps> = ({ wrapper }) => 
       <ListPlugin />
       <LinkPlugin />
       <AutoLinkPlugin matchers={URL_MATCHERS} />
-      <BeautifulMentionsPlugin
-        triggers={['@']}
-        onSearch={handleMentionSearch}
-        menuItemLimit={10}
-      />
+      <MentionsPlugin />
     </>
   );
 };

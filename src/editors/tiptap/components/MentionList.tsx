@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
-import { MentionUser } from '../extensions/configureMention'
+import { MentionUser } from '../../common/types'
+import { webViewBridge } from '../../common/webview-bridge'
 
 export interface MentionListProps {
   items: MentionUser[]
@@ -13,7 +14,17 @@ export const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
     const item = props.items[index]
 
     if (item) {
-      props.command({ id: item.id, label: item.name })
+      // Notify RN of selection
+      webViewBridge.sendMentionSelected(item)
+      
+      // Execute command with TipTap expected format
+      props.command({ 
+        id: item.id, 
+        label: `@${item.username}`,
+        userId: item.id,
+        userName: item.name,
+        username: item.username
+      })
     }
   }
 
@@ -68,7 +79,10 @@ export const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
           {item.avatar && (
             <img src={item.avatar} alt={item.name} className="mention-avatar" />
           )}
-          <span className="mention-name">{item.name}</span>
+          <div className="mention-info">
+            <span className="mention-name">{item.name}</span>
+            <span className="mention-username">@{item.username}</span>
+          </div>
         </button>
       ))}
     </div>

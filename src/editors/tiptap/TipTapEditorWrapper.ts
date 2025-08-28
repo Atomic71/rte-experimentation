@@ -13,8 +13,12 @@ export class TipTapEditorWrapper implements BaseEditor {
   initialize(): void {
     if (this.isInitialized) return
     
-    // Initialize the bridge with callbacks
+    // Preserve existing callbacks (like mention callbacks from configureMention)
+    const existingCallbacks = { ...webViewBridge.callbacks }
+    
+    // Initialize the bridge with callbacks, preserving existing ones
     webViewBridge.initialize('tiptap', {
+      ...existingCallbacks, // Keep existing callbacks
       onSetContent: (content: EditorContent) => {
         this.setContent(content)
       },

@@ -5,6 +5,7 @@ export interface MentionState {
   search: string;
   index: number;
   targetRange: Range | null;
+  users?: any[]; // For HTTP mentions compatibility
 }
 
 export const withMentions = (editor: Editor) => {
