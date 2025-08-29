@@ -2,8 +2,7 @@ import Mention from '@tiptap/extension-mention'
 import { ReactRenderer } from '@tiptap/react'
 import tippy, { Instance as TippyInstance } from 'tippy.js'
 import { MentionList } from '../components/MentionList'
-import { webViewBridge } from '../../common/webview-bridge'
-import { MentionUser } from '../../common/types'
+import { webViewBridge, MentionUser } from '../webview-bridge'
 
 export function configureMention() {
   let resolveSearch: ((users: MentionUser[]) => void) | null = null

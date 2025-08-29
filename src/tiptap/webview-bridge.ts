@@ -1,11 +1,41 @@
-import type {
-  EditorContent,
-  EditorCommand,
-  MentionUser,
-  MentionsConfig,
-} from './types';
+// Simplified WebView bridge for TipTap editor only
 
-// Unified message interface that consolidates all previous formats
+export interface EditorContent {
+  format: 'html' | 'text';
+  data: any;
+}
+
+export interface EditorCommand {
+  action:
+    | 'bold'
+    | 'italic'
+    | 'underline'
+    | 'strikethrough'
+    | 'heading'
+    | 'list'
+    | 'link'
+    | 'undo'
+    | 'redo'
+    | 'direction';
+  value?: any;
+}
+
+export interface MentionUser {
+  id: string;
+  name: string;
+  username: string;
+  avatar?: string;
+}
+
+export interface MentionsConfig {
+  enabled: boolean;
+  allowedTriggers?: string[];
+  maxResults?: number;
+  debounceMs?: number;
+  allowSpaces?: boolean;
+  minQueryLength?: number;
+}
+
 export interface WebViewMessage {
   type:
     | 'READY'
@@ -23,14 +53,14 @@ export interface WebViewMessage {
     | 'SET_MENTIONS_CONFIG'
     | 'DEBUG';
   payload?: any;
-  editor?: string;
   timestamp?: number;
 }
 
-// Editor callback interface for type-safe event handling
+interface ReactNativeWebView {
+  postMessage: (message: string) => void;
+}
+
 export interface EditorCallbacks {
-  onReady?: () => void;
-  onContentChange?: (content: EditorContent) => void;
   onSetContent?: (content: EditorContent) => void;
   onGetContent?: () => EditorContent;
   onExecuteCommand?: (command: EditorCommand) => void;
@@ -42,13 +72,7 @@ export interface EditorCallbacks {
   onMentionsConfigUpdate?: (config: MentionsConfig) => void;
 }
 
-// Type-safe React Native WebView interface
-interface ReactNativeWebView {
-  postMessage: (message: string) => void;
-}
-
-class UnifiedWebViewBridge {
-  private editorType: string = 'unknown';
+class TipTapWebViewBridge {
   public callbacks: EditorCallbacks = {};
   private isReactNative: boolean = false;
   private messageListener?: () => void;
@@ -64,16 +88,23 @@ class UnifiedWebViewBridge {
     this.setupMessageListener();
   }
 
-  // Initialize bridge for specific editor
-  initialize(editorType: string, callbacks: EditorCallbacks) {
-    this.editorType = editorType;
+  initialize(callbacks: EditorCallbacks) {
     this.callbacks = callbacks;
-
-    // Notify React Native that editor is ready
-    this.postMessage('READY', { editorType });
+    this.postMessage('READY', { 
+      features: {
+        bold: true,
+        italic: true,
+        underline: true,
+        strikethrough: true,
+        headings: true,
+        lists: true,
+        links: true,
+        mentions: true,
+        rtl: true,
+      }
+    });
   }
 
-  // Clean up listeners
   destroy() {
     if (this.messageListener) {
       this.messageListener();
@@ -83,7 +114,6 @@ class UnifiedWebViewBridge {
 
   private setupMessageListener() {
     const handleMessage = (event: MessageEvent) => {
-      // Send debug info back to RN
       this.postMessage('DEBUG', { step: 'received_message', data: event.data });
       try {
         const message = this.parseMessage(event);
@@ -99,9 +129,8 @@ class UnifiedWebViewBridge {
     };
 
     window.addEventListener('message', handleMessage);
-    document.addEventListener('message', handleMessage as EventListener); // Android support
+    document.addEventListener('message', handleMessage as EventListener);
 
-    // Return cleanup function
     this.messageListener = () => {
       window.removeEventListener('message', handleMessage);
       document.removeEventListener('message', handleMessage as EventListener);
@@ -113,9 +142,8 @@ class UnifiedWebViewBridge {
       typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
 
     return {
-      type: data.type as WebViewMessage['type'],
+      type: data.type,
       payload: data.payload,
-      editor: data.editor,
       timestamp: data.timestamp || Date.now(),
     };
   }
@@ -175,12 +203,10 @@ class UnifiedWebViewBridge {
     }
   }
 
-  // Public API methods
   postMessage(type: WebViewMessage['type'], payload?: any) {
     const message: WebViewMessage = {
       type,
       payload,
-      editor: this.editorType,
       timestamp: Date.now(),
     };
 
@@ -192,12 +218,10 @@ class UnifiedWebViewBridge {
         this.callbacks.onError?.('Failed to communicate with React Native');
       }
     } else {
-      // Development logging
-      console.log(`[${this.editorType}] WebView Message:`, message);
+      console.log('[TipTap] WebView Message:', message);
     }
   }
 
-  // Mentions methods
   queryMentions(query: string) {
     this.postMessage('MENTION_QUERY', { query });
   }
@@ -215,7 +239,6 @@ class UnifiedWebViewBridge {
     this.callbacks.onMentionsConfigUpdate?.(this.mentionsConfig);
   }
 
-  // Convenience methods
   notifyContentChange(content: EditorContent) {
     this.postMessage('CHANGE', content);
   }
@@ -226,7 +249,19 @@ class UnifiedWebViewBridge {
   }
 
   notifyReady() {
-    this.postMessage('READY', { editorType: this.editorType });
+    this.postMessage('READY', { 
+      features: {
+        bold: true,
+        italic: true,
+        underline: true,
+        strikethrough: true,
+        headings: true,
+        lists: true,
+        links: true,
+        mentions: true,
+        rtl: true,
+      }
+    });
   }
 
   sendContent(content: EditorContent) {
@@ -238,19 +273,10 @@ class UnifiedWebViewBridge {
   }
 }
 
-// Global type declarations - consolidated in one place
 declare global {
   interface Window {
     ReactNativeWebView?: ReactNativeWebView;
-    setLexicalContent?: (content: any) => void;
   }
 }
 
-// Export singleton instance
-export const webViewBridge = new UnifiedWebViewBridge();
-
-// Export for testing or multiple instances if needed
-export { UnifiedWebViewBridge };
-
-// Re-export types for convenience
-export type { EditorContent, EditorCommand } from './types';
+export const webViewBridge = new TipTapWebViewBridge();

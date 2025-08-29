@@ -1,24 +1,19 @@
-import { BaseEditor, EditorContent, EditorCommand } from '../common/types'
-import { webViewBridge } from '../common/webview-bridge'
+import { EditorContent, EditorCommand, webViewBridge } from './webview-bridge'
 import type { TipTapEditorHandle } from './TipTapEditor'
 
-export class TipTapEditorWrapper implements BaseEditor {
+export class TipTapEditorWrapper {
   private editorRef: TipTapEditorHandle | null = null
   private isInitialized = false
 
-  constructor(_container?: HTMLElement) {
-    // Container parameter kept for compatibility but not used
-  }
+  constructor() {}
 
   initialize(): void {
     if (this.isInitialized) return
     
-    // Preserve existing callbacks (like mention callbacks from configureMention)
     const existingCallbacks = { ...webViewBridge.callbacks }
     
-    // Initialize the bridge with callbacks, preserving existing ones
-    webViewBridge.initialize('tiptap', {
-      ...existingCallbacks, // Keep existing callbacks
+    webViewBridge.initialize({
+      ...existingCallbacks,
       onSetContent: (content: EditorContent) => {
         this.setContent(content)
       },
@@ -76,29 +71,13 @@ export class TipTapEditorWrapper implements BaseEditor {
     this.editorRef = null
   }
 
-  // Notify React Native about content changes
   notifyContentChange(content: EditorContent): void {
     webViewBridge.postMessage('CHANGE', content)
   }
 
-  // Notify React Native that editor is ready
   notifyReady(): void {
-    webViewBridge.postMessage('READY', { 
-      editorType: 'tiptap',
-      features: {
-        bold: true,
-        italic: true,
-        underline: true,
-        strikethrough: true,
-        headings: true,
-        lists: true,
-        links: true,
-        mentions: true,
-        rtl: true,
-      }
-    })
+    webViewBridge.notifyReady()
   }
 }
 
-// Create a singleton instance for use across the app
 export const tiptapEditorWrapper = new TipTapEditorWrapper()

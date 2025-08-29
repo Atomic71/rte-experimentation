@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Editor } from '@tiptap/react';
-import { LinkPopup } from '../../common/LinkPopup';
+import { LinkPopup } from './LinkPopup';
 
 interface ToolbarProps {
   editor: Editor;
@@ -66,10 +66,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
           .run();
       }
     }
-  };
-
-  const handleRemoveLink = () => {
-    editor.chain().focus().unsetLink().run();
   };
 
   const handleSend = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -155,9 +151,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
         <LinkPopup
           isOpen={showLinkPopup}
           onClose={() => setShowLinkPopup(false)}
-          onSave={handleSaveLink}
-          onRemove={handleRemoveLink}
-          initialText={linkData.text}
+          onSubmit={(url) => handleSaveLink(linkData.text, url)}
           initialUrl={linkData.url}
         />
       </div>
