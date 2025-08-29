@@ -62,15 +62,5 @@
       "import": "./dist/utils.js",
       "require": "./dist/utils.js"
     }
-  },
-  "overrides": {
-    "tiptap-text-direction": {
-      "@tiptap/core": "^3.3.0"
-    }
-  },
-  "peerDependenciesMeta": {
-    "@tiptap/core": {
-      "optional": true
-    }
   }
 }
