@@ -40,23 +40,15 @@ export default function TipTapRoute() {
   };
 
   return (
-    <div style={{ height: '100vh', backgroundColor: '#f5f5f5' }}>
-      <div
-        style={{
-          height: 'calc(100% - 40px)',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        <div style={{ flex: 1, minHeight: 0 }}>
-          <TipTapEditor
-            ref={editorRef}
-            placeholder='Start typing... Use @ to mention users'
-            onContentChange={handleContentChange}
-            onReady={handleReady}
-            initialContent='<p>Welcome to the <strong>TipTap</strong> editor! Try out the formatting options, mentions with @, and RTL/LTR text direction.</p>'
-          />
-        </div>
+    <div style={{ height: '100vh' }}>
+      <div style={{ flex: 1, height: '100%' }}>
+        <TipTapEditor
+          ref={editorRef}
+          placeholder='Start typing... Use @ to mention users'
+          onContentChange={handleContentChange}
+          onReady={handleReady}
+          initialContent='<p>Welcome to the <strong>TipTap</strong> editor! Try out the formatting options, mentions with @, and RTL/LTR text direction.</p>'
+        />
       </div>
     </div>
   );

@@ -91,7 +91,6 @@ export const SlateEditor: React.FC = () => {
         initialValue={value}
         onChange={handleChange}
       >
-        <Toolbar />
         <Editable
           className='editor'
           renderElement={renderElement}
@@ -105,6 +104,7 @@ export const SlateEditor: React.FC = () => {
           spellCheck
           autoFocus
         />
+        <Toolbar />
       </Slate>
       <MentionsDropdown
         users={mentionState.users || []}

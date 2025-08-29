@@ -27,7 +27,6 @@ export const EditorContainer: React.FC<EditorContainerProps> = ({ wrapper }) => 
 
   return (
     <>
-      <ToolbarPlugin />
       <div style={editor.wrapper}>
         <RichTextPlugin
           contentEditable={<ContentEditable style={editor.content} />}
@@ -37,6 +36,7 @@ export const EditorContainer: React.FC<EditorContainerProps> = ({ wrapper }) => 
           ErrorBoundary={LexicalErrorBoundary}
         />
       </div>
+      <ToolbarPlugin />
       <HistoryPlugin />
       <OnChangePlugin onChange={handleChange} />
       <ListPlugin />

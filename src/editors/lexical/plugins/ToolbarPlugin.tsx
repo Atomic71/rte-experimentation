@@ -78,11 +78,16 @@ export const ToolbarPlugin: React.FC = () => {
     editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
   };
 
+  const handleSend = () => {
+    // TODO: Implement send functionality
+    console.log('Send clicked');
+  };
+
   return (
-    <div>
-      <div style={toolbar.container}>
+    <div className="toolbar">
+      <div className="toolbar-left">
         <button
-          style={isBold ? button.active : button.default}
+          className={`toolbar-button ${isBold ? 'active' : ''}`}
           onClick={() => formatText('bold')}
           title='Bold'
         >
@@ -90,7 +95,7 @@ export const ToolbarPlugin: React.FC = () => {
         </button>
 
         <button
-          style={isItalic ? button.active : button.default}
+          className={`toolbar-button ${isItalic ? 'active' : ''}`}
           onClick={() => formatText('italic')}
           title='Italic'
         >
@@ -98,7 +103,7 @@ export const ToolbarPlugin: React.FC = () => {
         </button>
 
         <button
-          style={isUnderline ? button.active : button.default}
+          className={`toolbar-button ${isUnderline ? 'active' : ''}`}
           onClick={() => formatText('underline')}
           title='Underline'
         >
@@ -106,24 +111,17 @@ export const ToolbarPlugin: React.FC = () => {
         </button>
 
         <button
-          style={isStrikethrough ? button.active : button.default}
+          className={`toolbar-button ${isStrikethrough ? 'active' : ''}`}
           onClick={() => formatText('strikethrough')}
           title='Strikethrough'
         >
           <s>S</s>
         </button>
 
-        <div
-          style={{
-            width: '1px',
-            height: '24px',
-            backgroundColor: '#ccc',
-            margin: '0 4px',
-          }}
-        />
+        <div className="toolbar-separator" />
 
         <button
-          style={button.default}
+          className="toolbar-button"
           onClick={() =>
             editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
           }
@@ -133,7 +131,7 @@ export const ToolbarPlugin: React.FC = () => {
         </button>
 
         <button
-          style={button.default}
+          className="toolbar-button"
           onClick={() =>
             editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
           }
@@ -142,8 +140,10 @@ export const ToolbarPlugin: React.FC = () => {
           1.
         </button>
 
+        <div className="toolbar-separator" />
+
         <button
-          style={button.default}
+          className="toolbar-button"
           onClick={handleLinkClick}
           title='Insert Link'
         >
@@ -158,15 +158,15 @@ export const ToolbarPlugin: React.FC = () => {
           initialText={linkData.text}
           initialUrl={linkData.url}
         />
-
-        <div
-          style={{
-            width: '1px',
-            height: '24px',
-            backgroundColor: '#ccc',
-            margin: '0 4px',
-          }}
-        />
+      </div>
+      
+      <div className="toolbar-right">
+        <button 
+          className="toolbar-send-button"
+          onClick={handleSend}
+        >
+          Send
+        </button>
       </div>
     </div>
   );

@@ -155,24 +155,40 @@ const LinkButton: React.FC = () => {
 }
 
 export const Toolbar: React.FC = () => {
+  const handleSend = () => {
+    // TODO: Implement send functionality
+    console.log('Send clicked');
+  };
+
   return (
     <div className="toolbar">
-      {/* Text formatting */}
-      <MarkButton format="bold" icon="B" />
-      <MarkButton format="italic" icon="I" />
-      <MarkButton format="underline" icon="U" />
-      <MarkButton format="strikethrough" icon="S" />
+      <div className="toolbar-left">
+        {/* Text formatting */}
+        <MarkButton format="bold" icon="B" />
+        <MarkButton format="italic" icon="I" />
+        <MarkButton format="underline" icon="U" />
+        <MarkButton format="strikethrough" icon="S" />
+        
+        <div className="toolbar-separator" />
+        
+        {/* Lists */}
+        <BlockButton format="bulleted-list" icon="•" />
+        <BlockButton format="numbered-list" icon="1." />
+        
+        <div className="toolbar-separator" />
+        
+        {/* Link - will trigger popup */}
+        <LinkButton />
+      </div>
       
-      <div className="toolbar-separator" />
-      
-      {/* Lists */}
-      <BlockButton format="bulleted-list" icon="•" />
-      <BlockButton format="numbered-list" icon="1." />
-      
-      <div className="toolbar-separator" />
-      
-      {/* Link - will trigger popup */}
-      <LinkButton />
+      <div className="toolbar-right">
+        <button 
+          className="toolbar-send-button"
+          onClick={handleSend}
+        >
+          Send
+        </button>
+      </div>
     </div>
   )
 }

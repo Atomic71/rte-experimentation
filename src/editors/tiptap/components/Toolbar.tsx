@@ -1,17 +1,17 @@
-import React, { useState } from 'react'
-import { Editor } from '@tiptap/react'
-import { LinkPopup } from '../../common/LinkPopup'
+import React, { useState } from 'react';
+import { Editor } from '@tiptap/react';
+import { LinkPopup } from '../../common/LinkPopup';
 
 interface ToolbarProps {
-  editor: Editor
+  editor: Editor;
 }
 
 const ToolbarButton: React.FC<{
-  onClick: () => void
-  isActive?: boolean
-  disabled?: boolean
-  title: string
-  children: React.ReactNode
+  onClick: () => void;
+  isActive?: boolean;
+  disabled?: boolean;
+  title: string;
+  children: React.ReactNode;
 }> = ({ onClick, isActive, disabled, title, children }) => (
   <button
     onClick={onClick}
@@ -21,125 +21,158 @@ const ToolbarButton: React.FC<{
   >
     {children}
   </button>
-)
+);
 
 export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
-  const [showLinkPopup, setShowLinkPopup] = useState(false)
-  const [linkData, setLinkData] = useState({ text: '', url: '' })
+  const [showLinkPopup, setShowLinkPopup] = useState(false);
+  const [linkData, setLinkData] = useState({ text: '', url: '' });
 
   const handleLinkClick = () => {
-    const { href } = editor.getAttributes('link')
+    const { href } = editor.getAttributes('link');
     const selectedText = editor.state.doc.textBetween(
       editor.state.selection.from,
       editor.state.selection.to,
       ' '
-    )
+    );
 
     if (href) {
       // Editing existing link
       setLinkData({
         text: selectedText || href,
-        url: href
-      })
+        url: href,
+      });
     } else {
       // Creating new link
       setLinkData({
         text: selectedText,
-        url: ''
-      })
+        url: '',
+      });
     }
 
-    setShowLinkPopup(true)
-  }
+    setShowLinkPopup(true);
+  };
 
   const handleSaveLink = (text: string, url: string) => {
     if (url) {
       // If we have selected text, just add the link
       if (editor.state.selection.from !== editor.state.selection.to) {
-        editor.chain().focus().setLink({ href: url }).run()
+        editor.chain().focus().setLink({ href: url }).run();
       } else {
         // Insert text with link
-        editor.chain().focus().insertContent(`<a href="${url}">${text}</a>`).run()
+        editor
+          .chain()
+          .focus()
+          .insertContent(`<a href="${url}">${text}</a>`)
+          .run();
       }
     }
-  }
+  };
 
   const handleRemoveLink = () => {
-    editor.chain().focus().unsetLink().run()
-  }
+    editor.chain().focus().unsetLink().run();
+  };
+
+  const handleSend = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    // TODO: Implement send functionality
+    console.log('Send clicked');
+  };
+
+  const handleSendMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // Prevent keyboard dismissal on mobile devices
+    e.preventDefault();
+  };
+
+  const handleSendPointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
+    // Prevent keyboard dismissal for pointer events (touch, stylus, mouse)
+    e.preventDefault();
+  };
+
+  const handleSendTouchStart = (e: React.TouchEvent<HTMLButtonElement>) => {
+    // Prevent keyboard dismissal for touch events
+    e.preventDefault();
+  };
 
   return (
-    <div className="tiptap-toolbar">
-      <div className="toolbar-group">
+    <div className='toolbar'>
+      <div className='toolbar-left'>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           isActive={editor.isActive('bold')}
-          title="Bold (Cmd+B)"
+          title='Bold (Cmd+B)'
         >
           <strong>B</strong>
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleItalic().run()}
           isActive={editor.isActive('italic')}
-          title="Italic (Cmd+I)"
+          title='Italic (Cmd+I)'
         >
           <em>I</em>
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleUnderline().run()}
           isActive={editor.isActive('underline')}
-          title="Underline (Cmd+U)"
+          title='Underline (Cmd+U)'
         >
           <u>U</u>
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleStrike().run()}
           isActive={editor.isActive('strike')}
-          title="Strikethrough"
+          title='Strikethrough'
         >
           <s>S</s>
         </ToolbarButton>
-      </div>
-      
-      <div className="toolbar-separator" />
 
-      <div className="toolbar-group">
+        <div className='toolbar-separator' />
+
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           isActive={editor.isActive('bulletList')}
-          title="Bullet List"
+          title='Bullet List'
         >
           •
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           isActive={editor.isActive('orderedList')}
-          title="Numbered List"
+          title='Numbered List'
         >
           1.
         </ToolbarButton>
-      </div>
-      
-      <div className="toolbar-separator" />
-      
-      <div className="toolbar-group">
-        <ToolbarButton 
-          onClick={handleLinkClick} 
+
+        <div className='toolbar-separator' />
+
+        <ToolbarButton
+          onClick={handleLinkClick}
           isActive={editor.isActive('link')}
-          title="Link"
+          title='Link'
         >
           🔗
         </ToolbarButton>
+
+        <LinkPopup
+          isOpen={showLinkPopup}
+          onClose={() => setShowLinkPopup(false)}
+          onSave={handleSaveLink}
+          onRemove={handleRemoveLink}
+          initialText={linkData.text}
+          initialUrl={linkData.url}
+        />
       </div>
 
-      <LinkPopup
-        isOpen={showLinkPopup}
-        onClose={() => setShowLinkPopup(false)}
-        onSave={handleSaveLink}
-        onRemove={handleRemoveLink}
-        initialText={linkData.text}
-        initialUrl={linkData.url}
-      />
+      <div className='toolbar-right'>
+        <button
+          className='toolbar-send-button'
+          onMouseDown={handleSendMouseDown}
+          onPointerDown={handleSendPointerDown}
+          onTouchStart={handleSendTouchStart}
+          onClick={handleSend}
+        >
+          Send
+        </button>
+      </div>
     </div>
-  )
-}
+  );
+};

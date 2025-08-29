@@ -170,10 +170,10 @@ const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
 
     return (
       <div className="tiptap-editor-container">
-        <Toolbar editor={editor} />
         <div className="tiptap-editor-content">
           <EditorContent editor={editor} />
         </div>
+        <Toolbar editor={editor} />
       </div>
     )
   }
