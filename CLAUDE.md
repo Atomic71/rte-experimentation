@@ -16,7 +16,6 @@ npm run lint
 
 # Production builds
 npm run build        # Full build: tsc + vite + HTML export
-npm run build:web    # Web only: vite + HTML export
 npm run build:lib    # Library only: tsc with lib config
 
 # Package management for local development
@@ -26,34 +25,36 @@ npm run link:local      # Build library and push to linked projects
 
 ## Architecture Overview
 
-Rich text editor playground with multiple implementations (Slate.js, Lexical, and TipTap) and WebView communication API for React Native integration.
+Rich text editor built with TipTap and WebView communication API for React Native integration.
 
 ### Key Architecture Concepts
 
-- **Triple Editor Support**: [Slate.js](src/editors/slate/), [Lexical](src/editors/lexical/), and [TipTap](src/editors/tiptap/) implementations
-- **WebView API**: All editors implement the same message protocol for React Native WebView communication
-- **Editor Selection**: Via URL parameters (`?editor=slate`, `?editor=lexical`, or `?editor=tiptap`) or path-based routing
-- **Shared Bridge**: Common WebView communication layer in [`/src/editors/common/webview-bridge.ts`](src/editors/common/webview-bridge.ts)
+- **TipTap Editor**: Modern, extensible rich text editor framework
+- **WebView API**: Message protocol for React Native WebView communication
+- **Direct Routing**: TipTap editor served directly at root path (`/`)
+- **WebView Bridge**: Communication layer in [`/src/tiptap/webview-bridge.ts`](src/tiptap/webview-bridge.ts)
 
 ### Directory Structure
 
 ```
 src/
-├── editors/
-│   ├── common/          # Shared WebView bridge and types
-│   ├── slate/           # Slate.js implementation with plugins
-│   ├── lexical/         # Lexical implementation with plugins
-│   └── tiptap/          # TipTap implementation with extensions
+├── tiptap/              # TipTap editor implementation
+│   ├── components/      # UI components (Toolbar, MentionList, LinkPopup)
+│   ├── extensions/      # TipTap extensions (mentions)
+│   ├── styles/          # CSS styles
+│   ├── webview-bridge.ts       # WebView communication
+│   ├── TipTapEditor.tsx        # Main editor component
+│   └── TipTapEditorWrapper.ts  # WebView integration wrapper
 ├── data/                # Static data (users for mentions)
-└── routes/              # App routing
+└── App.tsx              # Root app component
 ```
 
 ### WebView Integration
 
-The primary use case is React Native WebView integration. The built [`dist/index.html`](dist/index.html) file can be loaded in a WebView with editor selection via URL parameters. All editors implement the same message protocol:
+The primary use case is React Native WebView integration. The built [`dist/index.html`](dist/index.html) file can be loaded in a WebView. The editor implements this message protocol:
 
-- **Web → React Native**: `READY`, `CHANGE`, `GET_CONTENT`, `EXPORT_HTML`, `ERROR`
-- **React Native → Web**: `SET_CONTENT`, `COMMAND`, `GET_CONTENT`, `EXPORT_HTML`, `IMPORT_HTML`
+- **Web → React Native**: `READY`, `CHANGE`, `GET_CONTENT`, `EXPORT_HTML`, `ERROR`, `MENTION_QUERY`, `MENTION_SELECT`
+- **React Native → Web**: `SET_CONTENT`, `EXECUTE_COMMAND`, `GET_CONTENT`, `EXPORT_HTML`, `IMPORT_HTML`, `MENTION_RESULTS`, `SET_MENTIONS_CONFIG`
 
 ### Build Outputs
 
@@ -64,8 +65,9 @@ The primary use case is React Native WebView integration. The built [`dist/index
 ### Key Features
 
 - RTL/LTR text direction support
-- Rich text formatting (bold, italic, underline, etc.)
+- Rich text formatting (bold, italic, underline, strikethrough)
+- Headings and lists
 - Mentions support with dropdown
 - Link insertion and editing
 - HTML import/export
-- Consistent API across editor types
+- Extensible plugin system

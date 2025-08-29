@@ -6,15 +6,22 @@
 
 .toolbar {
   display: flex;
-  gap: 4px;
-  padding: 8px 12px;
-  background: #f5f5f5;
-  border-bottom: 1px solid #e0e0e0;
+  justify-content: space-between;
   align-items: center;
+  gap: 8px;
+  padding: 16px 0px 12px 0px;
+  background: white;
   flex-shrink: 0;
   position: sticky;
-  top: 0;
+  bottom: 0;
   z-index: 10;
+}
+
+.toolbar-left {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex: 1;
   overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
@@ -22,22 +29,28 @@
   scrollbar-width: thin;
 }
 
-.toolbar::-webkit-scrollbar {
+.toolbar-left::-webkit-scrollbar {
   height: 4px;
 }
 
-.toolbar::-webkit-scrollbar-track {
+.toolbar-left::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
 
-.toolbar::-webkit-scrollbar-thumb {
+.toolbar-left::-webkit-scrollbar-thumb {
   background: #c1c1c1;
   border-radius: 2px;
 }
 
-.toolbar::-webkit-scrollbar-thumb:hover {
+.toolbar-left::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
+
+.toolbar-right {
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
 
 .toolbar-button {
   display: flex;
@@ -46,7 +59,7 @@
   width: 32px;
   height: 32px;
   min-width: 32px;
-  border: 1px solid #d0d0d0;
+  border: none;
   background: white;
   border-radius: 4px;
   cursor: pointer;
@@ -59,18 +72,15 @@
 
 .toolbar-button:hover {
   background: #f0f0f0;
-  border-color: #a0a0a0;
 }
 
 .toolbar-button.active {
   background: #2196f3;
   color: white;
-  border-color: #2196f3;
 }
 
 .toolbar-button.active:hover {
   background: #1976d2;
-  border-color: #1976d2;
 }
 
 .toolbar-separator {
@@ -78,6 +88,31 @@
   height: 24px;
   background: #d0d0d0;
   margin: 0 4px;
+}
+
+.toolbar-send-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  transition: all 0.2s;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.toolbar-send-button:hover {
+  background: #1976d2;
+}
+
+.toolbar-send-button:active {
+  background: #1565c0;
 }
 
 .editor {
