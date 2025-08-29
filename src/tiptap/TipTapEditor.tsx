@@ -4,6 +4,7 @@ import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
+import TextDirection from 'tiptap-text-direction'
 import { EditorContent as EditorContentType, EditorCommand } from './webview-bridge'
 import { Toolbar } from './components/Toolbar'
 import { configureMention } from './extensions/configureMention'
@@ -40,6 +41,10 @@ const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
         }),
         Placeholder.configure({
           placeholder: placeholder || 'Start typing...',
+        }),
+        TextDirection.configure({
+          types: ['heading', 'paragraph'],
+          defaultDirection: null, // Auto-detect direction based on content
         }),
         configureMention(),
       ],
@@ -123,6 +128,16 @@ const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
           
           undo: () => chain.undo().run(),
           redo: () => chain.redo().run(),
+          
+          setTextDirection: () => {
+            if (command.value === 'rtl') {
+              return editor.commands.setTextDirection('rtl')
+            } else if (command.value === 'ltr') {
+              return editor.commands.setTextDirection('ltr')
+            } else if (command.value === 'auto' || command.value === null) {
+              return editor.commands.unsetTextDirection()
+            }
+          },
           
         }
 

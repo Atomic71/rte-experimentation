@@ -289,7 +289,13 @@ class TipTapWebViewBridge {
 declare global {
   interface Window {
     ReactNativeWebView?: ReactNativeWebView;
+    webViewBridge?: TipTapWebViewBridge;
   }
 }
 
 export const webViewBridge = new TipTapWebViewBridge();
+
+// Expose for debugging
+if (typeof window !== 'undefined') {
+  window.webViewBridge = webViewBridge;
+}

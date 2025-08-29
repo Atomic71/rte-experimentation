@@ -4,13 +4,18 @@ import tippy, { Instance as TippyInstance } from 'tippy.js'
 import { MentionList } from '../components/MentionList'
 import { webViewBridge, MentionUser } from '../webview-bridge'
 
-export function configureMention() {
-  let resolveSearch: ((users: MentionUser[]) => void) | null = null
-  let mentionsEnabled = true
-  let pendingQueries = new Map<string, (users: MentionUser[]) => void>()
+// Move these outside the function to persist across reconfigurations
+type MentionResolver = ((users: MentionUser[]) => void) & { timeoutId?: number }
+let resolveSearch: MentionResolver | null = null
+let mentionsEnabled = true
+let pendingQueries = new Map<string, MentionResolver>()
+let callbacksSetUp = false
 
-  // Listen for results from RN
-  webViewBridge.callbacks.onMentionResults = (users) => {
+export function configureMention() {
+  // Only set up callbacks once to prevent multiple initialization
+  if (!callbacksSetUp) {
+    // Listen for results from RN
+    webViewBridge.callbacks.onMentionResults = (users) => {
     webViewBridge.postMessage('DEBUG', { 
       step: 'tiptap_received_mention_results',
       users,
@@ -21,6 +26,10 @@ export function configureMention() {
     // Try current resolveSearch first
     if (resolveSearch) {
       webViewBridge.postMessage('DEBUG', { step: 'resolving_via_current_callback' })
+      // Clear timeout if it exists
+      if (resolveSearch.timeoutId) {
+        clearTimeout(resolveSearch.timeoutId)
+      }
       resolveSearch(users)
       resolveSearch = null
     } 
@@ -28,6 +37,10 @@ export function configureMention() {
     else if (pendingQueries.size > 0) {
       const [firstQuery, resolve] = Array.from(pendingQueries.entries())[0]
       webViewBridge.postMessage('DEBUG', { step: 'resolving_via_pending_queries', query: firstQuery })
+      // Clear timeout if it exists
+      if (resolve.timeoutId) {
+        clearTimeout(resolve.timeoutId)
+      }
       resolve(users)
       pendingQueries.delete(firstQuery)
     } else {
@@ -35,12 +48,14 @@ export function configureMention() {
     }
   }
   
-  webViewBridge.postMessage('DEBUG', { step: 'tiptap_mention_callback_setup_complete' })
-
   // Listen for config updates
   webViewBridge.callbacks.onMentionsConfigUpdate = (config) => {
     mentionsEnabled = config.enabled
     // Could also update other settings like debounce, triggers, etc
+  }
+  
+    webViewBridge.postMessage('DEBUG', { step: 'tiptap_mention_callback_setup_complete' })
+    callbacksSetUp = true
   }
 
   return Mention.configure({
@@ -71,19 +86,25 @@ export function configureMention() {
         // Wait for results with configured timeout
         return new Promise<MentionUser[]>((resolve) => {
           webViewBridge.postMessage('DEBUG', { step: 'setting_up_promise', query })
-          resolveSearch = resolve
-          pendingQueries.set(query, resolve)
+          const mentionResolver = resolve as MentionResolver
+          resolveSearch = mentionResolver
+          pendingQueries.set(query, mentionResolver)
           
           // Timeout fallback
-          setTimeout(() => {
-            if (resolveSearch === resolve) {
+          const timeoutId = setTimeout(() => {
+            if (resolveSearch === mentionResolver) {
               webViewBridge.postMessage('DEBUG', { step: 'mention_query_timeout', query })
               resolve([])
               resolveSearch = null
             }
-            // Clean up pending query
-            pendingQueries.delete(query)
-          }, 1000)
+            // Clean up pending query only if it matches
+            if (pendingQueries.get(query) === mentionResolver) {
+              pendingQueries.delete(query)
+            }
+          }, 3000) // Increase timeout to 3 seconds for testing
+          
+          // Store timeout ID for potential cleanup
+          mentionResolver.timeoutId = timeoutId as unknown as number
         })
       },
 

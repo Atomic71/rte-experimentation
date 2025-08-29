@@ -71,7 +71,7 @@ export class TipTapEditorWrapper {
     this.editorRef = null;
   }
 
-  notifyContentChange(content: EditorContent): void {
+  notifyContentChange(_content: EditorContent): void {
     // webViewBridge.postMessage('CHANGE', content);
   }
 
