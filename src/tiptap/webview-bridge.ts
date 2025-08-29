@@ -51,6 +51,7 @@ export interface WebViewMessage {
     | 'MENTION_RESULTS'
     | 'MENTION_SELECT'
     | 'SET_MENTIONS_CONFIG'
+    | 'SEND'
     | 'DEBUG';
   payload?: any;
   timestamp?: number;
@@ -76,6 +77,7 @@ class TipTapWebViewBridge {
   public callbacks: EditorCallbacks = {};
   private isReactNative: boolean = false;
   private messageListener?: () => void;
+  private isDebugMode: boolean = false;
   private mentionsConfig: MentionsConfig = {
     enabled: true,
     allowedTriggers: ['@'],
@@ -85,6 +87,7 @@ class TipTapWebViewBridge {
 
   constructor() {
     this.isReactNative = !!window.ReactNativeWebView;
+    this.isDebugMode = new URLSearchParams(window.location.search).get('debug') === 'true';
     this.setupMessageListener();
   }
 
@@ -114,13 +117,13 @@ class TipTapWebViewBridge {
 
   private setupMessageListener() {
     const handleMessage = (event: MessageEvent) => {
-      this.postMessage('DEBUG', { step: 'received_message', data: event.data });
+      this.postDebugMessage({ step: 'received_message', data: event.data });
       try {
         const message = this.parseMessage(event);
-        this.postMessage('DEBUG', { step: 'parsed_message', message });
+        this.postDebugMessage({ step: 'parsed_message', message });
         this.handleIncomingMessage(message);
       } catch (error) {
-        this.postMessage('DEBUG', {
+        this.postDebugMessage({
           step: 'parse_error',
           error: error instanceof Error ? error.message : String(error),
         });
@@ -149,7 +152,7 @@ class TipTapWebViewBridge {
   }
 
   private handleIncomingMessage(message: WebViewMessage) {
-    this.postMessage('DEBUG', {
+    this.postDebugMessage({
       step: 'handling_message',
       type: message.type,
       payload: message.payload,
@@ -183,7 +186,7 @@ class TipTapWebViewBridge {
         break;
 
       case 'MENTION_RESULTS':
-        this.postMessage('DEBUG', {
+        this.postDebugMessage({
           step: 'processing_mention_results',
           users: message.payload?.users,
           callbackExists: !!this.callbacks.onMentionResults,
@@ -196,7 +199,7 @@ class TipTapWebViewBridge {
         break;
 
       default:
-        this.postMessage('DEBUG', {
+        this.postDebugMessage({
           step: 'unknown_message_type',
           type: message.type,
         });
@@ -219,6 +222,12 @@ class TipTapWebViewBridge {
       }
     } else {
       console.log('[TipTap] WebView Message:', message);
+    }
+  }
+
+  private postDebugMessage(payload: any) {
+    if (this.isDebugMode) {
+      this.postMessage('DEBUG', payload);
     }
   }
 
@@ -270,6 +279,10 @@ class TipTapWebViewBridge {
 
   sendHTML(html: string) {
     this.postMessage('EXPORT_HTML', { html });
+  }
+
+  send(html: string) {
+    this.postMessage('SEND', { html });
   }
 }
 

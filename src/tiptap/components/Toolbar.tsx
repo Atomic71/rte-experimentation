@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Editor } from '@tiptap/react';
 import { LinkPopup } from './LinkPopup';
+import { webViewBridge } from '../webview-bridge';
 
 interface ToolbarProps {
   editor: Editor;
@@ -70,8 +71,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
 
   const handleSend = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    // TODO: Implement send functionality
-    console.log('Send clicked');
+    const html = editor.getHTML();
+    webViewBridge.send(html);
   };
 
   const handleSendMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
