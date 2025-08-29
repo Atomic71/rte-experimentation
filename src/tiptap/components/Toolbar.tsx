@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Editor } from '@tiptap/react';
-import { LinkPopup } from '../../common/LinkPopup';
+import { LinkPopup } from './LinkPopup';
+import { webViewBridge } from '../webview-bridge';
 
 interface ToolbarProps {
   editor: Editor;
@@ -68,14 +69,10 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
     }
   };
 
-  const handleRemoveLink = () => {
-    editor.chain().focus().unsetLink().run();
-  };
-
   const handleSend = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    // TODO: Implement send functionality
-    console.log('Send clicked');
+    const html = editor.getHTML();
+    webViewBridge.send(html);
   };
 
   const handleSendMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -155,11 +152,33 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
         <LinkPopup
           isOpen={showLinkPopup}
           onClose={() => setShowLinkPopup(false)}
-          onSave={handleSaveLink}
-          onRemove={handleRemoveLink}
-          initialText={linkData.text}
+          onSubmit={(url) => handleSaveLink(linkData.text, url)}
           initialUrl={linkData.url}
         />
+
+        <div className='toolbar-separator' />
+
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setTextDirection('ltr').run()}
+          isActive={false}
+          title='Left-to-Right (Ctrl+Alt+L)'
+        >
+          LTR
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setTextDirection('rtl').run()}
+          isActive={false}
+          title='Right-to-Left (Ctrl+Alt+R)'
+        >
+          RTL
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().unsetTextDirection().run()}
+          isActive={false}
+          title='Auto-detect direction'
+        >
+          Auto
+        </ToolbarButton>
       </div>
 
       <div className='toolbar-right'>

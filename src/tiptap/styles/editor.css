@@ -237,6 +237,54 @@
   direction: ltr;
 }
 
+/* RTL specific adjustments for all block elements */
+.tiptap-editor-content .ProseMirror p[dir="rtl"],
+.tiptap-editor-content .ProseMirror h1[dir="rtl"],
+.tiptap-editor-content .ProseMirror h2[dir="rtl"],
+.tiptap-editor-content .ProseMirror h3[dir="rtl"],
+.tiptap-editor-content .ProseMirror h4[dir="rtl"],
+.tiptap-editor-content .ProseMirror h5[dir="rtl"],
+.tiptap-editor-content .ProseMirror h6[dir="rtl"] {
+  text-align: right;
+}
+
+.tiptap-editor-content .ProseMirror p[dir="ltr"],
+.tiptap-editor-content .ProseMirror h1[dir="ltr"],
+.tiptap-editor-content .ProseMirror h2[dir="ltr"],
+.tiptap-editor-content .ProseMirror h3[dir="ltr"],
+.tiptap-editor-content .ProseMirror h4[dir="ltr"],
+.tiptap-editor-content .ProseMirror h5[dir="ltr"],
+.tiptap-editor-content .ProseMirror h6[dir="ltr"] {
+  text-align: left;
+}
+
+/* RTL list adjustments */
+.tiptap-editor-content .ProseMirror ul[dir="rtl"],
+.tiptap-editor-content .ProseMirror ol[dir="rtl"] {
+  padding-right: 1.5em;
+  padding-left: 0;
+}
+
+.tiptap-editor-content .ProseMirror ul[dir="ltr"],
+.tiptap-editor-content .ProseMirror ol[dir="ltr"] {
+  padding-left: 1.5em;
+  padding-right: 0;
+}
+
+/* RTL blockquote adjustments */
+.tiptap-editor-content .ProseMirror blockquote[dir="rtl"] {
+  border-left: none;
+  border-right: 4px solid #e2e8f0;
+  padding-left: 0;
+  padding-right: 1em;
+}
+
+/* Auto-detection support */
+.tiptap-editor-content .ProseMirror [dir="auto"] {
+  direction: auto;
+  text-align: start;
+}
+
 /* Link styles */
 .tiptap-editor-content .ProseMirror a {
   color: #3182ce;

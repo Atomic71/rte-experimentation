@@ -1,1 +1,0 @@
-export { LexicalEditor, LexicalEditorWrapper } from './LexicalEditor'

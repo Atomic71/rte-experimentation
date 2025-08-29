@@ -13,13 +13,6 @@
     "link:local": "npm run build:lib && yalc publish --private --push"
   },
   "dependencies": {
-    "@lexical/code": "^0.34.0",
-    "@lexical/html": "^0.34.0",
-    "@lexical/link": "^0.34.0",
-    "@lexical/list": "^0.34.0",
-    "@lexical/react": "^0.34.0",
-    "@lexical/rich-text": "^0.34.0",
-    "@lexical/selection": "^0.34.0",
     "@tippyjs/react": "^4.2.6",
     "@tiptap/extension-bubble-menu": "^3.3.0",
     "@tiptap/extension-floating-menu": "^3.3.0",
@@ -30,16 +23,10 @@
     "@tiptap/react": "^3.3.0",
     "@tiptap/starter-kit": "^3.3.0",
     "@tiptap/suggestion": "^3.3.0",
-    "highlight.js": "^11.11.1",
-    "lexical": "^0.34.0",
-    "lexical-beautiful-mentions": "^0.1.48",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "slate": "^0.118.0",
-    "slate-dom": "^0.117.4",
-    "slate-history": "^0.113.1",
-    "slate-react": "^0.117.4",
     "tippy.js": "^6.3.7",
+    "tiptap-text-direction": "^0.3.2",
     "yalc": "^1.0.0-pre.53"
   },
   "devDependencies": {
@@ -74,6 +61,16 @@
       "types": "./dist/utils.d.ts",
       "import": "./dist/utils.js",
       "require": "./dist/utils.js"
+    }
+  },
+  "overrides": {
+    "tiptap-text-direction": {
+      "@tiptap/core": "^3.3.0"
+    }
+  },
+  "peerDependenciesMeta": {
+    "@tiptap/core": {
+      "optional": true
     }
   }
 }
