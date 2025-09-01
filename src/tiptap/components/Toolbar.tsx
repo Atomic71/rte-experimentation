@@ -13,16 +13,24 @@ const ToolbarButton: React.FC<{
   disabled?: boolean;
   title: string;
   children: React.ReactNode;
-}> = ({ onClick, isActive, disabled, title, children }) => (
-  <button
-    onClick={onClick}
-    className={`toolbar-button ${isActive ? 'active' : ''}`}
-    disabled={disabled}
-    title={title}
-  >
-    {children}
-  </button>
-);
+}> = ({ onClick, isActive, disabled, title, children }) => {
+  // Prevent default click event in order to keep the keyboard open on mobile devices
+  const preventDefault = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+  };
+  return (
+    <button
+      onClick={onClick}
+      onMouseDown={preventDefault}
+      onPointerDown={preventDefault}
+      className={`toolbar-button ${isActive ? 'active' : ''}`}
+      disabled={disabled}
+      title={title}
+    >
+      {children}
+    </button>
+  );
+};
 
 export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
   const [showLinkPopup, setShowLinkPopup] = useState(false);

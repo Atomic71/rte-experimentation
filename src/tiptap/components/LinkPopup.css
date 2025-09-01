@@ -1,0 +1,114 @@
+@keyframes slideFromTop {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.link-popup-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideFromTop 0.3s ease-out;
+}
+
+.link-popup-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.link-popup-form {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  justify-content: center;
+}
+
+.link-popup-scroll-container {
+  flex: 1;
+  overflow: scroll;
+}
+
+.link-popup-field-container {
+  margin-bottom: 8px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.link-popup-field-container-last {
+  margin-bottom: 12px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.link-popup-label {
+  display: block;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.link-popup-label-url {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.link-popup-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.link-popup-button-container {
+  display: flex;
+  gap: 12px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.link-popup-cancel-button {
+  flex: 1;
+  padding: 6px;
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.link-popup-submit-button {
+  flex: 1;
+  padding: 6px;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 500;
+}

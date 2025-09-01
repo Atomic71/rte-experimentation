@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import validator from 'validator';
+import './LinkPopup.css';
 
 interface LinkPopupProps {
   isOpen: boolean;
@@ -34,8 +36,11 @@ export const LinkPopup: React.FC<LinkPopupProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (url && text) {
+    if (url && text && validator.isURL(url, { require_protocol: false })) {
       onSubmit(url, text);
+      // Clear the form after successful submission
+      setUrl('');
+      setText('');
     }
     onClose();
   };
@@ -49,145 +54,62 @@ export const LinkPopup: React.FC<LinkPopupProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div
-      className='link-popup-fullscreen'
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: 'white',
-        zIndex: 9999,
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      <div
-        style={{
-          flex: 1,
-          padding: '20px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          maxWidth: '100%',
-        }}
-      >
-        <h3
-          style={{
-            margin: '0 0 20px 0',
-            fontSize: '16px',
-            fontWeight: '600',
-            textAlign: 'center',
-          }}
-        >
-          Insert Link
-        </h3>
-
+    <div className='link-popup-fullscreen'>
+      <div className='link-popup-container'>
         <form
           onSubmit={handleSubmit}
-          style={{ width: '100%' }}
+          className='link-popup-form'
         >
-          <div style={{ marginBottom: '16px' }}>
-            <label
-              htmlFor='link-text'
-              style={{
-                display: 'block',
-                marginBottom: '6px',
-                fontSize: '14px',
-                color: '#666',
-                fontWeight: '500',
-              }}
-            >
-              Text
-            </label>
-            <input
-              id='link-text'
-              type='text'
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder='Enter link text'
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '1px solid #ddd',
-                borderRadius: '6px',
-                fontSize: '16px',
-                boxSizing: 'border-box',
-              }}
-            />
+          <div className='link-popup-scroll-container'>
+            <div className='link-popup-field-container'>
+              <label
+                htmlFor='link-text'
+                className='link-popup-label'
+              >
+                Text
+              </label>
+              <input
+                id='link-text'
+                type='text'
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder='Enter link text'
+                className='link-popup-input'
+              />
+            </div>
+
+            <div className='link-popup-field-container-last'>
+              <label
+                htmlFor='link-url'
+                className='link-popup-label-url'
+              >
+                URL
+              </label>
+              <input
+                id='link-url'
+                ref={urlInputRef}
+                type='text'
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder='https://example.com'
+                className='link-popup-input'
+              />
+            </div>
           </div>
 
-          <div style={{ marginBottom: '24px' }}>
-            <label
-              htmlFor='link-url'
-              style={{
-                display: 'block',
-                marginBottom: '6px',
-                fontSize: '14px',
-                color: '#666',
-                fontWeight: '500',
-              }}
-            >
-              URL
-            </label>
-            <input
-              id='link-url'
-              ref={urlInputRef}
-              type='url'
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder='https://example.com'
-              style={{
-                width: '100%',
-                padding: '12px',
-                border: '1px solid #ddd',
-                borderRadius: '6px',
-                fontSize: '16px',
-                boxSizing: 'border-box',
-              }}
-            />
-          </div>
-
-          <div
-            style={{
-              display: 'flex',
-              gap: '12px',
-              width: '100%',
-            }}
-          >
+          <div className='link-popup-button-container'>
             <button
               type='button'
               onClick={onClose}
-              style={{
-                flex: 1,
-                padding: '10px',
-                background: '#f5f5f5',
-                color: '#333',
-                border: '1px solid #ddd',
-                borderRadius: '6px',
-                fontSize: '14px',
-                cursor: 'pointer',
-                fontWeight: '500',
-              }}
+              className='link-popup-cancel-button'
             >
               Cancel
             </button>
             <button
               type='submit'
-              style={{
-                flex: 1,
-                padding: '10px',
-                background: '#2196f3',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                fontSize: '14px',
-                cursor: 'pointer',
-                fontWeight: '500',
-              }}
+              className='link-popup-submit-button'
             >
               OK
             </button>
