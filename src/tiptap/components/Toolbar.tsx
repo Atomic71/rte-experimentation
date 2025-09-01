@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
 import { Editor } from '@tiptap/react';
-import { LinkPopup } from './LinkPopup';
+import React, { useState } from 'react';
 import { webViewBridge } from '../webview-bridge';
+import { LinkPopup } from './LinkPopup';
 
 interface ToolbarProps {
   editor: Editor;
@@ -155,30 +155,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
           onSubmit={(url) => handleSaveLink(linkData.text, url)}
           initialUrl={linkData.url}
         />
-
-        <div className='toolbar-separator' />
-
-        <ToolbarButton
-          onClick={() => editor.chain().focus().setTextDirection('ltr').run()}
-          isActive={false}
-          title='Left-to-Right (Ctrl+Alt+L)'
-        >
-          LTR
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().setTextDirection('rtl').run()}
-          isActive={false}
-          title='Right-to-Left (Ctrl+Alt+R)'
-        >
-          RTL
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().unsetTextDirection().run()}
-          isActive={false}
-          title='Auto-detect direction'
-        >
-          Auto
-        </ToolbarButton>
       </div>
 
       <div className='toolbar-right'>
