@@ -122,25 +122,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
           <s>S</s>
         </ToolbarButton>
 
-        <div className='toolbar-separator' />
-
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          isActive={editor.isActive('bulletList')}
-          title='Bullet List'
-        >
-          •
-        </ToolbarButton>
-        <ToolbarButton
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          isActive={editor.isActive('orderedList')}
-          title='Numbered List'
-        >
-          1.
-        </ToolbarButton>
-
-        <div className='toolbar-separator' />
-
         <ToolbarButton
           onClick={handleLinkClick}
           isActive={editor.isActive('link')}
