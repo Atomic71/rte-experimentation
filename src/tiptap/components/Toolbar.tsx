@@ -53,7 +53,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
     setShowLinkPopup(true);
   };
 
-  const handleSaveLink = (text: string, url: string) => {
+  const handleSaveLink = (url: string, text: string) => {
     if (url) {
       // If we have selected text, just add the link
       if (editor.state.selection.from !== editor.state.selection.to) {
@@ -152,8 +152,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
         <LinkPopup
           isOpen={showLinkPopup}
           onClose={() => setShowLinkPopup(false)}
-          onSubmit={(url) => handleSaveLink(linkData.text, url)}
+          onSubmit={handleSaveLink}
           initialUrl={linkData.url}
+          initialText={linkData.text}
         />
       </div>
 

@@ -3,9 +3,9 @@ import React, { useState, useEffect, useRef } from 'react';
 interface LinkPopupProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (url: string) => void;
+  onSubmit: (url: string, text: string) => void;
   initialUrl?: string;
-  position?: { top: number; left: number };
+  initialText?: string;
 }
 
 export const LinkPopup: React.FC<LinkPopupProps> = ({
@@ -13,26 +13,29 @@ export const LinkPopup: React.FC<LinkPopupProps> = ({
   onClose,
   onSubmit,
   initialUrl = '',
-  position = { top: 0, left: 0 },
+  initialText = '',
 }) => {
   const [url, setUrl] = useState(initialUrl);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [text, setText] = useState(initialText);
+  const urlInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
+    if (isOpen && urlInputRef.current) {
+      setTimeout(() => {
+        urlInputRef.current?.focus();
+      }, 100);
     }
   }, [isOpen]);
 
   useEffect(() => {
     setUrl(initialUrl);
-  }, [initialUrl]);
+    setText(initialText);
+  }, [initialUrl, initialText]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (url) {
-      onSubmit(url);
+    if (url && text) {
+      onSubmit(url, text);
     }
     onClose();
   };
@@ -47,62 +50,150 @@ export const LinkPopup: React.FC<LinkPopupProps> = ({
 
   return (
     <div
-      className="link-popup"
+      className='link-popup-fullscreen'
       style={{
-        position: 'absolute',
-        top: position.top,
-        left: position.left,
-        zIndex: 1000,
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
         background: 'white',
-        border: '1px solid #ddd',
-        borderRadius: '4px',
-        padding: '8px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        zIndex: 9999,
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
-      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px' }}>
-        <input
-          ref={inputRef}
-          type="url"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Enter URL..."
+      <div
+        style={{
+          flex: 1,
+          padding: '20px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          maxWidth: '100%',
+        }}
+      >
+        <h3
           style={{
-            padding: '4px 8px',
-            border: '1px solid #ddd',
-            borderRadius: '2px',
-            minWidth: '250px',
-          }}
-        />
-        <button
-          type="submit"
-          style={{
-            padding: '4px 12px',
-            background: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '2px',
-            cursor: 'pointer',
+            margin: '0 0 20px 0',
+            fontSize: '16px',
+            fontWeight: '600',
+            textAlign: 'center',
           }}
         >
-          Apply
-        </button>
-        <button
-          type="button"
-          onClick={onClose}
-          style={{
-            padding: '4px 12px',
-            background: '#6c757d',
-            color: 'white',
-            border: 'none',
-            borderRadius: '2px',
-            cursor: 'pointer',
-          }}
+          Insert Link
+        </h3>
+
+        <form
+          onSubmit={handleSubmit}
+          style={{ width: '100%' }}
         >
-          Cancel
-        </button>
-      </form>
+          <div style={{ marginBottom: '16px' }}>
+            <label
+              htmlFor='link-text'
+              style={{
+                display: 'block',
+                marginBottom: '6px',
+                fontSize: '14px',
+                color: '#666',
+                fontWeight: '500',
+              }}
+            >
+              Text
+            </label>
+            <input
+              id='link-text'
+              type='text'
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder='Enter link text'
+              style={{
+                width: '100%',
+                padding: '12px',
+                border: '1px solid #ddd',
+                borderRadius: '6px',
+                fontSize: '16px',
+                boxSizing: 'border-box',
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: '24px' }}>
+            <label
+              htmlFor='link-url'
+              style={{
+                display: 'block',
+                marginBottom: '6px',
+                fontSize: '14px',
+                color: '#666',
+                fontWeight: '500',
+              }}
+            >
+              URL
+            </label>
+            <input
+              id='link-url'
+              ref={urlInputRef}
+              type='url'
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder='https://example.com'
+              style={{
+                width: '100%',
+                padding: '12px',
+                border: '1px solid #ddd',
+                borderRadius: '6px',
+                fontSize: '16px',
+                boxSizing: 'border-box',
+              }}
+            />
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              gap: '12px',
+              width: '100%',
+            }}
+          >
+            <button
+              type='button'
+              onClick={onClose}
+              style={{
+                flex: 1,
+                padding: '10px',
+                background: '#f5f5f5',
+                color: '#333',
+                border: '1px solid #ddd',
+                borderRadius: '6px',
+                fontSize: '14px',
+                cursor: 'pointer',
+                fontWeight: '500',
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type='submit'
+              style={{
+                flex: 1,
+                padding: '10px',
+                background: '#2196f3',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '14px',
+                cursor: 'pointer',
+                fontWeight: '500',
+              }}
+            >
+              OK
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
