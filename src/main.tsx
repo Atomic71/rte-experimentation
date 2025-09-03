@@ -1,4 +1,5 @@
 import { createRoot } from 'react-dom/client';
+import '@fontsource/inter';
 import EditorRouter from './App';
 
 const element = document.getElementById('root');

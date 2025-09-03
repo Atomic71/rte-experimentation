@@ -13,6 +13,7 @@
     "link:local": "npm run build:lib && yalc publish --private --push"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.2.6",
     "@tippyjs/react": "^4.2.6",
     "@tiptap/extension-bubble-menu": "^3.3.0",
     "@tiptap/extension-floating-menu": "^3.3.0",

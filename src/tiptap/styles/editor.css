@@ -85,6 +85,7 @@
 .tiptap-editor-content .ProseMirror {
   min-height: 100%;
   outline: none;
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
 .tiptap-editor-content .ProseMirror p {
