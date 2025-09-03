@@ -39,10 +39,9 @@ const App: React.FC = () => {
       <div style={{ flex: 1, height: '100%' }}>
         <TipTapEditor
           ref={editorRef}
-          placeholder='Start typing... Use @ to mention users'
+          placeholder='enter your message here'
           onContentChange={handleContentChange}
           onReady={handleReady}
-          initialContent='<p>Welcome to the <strong>TipTap</strong> editor! Try out the formatting options, mentions with @, and RTL/LTR text direction.</p><p>This is English text (LTR).</p><p>مرحبا بك في محرر النصوص - هذا نص عربي</p><p>שלום עולם - זהו טקסט בעברית</p>'
         />
       </div>
     </div>
