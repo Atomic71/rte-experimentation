@@ -24,7 +24,8 @@ export class TipTapEditorWrapper {
         return this.getContent();
       },
       onExportHTML: () => {
-        return this.exportHTML();
+        const content = this.getContent();
+        return content.data;
       },
     });
 
@@ -48,8 +49,8 @@ export class TipTapEditorWrapper {
   }
 
   exportHTML(): string {
-    if (!this.editorRef) return '';
-    return this.editorRef.exportHTML();
+    const content = this.getContent();
+    return content.data;
   }
 
   clearContent(): void {

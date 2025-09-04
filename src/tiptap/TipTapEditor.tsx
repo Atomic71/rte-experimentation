@@ -1,4 +1,10 @@
-import { useEffect, useImperativeHandle, forwardRef, useCallback, useMemo } from 'react';
+import {
+  useEffect,
+  useImperativeHandle,
+  forwardRef,
+  useCallback,
+  useMemo,
+} from 'react';
 import { EditorContent, useEditor, Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
@@ -6,9 +12,7 @@ import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import TextDirection from 'tiptap-text-direction';
 import { debounce } from 'lodash';
-import {
-  EditorContent as EditorContentType,
-} from './webview-bridge';
+import { EditorContent as EditorContentType } from './webview-bridge';
 import { Toolbar } from './components';
 import { configureMention } from './extensions/configureMention';
 import './styles/editor.css';
@@ -17,7 +21,6 @@ export interface TipTapEditorHandle {
   getContent: () => EditorContentType;
   setContent: (content: EditorContentType) => void;
   clearContent: () => void;
-  exportHTML: () => string;
   getEditor: () => Editor | null;
 }
 
@@ -35,11 +38,12 @@ const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
     ref
   ) => {
     const debouncedContentUpdate = useMemo(
-      () => debounce((htmlContent: string) => {
-        console.log('Debounced editor content (3s delay):', htmlContent);
-        // TODO: In the future, this will be sent to React Native side
-        // to sync the latest version
-      }, 3000),
+      () =>
+        debounce((htmlContent: string) => {
+          console.log('Debounced editor content (3s delay):', htmlContent);
+          // TODO: In the future, this will be sent to React Native side
+          // to sync the latest version
+        }, 3000),
       []
     );
 
@@ -62,14 +66,14 @@ const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
         }),
         configureMention(),
       ],
-      content: initialContent || '<p></p>',
+      content: initialContent,
       editable: !readOnly,
       onUpdate: ({ editor }) => {
         const htmlContent = editor.getHTML();
-        
+
         // Call the debounced function with the latest content
         debouncedContentUpdate(htmlContent);
-        
+
         if (onContentChange) {
           onContentChange({
             format: 'html',
@@ -116,21 +120,15 @@ const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
     }, [editor]);
 
 
-    const exportHTML = useCallback((): string => {
-      return editor?.getHTML() || '';
-    }, [editor]);
-
-
     useImperativeHandle(
       ref,
       () => ({
         getContent,
         setContent,
         clearContent,
-        exportHTML,
         getEditor: () => editor,
       }),
-      [getContent, setContent, clearContent, exportHTML, editor]
+      [getContent, setContent, clearContent, editor]
     );
 
     useEffect(() => {
