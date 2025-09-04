@@ -1,4 +1,4 @@
-import { EditorContent, EditorCommand, webViewBridge } from './webview-bridge';
+import { EditorContent, webViewBridge } from './webview-bridge';
 import type { TipTapEditorHandle } from './TipTapEditor';
 
 export class TipTapEditorWrapper {
@@ -17,17 +17,14 @@ export class TipTapEditorWrapper {
       onSetContent: (content: EditorContent) => {
         this.setContent(content);
       },
+      onClearContent: () => {
+        this.clearContent();
+      },
       onGetContent: () => {
         return this.getContent();
       },
-      onExecuteCommand: (command: EditorCommand) => {
-        this.executeCommand(command);
-      },
       onExportHTML: () => {
         return this.exportHTML();
-      },
-      onImportHTML: (html: string) => {
-        this.importHTML(html);
       },
     });
 
@@ -50,19 +47,14 @@ export class TipTapEditorWrapper {
     this.editorRef.setContent(content);
   }
 
-  executeCommand(command: EditorCommand): void {
-    if (!this.editorRef) return;
-    this.editorRef.executeCommand(command);
-  }
-
   exportHTML(): string {
     if (!this.editorRef) return '';
     return this.editorRef.exportHTML();
   }
 
-  importHTML(html: string): void {
+  clearContent(): void {
     if (!this.editorRef) return;
-    this.editorRef.importHTML(html);
+    this.editorRef.clearContent();
   }
 
   destroy(): void {

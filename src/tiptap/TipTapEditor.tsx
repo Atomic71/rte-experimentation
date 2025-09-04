@@ -1,13 +1,13 @@
-import { useEffect, useImperativeHandle, forwardRef, useCallback } from 'react';
+import { useEffect, useImperativeHandle, forwardRef, useCallback, useMemo } from 'react';
 import { EditorContent, useEditor, Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import TextDirection from 'tiptap-text-direction';
+import { debounce } from 'lodash';
 import {
   EditorContent as EditorContentType,
-  EditorCommand,
 } from './webview-bridge';
 import { Toolbar } from './components/Toolbar';
 import { configureMention } from './extensions/configureMention';
@@ -16,9 +16,8 @@ import './styles/editor.css';
 export interface TipTapEditorHandle {
   getContent: () => EditorContentType;
   setContent: (content: EditorContentType) => void;
-  executeCommand: (command: EditorCommand) => void;
+  clearContent: () => void;
   exportHTML: () => string;
-  importHTML: (html: string) => void;
   getEditor: () => Editor | null;
 }
 
@@ -35,6 +34,15 @@ const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
     { initialContent, placeholder, onContentChange, onReady, readOnly },
     ref
   ) => {
+    const debouncedContentUpdate = useMemo(
+      () => debounce((htmlContent: string) => {
+        console.log('Debounced editor content (3s delay):', htmlContent);
+        // TODO: In the future, this will be sent to React Native side
+        // to sync the latest version
+      }, 3000),
+      []
+    );
+
     const editor = useEditor({
       extensions: [
         StarterKit,
@@ -57,10 +65,15 @@ const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
       content: initialContent || '<p></p>',
       editable: !readOnly,
       onUpdate: ({ editor }) => {
+        const htmlContent = editor.getHTML();
+        
+        // Call the debounced function with the latest content
+        debouncedContentUpdate(htmlContent);
+        
         if (onContentChange) {
           onContentChange({
             format: 'html',
-            data: editor.getHTML(),
+            data: htmlContent,
           });
         }
       },
@@ -97,99 +110,35 @@ const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
       [editor]
     );
 
-    const executeCommand = useCallback(
-      (command: EditorCommand) => {
-        if (!editor) return;
+    const clearContent = useCallback(() => {
+      if (!editor) return;
+      editor.commands.clearContent();
+    }, [editor]);
 
-        const chain = editor.chain().focus();
-
-        const commandMap = {
-          bold: () => chain.toggleBold().run(),
-          italic: () => chain.toggleItalic().run(),
-          underline: () => chain.toggleUnderline().run(),
-          strikethrough: () => chain.toggleStrike().run(),
-
-          heading: () => {
-            const level = command.value?.level || 2;
-            return command.value?.toggle
-              ? chain.toggleHeading({ level }).run()
-              : chain.setHeading({ level }).run();
-          },
-
-          list: () => {
-            if (command.value === 'bullet' || command.value === 'unordered') {
-              return chain.toggleBulletList().run();
-            } else if (
-              command.value === 'ordered' ||
-              command.value === 'numbered'
-            ) {
-              return chain.toggleOrderedList().run();
-            }
-          },
-
-          link: () => {
-            if (command.value?.url) {
-              return chain
-                .extendMarkRange('link')
-                .setLink({ href: command.value.url })
-                .run();
-            } else {
-              return chain.unsetLink().run();
-            }
-          },
-
-          undo: () => chain.undo().run(),
-          redo: () => chain.redo().run(),
-
-          setTextDirection: () => {
-            if (command.value === 'rtl') {
-              return editor.commands.setTextDirection('rtl');
-            } else if (command.value === 'ltr') {
-              return editor.commands.setTextDirection('ltr');
-            } else if (command.value === 'auto' || command.value === null) {
-              return editor.commands.unsetTextDirection();
-            }
-          },
-        };
-
-        const commandHandler =
-          commandMap[command.action as keyof typeof commandMap];
-        if (commandHandler) {
-          commandHandler();
-        }
-      },
-      [editor]
-    );
 
     const exportHTML = useCallback((): string => {
       return editor?.getHTML() || '';
     }, [editor]);
 
-    const importHTML = useCallback(
-      (html: string) => {
-        editor?.commands.setContent(html);
-      },
-      [editor]
-    );
 
     useImperativeHandle(
       ref,
       () => ({
         getContent,
         setContent,
-        executeCommand,
+        clearContent,
         exportHTML,
-        importHTML,
         getEditor: () => editor,
       }),
-      [getContent, setContent, executeCommand, exportHTML, importHTML, editor]
+      [getContent, setContent, clearContent, exportHTML, editor]
     );
 
     useEffect(() => {
       return () => {
+        debouncedContentUpdate.cancel();
         editor?.destroy();
       };
-    }, [editor]);
+    }, [editor, debouncedContentUpdate]);
 
     if (!editor) {
       return null;

@@ -41,11 +41,10 @@ export interface WebViewMessage {
     | 'READY'
     | 'CHANGE'
     | 'SET_CONTENT'
+    | 'CLEAR_CONTENT'
     | 'GET_CONTENT'
-    | 'EXECUTE_COMMAND'
     | 'CONTENT_RESPONSE'
     | 'EXPORT_HTML'
-    | 'IMPORT_HTML'
     | 'ERROR'
     | 'MENTION_QUERY'
     | 'MENTION_RESULTS'
@@ -63,10 +62,9 @@ interface ReactNativeWebView {
 
 export interface EditorCallbacks {
   onSetContent?: (content: EditorContent) => void;
+  onClearContent?: () => void;
   onGetContent?: () => EditorContent;
-  onExecuteCommand?: (command: EditorCommand) => void;
   onExportHTML?: () => string;
-  onImportHTML?: (html: string) => void;
   onError?: (error: string) => void;
   onMentionQuery?: (query: string) => void;
   onMentionResults?: (results: MentionUser[]) => void;
@@ -163,6 +161,10 @@ class TipTapWebViewBridge {
         this.callbacks.onSetContent?.(message.payload);
         break;
 
+      case 'CLEAR_CONTENT':
+        this.callbacks.onClearContent?.();
+        break;
+
       case 'GET_CONTENT':
         const content = this.callbacks.onGetContent?.();
         if (content) {
@@ -170,19 +172,11 @@ class TipTapWebViewBridge {
         }
         break;
 
-      case 'EXECUTE_COMMAND':
-        this.callbacks.onExecuteCommand?.(message.payload);
-        break;
-
       case 'EXPORT_HTML':
         const html = this.callbacks.onExportHTML?.();
         if (html) {
           this.postMessage('EXPORT_HTML', { html });
         }
-        break;
-
-      case 'IMPORT_HTML':
-        this.callbacks.onImportHTML?.(message.payload.html || message.payload);
         break;
 
       case 'MENTION_RESULTS':
