@@ -9,7 +9,7 @@ import { debounce } from 'lodash';
 import {
   EditorContent as EditorContentType,
 } from './webview-bridge';
-import { Toolbar } from './components/Toolbar';
+import { Toolbar } from './components';
 import { configureMention } from './extensions/configureMention';
 import './styles/editor.css';
 

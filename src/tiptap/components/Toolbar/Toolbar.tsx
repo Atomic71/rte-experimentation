@@ -1,7 +1,7 @@
 import { Editor } from '@tiptap/react';
 import React, { useState } from 'react';
-import { webViewBridge } from '../webview-bridge';
-import { LinkPopup } from './LinkPopup';
+import { webViewBridge } from '../../webview-bridge';
+import { LinkPopup } from '../LinkPopup/LinkPopup';
 
 interface ToolbarProps {
   editor: Editor;

@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { MentionUser, webViewBridge } from '../webview-bridge';
+import { MentionUser, webViewBridge } from '../../webview-bridge';
 
 export interface MentionListProps {
   items: MentionUser[];
