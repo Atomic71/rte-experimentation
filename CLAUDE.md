@@ -43,10 +43,9 @@ src/
 │   ├── extensions/      # TipTap extensions (mentions)
 │   ├── styles/          # CSS styles
 │   ├── webview-bridge.ts       # WebView communication
-│   ├── TipTapEditor.tsx        # Main editor component
-│   └── TipTapEditorWrapper.ts  # WebView integration wrapper
+│   └── TipTapEditor.tsx        # Main editor component
 ├── data/                # Static data (users for mentions)
-└── App.tsx              # Root app component
+└── App.tsx              # Root app component (handles WebView bridge integration)
 ```
 
 ### WebView Integration

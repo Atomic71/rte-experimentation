@@ -1,14 +1,13 @@
 # Rich Text Editor Playground
 
-Rich text editor implementations (Slate.js, Lexical, and TipTap) with React Native WebView integration.
+TipTap-based rich text editor with React Native WebView integration.
 
 ## Quick Start
 
 ```bash
 npm install
 npm run dev
-# Open http://localhost:5173?editor=slate
-# Or try: ?editor=lexical or ?editor=tiptap
+# Open http://localhost:5173
 ```
 
 ## Build Process
@@ -114,14 +113,12 @@ npm run link:local  # Auto-updates all linked projects
   - Use for active development with instant updates
   - Like hot-reload for npm packages
 
-## Editor Selection
+## Editor Features
 
-```
-# URL Parameters
-http://localhost:5173?editor=slate
-http://localhost:5173?editor=lexical
-http://localhost:5173?editor=tiptap
-```
+- **TipTap Editor**: Modern, extensible rich text editor
+- **WebView Bridge**: Direct communication between App.tsx and WebView
+- **Mentions System**: @ mentions with user search and dropdown
+- **Formatting Toolbar**: Bold, italic, underline, strikethrough, links
 
 ## WebView Integration
 
@@ -129,7 +126,7 @@ http://localhost:5173?editor=tiptap
 
 ```javascript
 <WebView
-  source={{ uri: 'file:///path/to/dist/index.html?editor=slate' }}
+  source={{ uri: 'file:///path/to/dist/index.html' }}
   onMessage={(event) => {
     const message = JSON.parse(event.nativeEvent.data)
     console.log('Editor message:', message.type, message.payload)
@@ -162,14 +159,13 @@ http://localhost:5173?editor=tiptap
 - HTML import/export
 - TypeScript support
 
-## Documentation
+## Architecture
 
-- **[Editor Implementations](src/editors/editors.md)** - Architecture overview
-- **[Slate.js Implementation](src/editors/slate.md)** - Plugin-based editor
-- **[Lexical Implementation](src/editors/lexical.md)** - Command-based editor  
-- **[TipTap Implementation](src/editors/tiptap.md)** - Extension-based editor
-- **[WebView Integration](webview-integration.md)** - React Native protocol
-- **[Design System](src/design-system/)** - Styling system
+- **App.tsx**: Root component that initializes WebView bridge
+- **TipTapEditor.tsx**: Main editor component with extensions
+- **webview-bridge.ts**: Message protocol handling for React Native
+- **Extensions**: Mentions, links, text formatting
+- **Components**: Toolbar, MentionList, LinkPopup
 
 ## Deployment Notes
 
