@@ -3,7 +3,6 @@
 // Types
 export type {
   EditorContent,
-  EditorCommand,
   MentionUser,
   MentionsConfig,
   WebViewMessage,

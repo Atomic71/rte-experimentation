@@ -5,20 +5,6 @@ export interface EditorContent {
   data: any;
 }
 
-export interface EditorCommand {
-  action:
-    | 'bold'
-    | 'italic'
-    | 'underline'
-    | 'strikethrough'
-    | 'heading'
-    | 'list'
-    | 'link'
-    | 'undo'
-    | 'redo'
-    | 'direction';
-  value?: any;
-}
 
 export interface MentionUser {
   id: string;
