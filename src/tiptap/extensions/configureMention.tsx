@@ -1,61 +1,59 @@
-import Mention from '@tiptap/extension-mention'
-import { ReactRenderer } from '@tiptap/react'
-import tippy, { Instance as TippyInstance } from 'tippy.js'
-import { MentionList } from '../components'
-import { webViewBridge, MentionUser } from '../webview-bridge'
+import Mention from '@tiptap/extension-mention';
+import { ReactRenderer } from '@tiptap/react';
+import tippy, { Instance as TippyInstance } from 'tippy.js';
+import { MentionList } from '../components';
+import { webViewBridge, MentionUser } from '../webview-bridge';
 
-// Move these outside the function to persist across reconfigurations
-type MentionResolver = ((users: MentionUser[]) => void) & { timeoutId?: number }
-let resolveSearch: MentionResolver | null = null
-let mentionsEnabled = true
-let pendingQueries = new Map<string, MentionResolver>()
-let callbacksSetUp = false
+// Simplified state management for mention queries
+let currentQuery: {
+  query: string;
+  resolve: (users: MentionUser[]) => void;
+  timeout: number;
+} | null = null;
+let mentionsEnabled = true;
+let callbacksSetUp = false;
+let debounceTimeout: number | null = null;
 
 export function configureMention() {
   // Only set up callbacks once to prevent multiple initialization
   if (!callbacksSetUp) {
     // Listen for results from RN
-    webViewBridge.callbacks.onMentionResults = (users) => {
-    webViewBridge.postMessage('DEBUG', { 
-      step: 'tiptap_received_mention_results',
-      users,
-      resolveSearchExists: !!resolveSearch,
-      pendingQueriesCount: pendingQueries.size 
-    })
-    
-    // Try current resolveSearch first
-    if (resolveSearch) {
-      webViewBridge.postMessage('DEBUG', { step: 'resolving_via_current_callback' })
-      // Clear timeout if it exists
-      if (resolveSearch.timeoutId) {
-        clearTimeout(resolveSearch.timeoutId)
+    webViewBridge.callbacks.onMentionResults = (users, query) => {
+      webViewBridge.postMessage('DEBUG', {
+        step: 'tiptap_received_mention_results',
+        users,
+        query,
+        currentQueryExists: !!currentQuery,
+      });
+
+      // Only resolve if this matches the current query
+      if (currentQuery?.query === query) {
+        webViewBridge.postMessage('DEBUG', {
+          step: 'resolving_current_query',
+          query,
+        });
+        clearTimeout(currentQuery.timeout);
+        currentQuery.resolve(users);
+        currentQuery = null;
+      } else {
+        webViewBridge.postMessage('DEBUG', {
+          step: 'query_mismatch_or_stale',
+          query,
+          currentQuery: currentQuery?.query,
+        });
       }
-      resolveSearch(users)
-      resolveSearch = null
-    } 
-    // Fallback: resolve any pending queries
-    else if (pendingQueries.size > 0) {
-      const [firstQuery, resolve] = Array.from(pendingQueries.entries())[0]
-      webViewBridge.postMessage('DEBUG', { step: 'resolving_via_pending_queries', query: firstQuery })
-      // Clear timeout if it exists
-      if (resolve.timeoutId) {
-        clearTimeout(resolve.timeoutId)
-      }
-      resolve(users)
-      pendingQueries.delete(firstQuery)
-    } else {
-      webViewBridge.postMessage('DEBUG', { step: 'no_callback_available', issue: 'This is likely the problem!' })
-    }
-  }
-  
-  // Listen for config updates
-  webViewBridge.callbacks.onMentionsConfigUpdate = (config) => {
-    mentionsEnabled = config.enabled
-    // Could also update other settings like debounce, triggers, etc
-  }
-  
-    webViewBridge.postMessage('DEBUG', { step: 'tiptap_mention_callback_setup_complete' })
-    callbacksSetUp = true
+    };
+
+    // Listen for config updates
+    webViewBridge.callbacks.onMentionsConfigUpdate = (config) => {
+      mentionsEnabled = config.enabled;
+      // Could also update other settings like debounce, triggers, etc
+    };
+
+    webViewBridge.postMessage('DEBUG', {
+      step: 'tiptap_mention_callback_setup_complete',
+    });
+    callbacksSetUp = true;
   }
 
   return Mention.configure({
@@ -64,76 +62,98 @@ export function configureMention() {
       items: async ({ query }) => {
         // Check if mentions are enabled
         if (!mentionsEnabled || !webViewBridge.getMentionsConfig().enabled) {
-          return []
+          return [];
         }
 
-        const config = webViewBridge.getMentionsConfig()
-        
+        const config = webViewBridge.getMentionsConfig();
+
         // Check minimum query length
         if (config.minQueryLength && query.length < config.minQueryLength) {
-          return []
-        }
-        
-        // Check for spaces if not allowed
-        if (!config.allowSpaces && query.includes(' ')) {
-          return []
+          return [];
         }
 
-        // Send query to RN
-        webViewBridge.postMessage('DEBUG', { step: 'sending_mention_query', query })
-        webViewBridge.queryMentions(query)
-        
-        // Wait for results with configured timeout
+        // Check for spaces if not allowed
+        if (!config.allowSpaces && query.includes(' ')) {
+          return [];
+        }
+
+        // Wait for results with debounced query
         return new Promise<MentionUser[]>((resolve) => {
-          webViewBridge.postMessage('DEBUG', { step: 'setting_up_promise', query })
-          const mentionResolver = resolve as MentionResolver
-          resolveSearch = mentionResolver
-          pendingQueries.set(query, mentionResolver)
-          
-          // Timeout fallback
-          const timeoutId = setTimeout(() => {
-            if (resolveSearch === mentionResolver) {
-              webViewBridge.postMessage('DEBUG', { step: 'mention_query_timeout', query })
-              resolve([])
-              resolveSearch = null
+          webViewBridge.postMessage('DEBUG', {
+            step: 'setting_up_promise',
+            query,
+          });
+
+          // Cancel previous query if exists
+          if (currentQuery) {
+            clearTimeout(currentQuery.timeout);
+          }
+
+          // Cancel previous debounce
+          if (debounceTimeout) {
+            clearTimeout(debounceTimeout);
+          }
+
+          // Set up new query
+          currentQuery = {
+            query,
+            resolve,
+            // @ts-ignore
+            timeout: setTimeout(() => {
+              if (currentQuery?.query === query) {
+                webViewBridge.postMessage('DEBUG', {
+                  step: 'mention_query_timeout',
+                  query,
+                });
+                resolve([]);
+                currentQuery = null;
+              }
+            }, 2000), // 2 seconds - realistic for React Native response
+          };
+
+          // Debounce the actual RN query
+          // @ts-ignore
+          debounceTimeout = setTimeout(() => {
+            if (currentQuery?.query === query) {
+              webViewBridge.postMessage('DEBUG', {
+                step: 'sending_mention_query',
+                query,
+              });
+              webViewBridge.queryMentions(query);
             }
-            // Clean up pending query only if it matches
-            if (pendingQueries.get(query) === mentionResolver) {
-              pendingQueries.delete(query)
-            }
-          }, 3000) // Increase timeout to 3 seconds for testing
-          
-          // Store timeout ID for potential cleanup
-          mentionResolver.timeoutId = timeoutId as unknown as number
-        })
+          }, 300); // 300ms debounce
+        });
       },
 
       render() {
-        let component: ReactRenderer | null = null
-        let popup: TippyInstance | null = null
+        let component: ReactRenderer | null = null;
+        let popup: TippyInstance | null = null;
 
         return {
           onStart: (props) => {
             component = new ReactRenderer(MentionList, {
               props,
               editor: props.editor,
-            })
+            });
 
             if (!props.clientRect) {
-              return
+              return;
             }
 
             const getClientRect = () => {
-              const rect = props.clientRect?.()
-              return rect || ({
-                top: 0,
-                left: 0,
-                bottom: 0,
-                right: 0,
-                width: 0,
-                height: 0
-              } as DOMRect)
-            }
+              const rect = props.clientRect?.();
+              return (
+                rect ||
+                ({
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  right: 0,
+                  width: 0,
+                  height: 0,
+                } as DOMRect)
+              );
+            };
 
             popup = tippy(document.body, {
               getReferenceClientRect: getClientRect,
@@ -143,48 +163,51 @@ export function configureMention() {
               interactive: true,
               trigger: 'manual',
               placement: 'bottom-start',
-            })
+            });
           },
-          
+
           onUpdate: (props) => {
-            component?.updateProps(props)
+            component?.updateProps(props);
 
             if (!props.clientRect) {
-              return
+              return;
             }
 
             const getClientRect = () => {
-              const rect = props.clientRect?.()
-              return rect || ({
-                top: 0,
-                left: 0,
-                bottom: 0,
-                right: 0,
-                width: 0,
-                height: 0
-              } as DOMRect)
-            }
+              const rect = props.clientRect?.();
+              return (
+                rect ||
+                ({
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  right: 0,
+                  width: 0,
+                  height: 0,
+                } as DOMRect)
+              );
+            };
 
             popup?.setProps({
               getReferenceClientRect: getClientRect,
-            })
+            });
           },
-          
+
           onKeyDown: (props) => {
             if (props.event.key === 'Escape') {
-              popup?.hide()
-              return true
+              popup?.hide();
+              return true;
             }
 
-            return (component?.ref as any)?.onKeyDown?.(props) || false
+            return (component?.ref as any)?.onKeyDown?.(props) || false;
           },
-          
+
           onExit: () => {
-            popup?.destroy()
-            component?.destroy()
-          }
-        }
-      }
-    }
-  })
+            popup?.destroy();
+            component?.destroy();
+          },
+        };
+      },
+    },
+  });
 }

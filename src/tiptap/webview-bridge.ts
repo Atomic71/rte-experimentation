@@ -5,7 +5,6 @@ export interface EditorContent {
   data: any;
 }
 
-
 export interface MentionUser {
   id: string;
   name: string;
@@ -52,7 +51,7 @@ export interface EditorCallbacks {
   onGetContent?: () => EditorContent;
   onError?: (error: string) => void;
   onMentionQuery?: (query: string) => void;
-  onMentionResults?: (results: MentionUser[]) => void;
+  onMentionResults?: (results: MentionUser[], query: string) => void;
   onMentionsConfigUpdate?: (config: MentionsConfig) => void;
 }
 
@@ -70,13 +69,27 @@ class TipTapWebViewBridge {
 
   constructor() {
     this.isReactNative = !!window.ReactNativeWebView;
-    this.isDebugMode = new URLSearchParams(window.location.search).get('debug') === 'true';
+    this.isDebugMode =
+      new URLSearchParams(window.location.search).get('debug') === 'true';
     this.setupMessageListener();
   }
 
   initialize(callbacks: EditorCallbacks) {
-    this.callbacks = callbacks;
-    this.postMessage('READY', { 
+    // Merge new callbacks with existing ones instead of replacing
+    this.postDebugMessage({
+      step: 'webview_bridge_initialize',
+      existingCallbacks: Object.keys(this.callbacks),
+      newCallbacks: Object.keys(callbacks),
+    });
+    this.callbacks = {
+      ...this.callbacks,
+      ...callbacks
+    };
+    this.postDebugMessage({
+      step: 'webview_bridge_initialize_complete',
+      finalCallbacks: Object.keys(this.callbacks),
+    });
+    this.postMessage('READY', {
       features: {
         bold: true,
         italic: true,
@@ -87,7 +100,7 @@ class TipTapWebViewBridge {
         links: true,
         mentions: true,
         rtl: true,
-      }
+      },
     });
   }
 
@@ -167,14 +180,18 @@ class TipTapWebViewBridge {
       case 'MENTION_RESULTS':
         this.postDebugMessage({
           step: 'processing_mention_results',
+          query: message.payload?.query,
           users: message.payload?.users,
           callbackExists: !!this.callbacks.onMentionResults,
         });
-        this.callbacks.onMentionResults?.(message.payload.users);
+        this.callbacks.onMentionResults?.(
+          message.payload.users,
+          message.payload.query
+        );
         break;
 
       case 'SET_MENTIONS_CONFIG':
-        this.callbacks.onMentionsConfigUpdate?.(message.payload);
+        this.setMentionsConfig(message.payload);
         break;
 
       default:
@@ -237,7 +254,7 @@ class TipTapWebViewBridge {
   }
 
   notifyReady() {
-    this.postMessage('READY', { 
+    this.postMessage('READY', {
       features: {
         bold: true,
         italic: true,
@@ -248,7 +265,7 @@ class TipTapWebViewBridge {
         links: true,
         mentions: true,
         rtl: true,
-      }
+      },
     });
   }
 
