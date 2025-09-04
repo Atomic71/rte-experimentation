@@ -1,8 +1,7 @@
 import React, { useRef, useEffect } from 'react'
 import TipTapEditor from './tiptap/TipTapEditor'
 import type { TipTapEditorHandle } from './tiptap/TipTapEditor'
-import { tiptapEditorWrapper } from './tiptap/TipTapEditorWrapper'
-import type { EditorContent } from './tiptap/webview-bridge'
+import { webViewBridge, type EditorContent } from './tiptap/webview-bridge'
 import './toolbar.css'
 import './tiptap/styles/editor.css'
 
@@ -11,25 +10,33 @@ const App: React.FC = () => {
 
   useEffect(() => {
     return () => {
-      tiptapEditorWrapper.destroy()
+      webViewBridge.destroy()
     }
   }, [])
 
   const handleContentChange = (content: EditorContent) => {
     // Notify React Native about content changes
-    tiptapEditorWrapper.notifyContentChange(content)
+    webViewBridge.notifyContentChange(content)
   }
 
   const handleReady = () => {
     if (editorRef.current) {
-      tiptapEditorWrapper.setEditorRef(editorRef.current)
-      
-      // Initialize the WebView bridge AFTER editor is ready and extensions are set up
-      tiptapEditorWrapper.initialize()
+      // Initialize the WebView bridge AFTER editor is ready
+      webViewBridge.initialize({
+        onSetContent: (content: EditorContent) => {
+          editorRef.current?.setContent(content)
+        },
+        onClearContent: () => {
+          editorRef.current?.clearContent()
+        },
+        onGetContent: () => {
+          return editorRef.current?.getContent() || { format: 'html', data: '' }
+        },
+      })
       
       // Notify React Native that editor is ready
       setTimeout(() => {
-        tiptapEditorWrapper.notifyReady()
+        webViewBridge.notifyReady()
       }, 100)
     }
   }

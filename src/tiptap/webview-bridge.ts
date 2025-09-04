@@ -50,7 +50,6 @@ export interface EditorCallbacks {
   onSetContent?: (content: EditorContent) => void;
   onClearContent?: () => void;
   onGetContent?: () => EditorContent;
-  onExportHTML?: () => string;
   onError?: (error: string) => void;
   onMentionQuery?: (query: string) => void;
   onMentionResults?: (results: MentionUser[]) => void;
@@ -159,9 +158,9 @@ class TipTapWebViewBridge {
         break;
 
       case 'EXPORT_HTML':
-        const html = this.callbacks.onExportHTML?.();
-        if (html) {
-          this.postMessage('EXPORT_HTML', { html });
+        const htmlContent = this.callbacks.onGetContent?.();
+        if (htmlContent) {
+          this.postMessage('EXPORT_HTML', { html: htmlContent.data });
         }
         break;
 

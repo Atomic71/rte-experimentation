@@ -1,1 +1,1 @@
-export { default } from './LinkPopup';
+export { LinkPopup as default } from './LinkPopup';
