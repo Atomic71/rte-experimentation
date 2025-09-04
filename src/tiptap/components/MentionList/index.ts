@@ -1,1 +1,1 @@
-export { MentionList } from './MentionList';
+export { default } from './MentionList';

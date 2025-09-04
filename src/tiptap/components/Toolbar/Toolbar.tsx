@@ -161,3 +161,5 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
     </div>
   );
 };
+
+export default Toolbar;
