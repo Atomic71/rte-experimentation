@@ -2,6 +2,7 @@ import { Editor } from '@tiptap/react';
 import React, { useState } from 'react';
 import { webViewBridge } from '../../webview-bridge';
 import { LinkPopup } from '../LinkPopup/LinkPopup';
+import { createPreventDefaultHandlers } from '../../../utils/eventHelpers';
 
 interface ToolbarProps {
   editor: Editor;
@@ -14,15 +15,10 @@ const ToolbarButton: React.FC<{
   title: string;
   children: React.ReactNode;
 }> = ({ onClick, isActive, disabled, title, children }) => {
-  // Prevent default click event in order to keep the keyboard open on mobile devices
-  const preventDefault = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-  };
   return (
     <button
       onClick={onClick}
-      onMouseDown={preventDefault}
-      onPointerDown={preventDefault}
+      {...createPreventDefaultHandlers()}
       className={`toolbar-button ${isActive ? 'active' : ''}`}
       disabled={disabled}
       title={title}
@@ -83,21 +79,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
     webViewBridge.send(html);
   };
 
-  const handleSendMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
-    // Prevent keyboard dismissal on mobile devices
-    e.preventDefault();
-  };
-
-  const handleSendPointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
-    // Prevent keyboard dismissal for pointer events (touch, stylus, mouse)
-    e.preventDefault();
-  };
-
-  const handleSendTouchStart = (e: React.TouchEvent<HTMLButtonElement>) => {
-    // Prevent keyboard dismissal for touch events
-    e.preventDefault();
-  };
-
   return (
     <div className='toolbar'>
       <div className='toolbar-left'>
@@ -150,9 +131,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
       <div className='toolbar-right'>
         <button
           className='toolbar-send-button'
-          onMouseDown={handleSendMouseDown}
-          onPointerDown={handleSendPointerDown}
-          onTouchStart={handleSendTouchStart}
+          {...createPreventDefaultHandlers()}
           onClick={handleSend}
         >
           Send
