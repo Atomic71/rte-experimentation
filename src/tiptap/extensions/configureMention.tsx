@@ -8,11 +8,11 @@ import { webViewBridge, MentionUser } from '../webview-bridge';
 let currentQuery: {
   query: string;
   resolve: (users: MentionUser[]) => void;
-  timeout: number;
+  timeout: ReturnType<typeof setTimeout>;
 } | null = null;
 let mentionsEnabled = true;
 let callbacksSetUp = false;
-let debounceTimeout: number | null = null;
+let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
 
 export function configureMention() {
   // Only set up callbacks once to prevent multiple initialization
@@ -98,7 +98,6 @@ export function configureMention() {
           currentQuery = {
             query,
             resolve,
-            // @ts-ignore
             timeout: setTimeout(() => {
               if (currentQuery?.query === query) {
                 webViewBridge.postMessage('DEBUG', {
@@ -112,7 +111,6 @@ export function configureMention() {
           };
 
           // Debounce the actual RN query
-          // @ts-ignore
           debounceTimeout = setTimeout(() => {
             if (currentQuery?.query === query) {
               webViewBridge.postMessage('DEBUG', {
