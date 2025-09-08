@@ -15,6 +15,7 @@ import { debounce } from 'lodash';
 import { EditorContent as EditorContentType } from './webview-bridge';
 import { Toolbar } from './components';
 import { configureMention } from './extensions/configureMention';
+import { useMentionContext } from '../contexts/MentionContext';
 import './styles/editor.css';
 
 export interface TipTapEditorHandle {
@@ -37,6 +38,8 @@ const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
     { initialContent, placeholder, onContentChange, onReady, readOnly },
     ref
   ) => {
+    const { queryMentions } = useMentionContext();
+    
     const debouncedContentUpdate = useMemo(
       () =>
         debounce((htmlContent: string) => {
@@ -64,7 +67,7 @@ const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
           types: ['heading', 'paragraph'],
           defaultDirection: null, // Auto-detect direction based on content
         }),
-        configureMention(),
+        configureMention(queryMentions),
       ],
       content: initialContent,
       editable: !readOnly,

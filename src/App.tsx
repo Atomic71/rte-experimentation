@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react'
 import TipTapEditor from './tiptap/TipTapEditor'
 import type { TipTapEditorHandle } from './tiptap/TipTapEditor'
 import { webViewBridge, type EditorContent } from './tiptap/webview-bridge'
+import { MentionProvider } from './contexts/MentionContext'
 import './toolbar.css'
 import './tiptap/styles/editor.css'
 
@@ -42,16 +43,18 @@ const App: React.FC = () => {
   }
 
   return (
-    <div style={{ height: '100vh' }}>
-      <div style={{ flex: 1, height: '100%' }}>
-        <TipTapEditor
-          ref={editorRef}
-          placeholder='enter your message here'
-          onContentChange={handleContentChange}
-          onReady={handleReady}
-        />
+    <MentionProvider>
+      <div style={{ height: '100vh' }}>
+        <div style={{ flex: 1, height: '100%' }}>
+          <TipTapEditor
+            ref={editorRef}
+            placeholder='enter your message here'
+            onContentChange={handleContentChange}
+            onReady={handleReady}
+          />
+        </div>
       </div>
-    </div>
+    </MentionProvider>
   )
 }
 

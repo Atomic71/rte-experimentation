@@ -1,8 +1,12 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { MentionUser, webViewBridge } from '../../webview-bridge';
 
+export interface MentionItem extends MentionUser {
+  isError?: boolean;
+}
+
 export interface MentionListProps {
-  items: MentionUser[];
+  items: MentionItem[];
   command: (item: any) => void;
 }
 
@@ -12,7 +16,7 @@ const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
   const selectItem = (index: number) => {
     const item = props.items[index];
 
-    if (item) {
+    if (item && !item.isError) {
       // Notify RN of selection
       webViewBridge.sendMentionSelected(item);
 
@@ -74,22 +78,31 @@ const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
         <button
           className={`mention-list-item ${
             index === selectedIndex ? 'selected' : ''
-          }`}
+          } ${item.isError ? 'error' : ''}`}
           key={item.id}
-          onClick={() => selectItem(index)}
+          onClick={() => !item.isError && selectItem(index)}
           onMouseEnter={() => setSelectedIndex(index)}
+          disabled={item.isError}
         >
-          {item.avatar && (
-            <img
-              src={item.avatar}
-              alt={item.name}
-              className='mention-avatar'
-            />
+          {item.isError ? (
+            <div className='mention-error'>
+              <span className='error-message'>{item.name}</span>
+            </div>
+          ) : (
+            <>
+              {item.avatar && (
+                <img
+                  src={item.avatar}
+                  alt={item.name}
+                  className='mention-avatar'
+                />
+              )}
+              <div className='mention-info'>
+                <span className='mention-name'>{item.name}</span>
+                <span className='mention-username'>@{item.username}</span>
+              </div>
+            </>
           )}
-          <div className='mention-info'>
-            <span className='mention-name'>{item.name}</span>
-            <span className='mention-username'>@{item.username}</span>
-          </div>
         </button>
       ))}
     </div>
