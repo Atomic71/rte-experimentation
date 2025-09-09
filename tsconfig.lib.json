@@ -16,7 +16,11 @@
     "strict": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "allowImportingTsExtensions": false
+    "allowImportingTsExtensions": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
   },
   "include": [
     "src/index.ts",
