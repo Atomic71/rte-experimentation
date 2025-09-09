@@ -1,7 +1,8 @@
 import Mention from '@tiptap/extension-mention';
-import { ReactRenderer } from '@tiptap/react';
+import { ReactRenderer, ReactNodeViewRenderer } from '@tiptap/react';
 import tippy, { Instance as TippyInstance } from 'tippy.js';
 import { MentionList } from '@/components';
+import { MentionNode } from '@/components/MentionNode';
 import { QueryTimeoutError } from '../errors';
 
 /**
@@ -11,7 +12,11 @@ import { QueryTimeoutError } from '../errors';
 export function configureMention(
   queryMentions: (query: string) => Promise<any[]>
 ) {
-  return Mention.configure({
+  return Mention.extend({
+    addNodeView() {
+      return ReactNodeViewRenderer(MentionNode);
+    },
+  }).configure({
     HTMLAttributes: { class: 'mention' },
     suggestion: {
       items: async ({ query }) => {
@@ -100,6 +105,8 @@ export function configureMention(
           },
 
           onUpdate: (props) => {
+            console.log('onUpdate', props);
+
             component?.updateProps(props);
 
             if (!props.clientRect) {

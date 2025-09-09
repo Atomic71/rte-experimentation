@@ -31,11 +31,11 @@ export interface WebViewMessage {
     | 'CLEAR_CONTENT'
     | 'GET_CONTENT'
     | 'CONTENT_RESPONSE'
-    | 'EXPORT_HTML'
     | 'ERROR'
     | 'MENTION_QUERY'
     | 'MENTION_RESULTS'
-    | 'MENTION_SELECT'
+    | 'MENTION_ADD'
+    | 'MENTION_REMOVE'
     | 'SET_MENTIONS_CONFIG'
     | 'SEND'
     | 'DEBUG';

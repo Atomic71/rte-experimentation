@@ -121,13 +121,6 @@ export default class WebviewBridge {
         }
         break;
 
-      case 'EXPORT_HTML':
-        const htmlContent = this.callbacks.onGetContent?.();
-        if (htmlContent) {
-          this.postMessage('EXPORT_HTML', { html: htmlContent.data });
-        }
-        break;
-
       case 'MENTION_RESULTS':
         this.postDebugMessage({
           step: 'processing_mention_results',
@@ -182,8 +175,17 @@ export default class WebviewBridge {
     this.postMessage('MENTION_QUERY', { query });
   }
 
-  sendMentionSelected(user: MentionUser) {
-    this.postMessage('MENTION_SELECT', { user });
+  sendMentionAdded(mention: {
+    id: string;
+    mentionText: string;
+    start: number;
+    end: number;
+  }) {
+    this.postMessage('MENTION_ADD', { mention });
+  }
+
+  sendMentionRemoved(mentionId: string) {
+    this.postMessage('MENTION_REMOVE', { mentionId });
   }
 
   getMentionsConfig() {
@@ -222,10 +224,6 @@ export default class WebviewBridge {
 
   sendContent(content: EditorContent) {
     this.postMessage('CONTENT_RESPONSE', content);
-  }
-
-  sendHTML(html: string) {
-    this.postMessage('EXPORT_HTML', { html });
   }
 
   send(html: string) {

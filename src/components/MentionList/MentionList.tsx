@@ -1,8 +1,7 @@
+import { useMentionContext } from '@/components/MentionContext';
+import { MentionUser } from '@/utils/WebviewBridge/types';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import './MentionList.css';
-import { webViewBridge } from '@/utils/WebviewBridge';
-import { MentionUser } from '@/utils/WebviewBridge/types';
-import { useMentionContext } from '@/components/MentionContext';
 
 export interface MentionItem extends MentionUser {
   isError?: boolean;
@@ -22,10 +21,6 @@ const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
     const item = props.items[index];
 
     if (item && !item.isError) {
-      // Notify RN of selection
-      webViewBridge.sendMentionSelected(item);
-
-      // Execute command with TipTap expected format
       props.command({
         id: item.id,
         label: `@${item.username}`,
