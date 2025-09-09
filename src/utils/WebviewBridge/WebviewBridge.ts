@@ -1,61 +1,12 @@
-// Simplified WebView bridge for TipTap editor only
+import {
+  EditorCallbacks,
+  EditorContent,
+  MentionsConfig,
+  MentionUser,
+  WebViewMessage,
+} from './types';
 
-export interface EditorContent {
-  format: 'html' | 'text';
-  data: any;
-}
-
-export interface MentionUser {
-  id: string;
-  name: string;
-  username: string;
-  avatar?: string;
-}
-
-export interface MentionsConfig {
-  enabled: boolean;
-  allowedTriggers?: string[];
-  maxResults?: number;
-  debounceMs?: number;
-  allowSpaces?: boolean;
-  minQueryLength?: number;
-}
-
-export interface WebViewMessage {
-  type:
-    | 'READY'
-    | 'CHANGE'
-    | 'SET_CONTENT'
-    | 'CLEAR_CONTENT'
-    | 'GET_CONTENT'
-    | 'CONTENT_RESPONSE'
-    | 'EXPORT_HTML'
-    | 'ERROR'
-    | 'MENTION_QUERY'
-    | 'MENTION_RESULTS'
-    | 'MENTION_SELECT'
-    | 'SET_MENTIONS_CONFIG'
-    | 'SEND'
-    | 'DEBUG';
-  payload?: any;
-  timestamp?: number;
-}
-
-interface ReactNativeWebView {
-  postMessage: (message: string) => void;
-}
-
-export interface EditorCallbacks {
-  onSetContent?: (content: EditorContent) => void;
-  onClearContent?: () => void;
-  onGetContent?: () => EditorContent;
-  onError?: (error: string) => void;
-  onMentionQuery?: (query: string) => void;
-  onMentionResults?: (results: MentionUser[], query: string) => void;
-  onMentionsConfigUpdate?: (config: MentionsConfig) => void;
-}
-
-class TipTapWebViewBridge {
+export default class WebviewBridge {
   public callbacks: EditorCallbacks = {};
   private isReactNative: boolean = false;
   private messageListener?: () => void;
@@ -83,7 +34,7 @@ class TipTapWebViewBridge {
     });
     this.callbacks = {
       ...this.callbacks,
-      ...callbacks
+      ...callbacks,
     };
     this.postDebugMessage({
       step: 'webview_bridge_initialize_complete',
@@ -280,18 +231,4 @@ class TipTapWebViewBridge {
   send(html: string) {
     this.postMessage('SEND', { html });
   }
-}
-
-declare global {
-  interface Window {
-    ReactNativeWebView?: ReactNativeWebView;
-    webViewBridge?: TipTapWebViewBridge;
-  }
-}
-
-export const webViewBridge = new TipTapWebViewBridge();
-
-// Expose for debugging
-if (typeof window !== 'undefined') {
-  window.webViewBridge = webViewBridge;
 }

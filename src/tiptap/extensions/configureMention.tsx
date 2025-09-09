@@ -1,7 +1,7 @@
 import Mention from '@tiptap/extension-mention';
 import { ReactRenderer } from '@tiptap/react';
 import tippy, { Instance as TippyInstance } from 'tippy.js';
-import { MentionList } from '../components';
+import { MentionList } from '@/components';
 import { QueryTimeoutError } from '../../errors';
 
 /**

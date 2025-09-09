@@ -1,0 +1,78 @@
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0px 12px 0px;
+  background: white;
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+.toolbar-left {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.toolbar-left::-webkit-scrollbar {
+  height: 4px;
+}
+
+.toolbar-left::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.toolbar-left::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+.toolbar-left::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.toolbar-right {
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.toolbar-separator {
+  width: 1px;
+  height: 24px;
+  background: #d0d0d0;
+  margin: 0 4px;
+}
+
+.toolbar-send-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  transition: all 0.2s;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.toolbar-send-button:hover {
+  background: #1976d2;
+}
+
+.toolbar-send-button:active {
+  background: #1565c0;
+}

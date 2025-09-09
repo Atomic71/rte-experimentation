@@ -1,32 +1,13 @@
 import { Editor } from '@tiptap/react';
 import React, { useState } from 'react';
-import { webViewBridge } from '../../webview-bridge';
 import { LinkPopup } from '../LinkPopup/LinkPopup';
-import { createPreventDefaultHandlers } from '../../../utils/eventHelpers';
+import { ToolbarButton } from './ToolbarButton';
+import { createPreventDefaultHandlers } from '../../utils/eventHelpers';
+import { webViewBridge } from '@/utils/WebviewBridge';
 
 interface ToolbarProps {
   editor: Editor;
 }
-
-const ToolbarButton: React.FC<{
-  onClick: () => void;
-  isActive?: boolean;
-  disabled?: boolean;
-  title: string;
-  children: React.ReactNode;
-}> = ({ onClick, isActive, disabled, title, children }) => {
-  return (
-    <button
-      onClick={onClick}
-      {...createPreventDefaultHandlers()}
-      className={`toolbar-button ${isActive ? 'active' : ''}`}
-      disabled={disabled}
-      title={title}
-    >
-      {children}
-    </button>
-  );
-};
 
 export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
   const [showLinkPopup, setShowLinkPopup] = useState(false);

@@ -1,0 +1,1 @@
+export { LinkPopup, LinkPopup as default } from './LinkPopup';

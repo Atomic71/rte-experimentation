@@ -6,12 +6,9 @@ import React, {
   useRef,
   useEffect,
 } from 'react';
-import {
-  webViewBridge,
-  MentionUser,
-  MentionsConfig,
-} from '../tiptap/webview-bridge';
-import { QueryTimeoutError } from '../errors';
+import { webViewBridge } from '@/utils/WebviewBridge';
+import { QueryTimeoutError } from '@/errors';
+import { MentionsConfig, MentionUser } from '@/utils/WebviewBridge/types';
 
 interface MentionQuery {
   query: string;
@@ -20,7 +17,7 @@ interface MentionQuery {
   timeoutId: ReturnType<typeof setTimeout>;
 }
 
-interface MentionContextValue {
+export interface MentionContextValue {
   mentionsEnabled: boolean;
   mentionsConfig: MentionsConfig;
   setMentionsConfig: (config: Partial<MentionsConfig>) => void;
