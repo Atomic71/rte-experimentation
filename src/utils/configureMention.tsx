@@ -2,26 +2,59 @@ import Mention from '@tiptap/extension-mention';
 import { ReactRenderer } from '@tiptap/react';
 import tippy, { Instance as TippyInstance } from 'tippy.js';
 import { MentionList } from '@/components';
-import { QueryTimeoutError } from '../../errors';
+import { QueryTimeoutError } from '../errors';
 
 /**
  * Configure mentions extension using React Context for state management
  * Requires MentionProvider to be set up in the app tree
  */
-export function configureMention(queryMentions: (query: string) => Promise<any[]>) {
+export function configureMention(
+  queryMentions: (query: string) => Promise<any[]>
+) {
   return Mention.configure({
     HTMLAttributes: { class: 'mention' },
     suggestion: {
       items: async ({ query }) => {
         try {
           // Use the passed-in queryMentions function from context
-          return await queryMentions(query);
+          const results = await queryMentions(query);
+
+          // Handle no results found case
+          if (results.length === 0) {
+            return [
+              {
+                id: 'no-results',
+                name: `No users found for "${query}"`,
+                username: '',
+                isError: true,
+                errorType: 'no-results',
+              },
+            ];
+          }
+
+          return results;
         } catch (error) {
           // Return error as special item to display in list
           if (error instanceof QueryTimeoutError) {
-            return [{ id: 'error', name: 'Query timed out', username: '', isError: true }];
+            return [
+              {
+                id: 'timeout-error',
+                name: error.message,
+                username: '',
+                isError: true,
+                errorType: 'timeout',
+              },
+            ];
           }
-          return [];
+          return [
+            {
+              id: 'general-error',
+              name: 'Failed to load users',
+              username: '',
+              isError: true,
+              errorType: 'general',
+            },
+          ];
         }
       },
 

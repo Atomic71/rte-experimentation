@@ -4,7 +4,7 @@ import Underline from '@tiptap/extension-underline';
 import { Editor, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import TextDirection from 'tiptap-text-direction';
-import { configureMention } from '../tiptap/extensions/configureMention';
+import { configureMention } from '@/utils/configureMention';
 import { EditorContent as EditorContentType } from '@/utils/WebviewBridge/types';
 
 import { useCallback, useEffect, useMemo } from 'react';
