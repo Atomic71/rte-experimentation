@@ -23,10 +23,8 @@ const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
     if (item && !item.isError) {
       props.command({
         id: item.id,
-        label: `@${item.username}`,
+        label: item.name,
         userId: item.id,
-        userName: item.name,
-        username: item.username,
       });
     }
   };
@@ -133,7 +131,7 @@ const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
               )}
               <div className='mention-info'>
                 <span className='mention-name'>{item.name}</span>
-                <span className='mention-username'>@{item.username}</span>
+                <span className='mention-username'>@{item.name}</span>
               </div>
             </>
           )}

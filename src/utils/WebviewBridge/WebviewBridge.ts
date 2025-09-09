@@ -175,13 +175,10 @@ export default class WebviewBridge {
     this.postMessage('MENTION_QUERY', { query });
   }
 
-  sendMentionAdded(mention: {
-    id: string;
-    mentionText: string;
-    start: number;
-    end: number;
-  }) {
-    this.postMessage('MENTION_ADD', { mention });
+  sendMentionAdded(mention: MentionUser) {
+    this.postMessage('MENTION_ADD', {
+      mention,
+    });
   }
 
   sendMentionRemoved(mentionId: string) {

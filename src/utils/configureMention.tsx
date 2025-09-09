@@ -17,7 +17,7 @@ export function configureMention(
       return ReactNodeViewRenderer(MentionNode);
     },
   }).configure({
-    HTMLAttributes: { class: 'mention' },
+    HTMLAttributes: { class: 'gorgias-mention' },
     suggestion: {
       items: async ({ query }) => {
         try {
