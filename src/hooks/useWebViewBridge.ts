@@ -2,9 +2,10 @@ import { useEffect } from 'react';
 
 import { webViewBridge } from '@/utils/WebviewBridge';
 import { EditorContent } from '@/utils/WebviewBridge/types';
-import { TipTapEditorHandle } from '@/components/TipTapEditor/types';
+import useTipTapRef from './useTipTapRef';
 
-const useWebViewBridge = (editorRef: React.RefObject<TipTapEditorHandle>) => {
+const useWebViewBridge = () => {
+  const editorRef = useTipTapRef();
   useEffect(() => {
     return () => {
       webViewBridge.destroy();
@@ -40,7 +41,7 @@ const useWebViewBridge = (editorRef: React.RefObject<TipTapEditorHandle>) => {
     }
   };
 
-  return { handleContentChange, handleReady };
+  return { handleContentChange, handleReady, editorRef };
 };
 
 export default useWebViewBridge;

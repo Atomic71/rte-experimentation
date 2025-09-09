@@ -1,17 +1,15 @@
-import { MentionProvider } from '@/components/MentionContext';
-import React, { useRef } from 'react';
-import { useWebViewBridge } from './hooks';
 import { TipTapEditor } from '@/components';
-import { TipTapEditorHandle } from './components/TipTapEditor/types';
+import { MentionProvider } from '@/components/MentionContext';
+import React from 'react';
+import { useWebViewBridge } from './hooks';
 
 const App: React.FC = () => {
-  const editorRef = useRef<TipTapEditorHandle>(null);
-  const { handleContentChange, handleReady } = useWebViewBridge(editorRef);
+  const { handleContentChange, handleReady, editorRef } = useWebViewBridge();
 
   return (
     <MentionProvider>
-      <div style={{ height: '100vh' }}>
-        <div style={{ flex: 1, height: '100%' }}>
+      <div className='app-container'>
+        <div className='app-content'>
           <TipTapEditor
             ref={editorRef}
             placeholder='enter your message here'

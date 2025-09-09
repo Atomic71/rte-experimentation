@@ -18,6 +18,16 @@ body {
   display: flex;
 }
 
+/* App layout classes */
+.app-container {
+  height: 100vh;
+}
+
+.app-content {
+  flex: 1;
+  height: 100%;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
