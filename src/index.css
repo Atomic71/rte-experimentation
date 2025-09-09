@@ -13,12 +13,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  margin: 0;
-  display: flex;
-}
-
-/* App layout classes */
 .app-container {
   height: 100vh;
 }

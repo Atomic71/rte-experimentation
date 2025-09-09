@@ -2,6 +2,7 @@ import { TipTapEditor } from '@/components';
 import { MentionProvider } from '@/components/MentionContext';
 import React from 'react';
 import { useWebViewBridge } from './hooks';
+import './index.css';
 
 const App: React.FC = () => {
   const { handleContentChange, handleReady, editorRef } = useWebViewBridge();
