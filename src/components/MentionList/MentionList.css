@@ -144,8 +144,31 @@
   color: #319795;
 }
 
+.mention-list-item.error-loading .error-message {
+  color: #718096;
+}
+
+.mention-list-item.error-loading:hover {
+  background: #f7fafc;
+}
+
 /* Loading overlay for items */
 .mention-list-item.loading-overlay {
   opacity: 0.6;
   pointer-events: none;
+}
+
+/* Typing State */
+.mention-list-typing {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  color: #4a5568;
+  font-size: 14px;
+  font-style: italic;
 }

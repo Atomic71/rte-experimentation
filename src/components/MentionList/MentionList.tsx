@@ -6,7 +6,7 @@ import { useMentionContext } from '@/components/MentionContext';
 
 export interface MentionItem extends MentionUser {
   isError?: boolean;
-  errorType?: 'timeout' | 'no-results' | 'general';
+  errorType?: 'timeout' | 'no-results' | 'general' | 'loading';
 }
 
 export interface MentionListProps {
@@ -16,16 +16,7 @@ export interface MentionListProps {
 
 const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const { isLoadingMentions, currentQuery } = useMentionContext();
-
-  // Debug logging
-  webViewBridge.postMessage('DEBUG', {
-    step: 'mention_list_render',
-    isLoadingMentions,
-    currentQuery,
-    itemsLength: props.items.length,
-    items: props.items.map(i => ({ id: i.id, name: i.name, isError: i.isError }))
-  });
+  const { isLoadingMentions, currentQuery, isTyping } = useMentionContext();
 
   const selectItem = (index: number) => {
     const item = props.items[index];
@@ -82,57 +73,21 @@ const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
     },
   }));
 
-  // Show loading state - either when no items and loading, or when we have items but still loading
+  // Show typing state - user still typing (interactive)
+  if (isTyping) {
+    return (
+      <div className='mention-list-typing'>
+        <span>Query for: "{currentQuery}"</span>
+      </div>
+    );
+  }
+
+  // Show loading state - user stopped typing, searching (disabled)
   if (isLoadingMentions) {
     return (
-      <div className='mention-list'>
-        <div className='mention-list-loading-item'>
-          <div className='loading-spinner'></div>
-          <span>Searching for "{currentQuery}"...</span>
-        </div>
-        {/* Show existing items while loading if any */}
-        {props.items.length > 0 && props.items.map((item, index) => (
-          <button
-            className={`mention-list-item ${
-              index === selectedIndex ? 'selected' : ''
-            } ${item.isError ? 'error' : ''} ${
-              item.errorType ? `error-${item.errorType}` : ''
-            } loading-overlay`}
-            key={item.id}
-            onClick={() => !item.isError && selectItem(index)}
-            onMouseEnter={() => setSelectedIndex(index)}
-            disabled={item.isError || isLoadingMentions}
-          >
-            {item.isError ? (
-              <div className='mention-error'>
-                {item.errorType === 'timeout' && (
-                  <span className='error-icon'>⏱️</span>
-                )}
-                {item.errorType === 'no-results' && (
-                  <span className='error-icon'>🔍</span>
-                )}
-                {item.errorType === 'general' && (
-                  <span className='error-icon'>❌</span>
-                )}
-                <span className='error-message'>{item.name}</span>
-              </div>
-            ) : (
-              <>
-                {item.avatar && (
-                  <img
-                    src={item.avatar}
-                    alt={item.name}
-                    className='mention-avatar'
-                  />
-                )}
-                <div className='mention-info'>
-                  <span className='mention-name'>{item.name}</span>
-                  <span className='mention-username'>@{item.username}</span>
-                </div>
-              </>
-            )}
-          </button>
-        ))}
+      <div className='mention-list-loading'>
+        <div className='loading-spinner'></div>
+        <span>Searching...</span>
       </div>
     );
   }
@@ -166,6 +121,9 @@ const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
               )}
               {item.errorType === 'general' && (
                 <span className='error-icon'>❌</span>
+              )}
+              {item.errorType === 'loading' && (
+                <div className='loading-spinner'></div>
               )}
               <span className='error-message'>{item.name}</span>
             </div>

@@ -22,6 +22,9 @@ export interface MentionContextValue {
   mentionsConfig: MentionsConfig;
   setMentionsConfig: (config: Partial<MentionsConfig>) => void;
   queryMentions: (query: string) => Promise<MentionUser[]>;
+  isLoadingMentions: boolean;
+  currentQuery: string;
+  isTyping: boolean;
 }
 
 const MentionContext = createContext<MentionContextValue | null>(null);
@@ -46,10 +49,13 @@ export const MentionProvider: React.FC<MentionProviderProps> = ({
     enabled: true,
     allowedTriggers: ['@'],
     maxResults: 10,
-    debounceMs: 300,
+    debounceMs: 800,
     allowSpaces: false,
     minQueryLength: 1,
   });
+  const [isLoadingMentions, setIsLoadingMentions] = useState(false);
+  const [currentQuery, setCurrentQuery] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
 
   const currentQueryRef = useRef<MentionQuery | null>(null);
   const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -72,12 +78,14 @@ export const MentionProvider: React.FC<MentionProviderProps> = ({
           query,
         });
         clearTimeout(currentQueryRef.current.timeoutId);
+        setIsLoadingMentions(false);
+        setIsTyping(false);
         currentQueryRef.current.resolve(users);
         currentQueryRef.current = null;
       } else {
         webViewBridge.postMessage('DEBUG', {
           step: 'query_mismatch_or_stale',
-          query,
+          query: `${query}+${currentQueryRef.current?.query}`,
           currentQuery: currentQueryRef.current?.query,
         });
       }
@@ -127,7 +135,7 @@ export const MentionProvider: React.FC<MentionProviderProps> = ({
         return Promise.resolve([]);
       }
 
-      const isValidQuerySpaces = allowSpaces && !query.includes(' ');
+      const isValidQuerySpaces = allowSpaces || !query.includes(' ');
 
       if (!isValidQuerySpaces) {
         return Promise.resolve([]);
@@ -137,11 +145,14 @@ export const MentionProvider: React.FC<MentionProviderProps> = ({
         webViewBridge.postMessage('DEBUG', {
           step: 'setting_up_promise',
           query,
+          willSetLoading: true,
         });
 
         // Cancel previous query if exists
         if (currentQueryRef.current) {
           clearTimeout(currentQueryRef.current.timeoutId);
+          setIsLoadingMentions(false);
+          setIsTyping(false);
         }
 
         // Cancel previous debounce
@@ -149,17 +160,30 @@ export const MentionProvider: React.FC<MentionProviderProps> = ({
           clearTimeout(debounceTimeoutRef.current);
         }
 
-        // Set up new query with proper timeout handling
+        // Set typing state and current query immediately
+        setIsTyping(true);
+        setCurrentQuery(query);
+        setIsLoadingMentions(false);
+
+        webViewBridge.postMessage('DEBUG', {
+          step: 'typing_state_set',
+          query,
+          isTyping: true,
+        });
+
+        // Set up timeout for the entire flow
         const timeoutId = setTimeout(() => {
           if (currentQueryRef.current?.query === query) {
             webViewBridge.postMessage('DEBUG', {
               step: 'mention_query_timeout',
               query,
             });
+            setIsLoadingMentions(false);
+            setIsTyping(false);
             reject(new QueryTimeoutError(query));
             currentQueryRef.current = null;
           }
-        }, 5000); // 5 seconds timeout
+        }, 10000); // 10 seconds total timeout
 
         currentQueryRef.current = {
           query,
@@ -168,14 +192,17 @@ export const MentionProvider: React.FC<MentionProviderProps> = ({
           timeoutId,
         };
 
-        // Debounce the actual RN query
-        const debounceMs = mentionsConfig.debounceMs || 300;
+        // Debounce the actual RN query - when this fires, user stopped typing
+        const debounceMs = mentionsConfig.debounceMs || 800;
         debounceTimeoutRef.current = setTimeout(() => {
           if (currentQueryRef.current?.query === query) {
             webViewBridge.postMessage('DEBUG', {
-              step: 'sending_mention_query',
+              step: 'debounce_finished_sending_query',
               query,
             });
+            // User stopped typing - now we're searching
+            setIsTyping(false);
+            setIsLoadingMentions(true);
             webViewBridge.queryMentions(query);
           }
         }, debounceMs);
@@ -191,6 +218,9 @@ export const MentionProvider: React.FC<MentionProviderProps> = ({
         mentionsConfig,
         setMentionsConfig,
         queryMentions,
+        isLoadingMentions,
+        currentQuery,
+        isTyping,
       }}
     >
       {children}
