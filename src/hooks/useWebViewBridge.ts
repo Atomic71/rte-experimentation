@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 
-import { TipTapEditorHandle } from '../tiptap/types';
 import { webViewBridge } from '@/utils/WebviewBridge';
 import { EditorContent } from '@/utils/WebviewBridge/types';
+import { TipTapEditorHandle } from '@/components/TipTapEditor/types';
 
 const useWebViewBridge = (editorRef: React.RefObject<TipTapEditorHandle>) => {
   useEffect(() => {

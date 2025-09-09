@@ -2,7 +2,7 @@ import { MentionProvider } from '@/components/MentionContext';
 import React, { useRef } from 'react';
 import { useWebViewBridge } from './hooks';
 import { TipTapEditor } from '@/components';
-import { TipTapEditorHandle } from './tiptap/types';
+import { TipTapEditorHandle } from './components/TipTapEditor/types';
 
 const App: React.FC = () => {
   const editorRef = useRef<TipTapEditorHandle>(null);

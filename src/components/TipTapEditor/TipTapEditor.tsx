@@ -5,7 +5,7 @@ import { useTipTapEditor } from '../../hooks';
 import './TipTapEditor.css';
 import '../Toolbar/Toolbar.css';
 import '../Toolbar/ToolbarButton.css';
-import { TipTapEditorHandle, TipTapEditorProps } from '../../tiptap/types';
+import { TipTapEditorHandle, TipTapEditorProps } from './types';
 
 const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
   (
