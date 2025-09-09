@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react'
 import TipTapEditor from './tiptap/TipTapEditor'
 import type { TipTapEditorHandle } from './tiptap/TipTapEditor'
 import { webViewBridge, type EditorContent } from './tiptap/webview-bridge'
-import { MentionProvider } from './contexts/MentionContext'
+import { MentionProvider } from './components/MentionContext'
 import './toolbar.css'
 import './tiptap/styles/editor.css'
 

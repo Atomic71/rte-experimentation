@@ -15,7 +15,7 @@ import { debounce } from 'lodash';
 import { EditorContent as EditorContentType } from './webview-bridge';
 import { Toolbar } from './components';
 import { configureMention } from './extensions/configureMention';
-import { useMentionContext } from '../contexts/MentionContext';
+import { useMentionContext } from '../components/MentionContext';
 import './styles/editor.css';
 
 export interface TipTapEditorHandle {
