@@ -2,7 +2,6 @@ import {
   EditorCallbacks,
   EditorContent,
   MentionsConfig,
-  MentionUser,
   WebViewMessage,
 } from './types';
 
@@ -40,19 +39,7 @@ export default class WebviewBridge {
       step: 'webview_bridge_initialize_complete',
       finalCallbacks: Object.keys(this.callbacks),
     });
-    this.postMessage('READY', {
-      features: {
-        bold: true,
-        italic: true,
-        underline: true,
-        strikethrough: true,
-        headings: true,
-        lists: true,
-        links: true,
-        mentions: true,
-        rtl: true,
-      },
-    });
+    this.postMessage('READY');
   }
 
   destroy() {
@@ -117,7 +104,7 @@ export default class WebviewBridge {
       case 'GET_CONTENT':
         const content = this.callbacks.onGetContent?.();
         if (content) {
-          this.postMessage('CONTENT_RESPONSE', content);
+          this.postMessage('CONTENT_RESPONSE', { html: content.data });
         }
         break;
 
@@ -175,14 +162,14 @@ export default class WebviewBridge {
     this.postMessage('MENTION_QUERY', { query });
   }
 
-  sendMentionAdded(mention: MentionUser) {
+  sendMentionAdded(id: number) {
     this.postMessage('MENTION_ADD', {
-      mention,
+      id,
     });
   }
 
-  sendMentionRemoved(mentionId: string) {
-    this.postMessage('MENTION_REMOVE', { mentionId });
+  sendMentionRemoved(id: number) {
+    this.postMessage('MENTION_REMOVE', { id });
   }
 
   getMentionsConfig() {
@@ -217,10 +204,6 @@ export default class WebviewBridge {
         rtl: true,
       },
     });
-  }
-
-  sendContent(content: EditorContent) {
-    this.postMessage('CONTENT_RESPONSE', content);
   }
 
   send(html: string) {
