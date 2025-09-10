@@ -57,7 +57,7 @@
   align-items: center;
   justify-content: center;
   padding: 8px 16px;
-  background: #2196f3;
+  background: #222222;
   color: white;
   border: none;
   border-radius: 4px;
@@ -70,9 +70,9 @@
 }
 
 .toolbar-send-button:hover {
-  background: #1976d2;
+  background: #222222;
 }
 
 .toolbar-send-button:active {
-  background: #1565c0;
+  background: #222222;
 }

@@ -168,6 +168,19 @@
   text-align: start;
 }
 
+/* Text formatting styles */
+.tiptap-editor-content .ProseMirror strong {
+  font-weight: bold;
+}
+
+.tiptap-editor-content .ProseMirror em {
+  font-style: italic;
+}
+
+.tiptap-editor-content .ProseMirror u {
+  text-decoration: underline;
+}
+
 /* Link styles */
 .tiptap-editor-content .ProseMirror a {
   color: #3182ce;

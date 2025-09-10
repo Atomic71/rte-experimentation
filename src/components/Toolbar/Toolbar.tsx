@@ -85,14 +85,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
           <u>U</u>
         </ToolbarButton>
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleStrike().run()}
-          isActive={editor.isActive('strike')}
-          title='Strikethrough'
-        >
-          <s>S</s>
-        </ToolbarButton>
-
-        <ToolbarButton
           onClick={handleLinkClick}
           isActive={editor.isActive('link')}
           title='Link'

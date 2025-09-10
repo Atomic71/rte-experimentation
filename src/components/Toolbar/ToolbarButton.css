@@ -14,6 +14,7 @@
   transition: all 0.2s;
   user-select: none;
   flex-shrink: 0;
+  color: #222222;
 }
 
 .toolbar-button:hover {
@@ -21,10 +22,10 @@
 }
 
 .toolbar-button.active {
-  background: #2196f3;
+  background: #222222;
   color: white;
 }
 
 .toolbar-button.active:hover {
-  background: #1976d2;
+  background: #222222;
 }

@@ -93,26 +93,48 @@
 
 .link-popup-cancel-button {
   flex: 1;
-  padding: 6px;
-  background: #f5f5f5;
-  color: #333;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 12px;
+  padding: 8px 16px;
+  background: transparent;
+  color: #222222;
+  border: 1px solid #222222;
+  border-radius: 4px;
+  font-size: 14px;
   font-family: inherit;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: bold;
+  transition: all 0.2s;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.link-popup-cancel-button:hover {
+  background: rgba(34, 34, 34, 0.05);
+}
+
+.link-popup-cancel-button:active {
+  background: rgba(34, 34, 34, 0.1);
 }
 
 .link-popup-submit-button {
   flex: 1;
-  padding: 6px;
-  background: #2196f3;
+  padding: 8px 16px;
+  background: #222222;
   color: white;
   border: none;
-  border-radius: 6px;
-  font-size: 12px;
+  border-radius: 4px;
+  font-size: 14px;
   font-family: inherit;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: bold;
+  transition: all 0.2s;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.link-popup-submit-button:hover {
+  background: #222222;
+}
+
+.link-popup-submit-button:active {
+  background: #222222;
 }
