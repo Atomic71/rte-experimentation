@@ -1,13 +1,12 @@
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
-import Underline from '@tiptap/extension-underline';
 import { Editor, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import TextDirection from 'tiptap-text-direction';
 import { configureMention } from '@/utils/configureMention';
 import { EditorContent as EditorContentType } from '@/utils/WebviewBridge/types';
 
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { debounce } from 'lodash';
 import { useMentionContext } from '../components/MentionContext';
 
@@ -31,6 +30,8 @@ const useTipTapEditor = ({
   onUpdate,
 }: UseTipTapEditorProps) => {
   const { queryMentions, mentionsConfig } = useMentionContext();
+  const persistedContentRef = useRef<string | null>(null);
+  const previousMentionsEnabledRef = useRef(mentionsConfig.enabled);
 
   const debouncedContentUpdate = useMemo(
     () =>
@@ -55,7 +56,6 @@ const useTipTapEditor = ({
     {
       extensions: [
         StarterKit,
-        Underline,
         Link.configure({
           openOnClick: false,
           HTMLAttributes: {
@@ -73,7 +73,7 @@ const useTipTapEditor = ({
           ? [configureMention(queryMentions, () => mentionsConfig.enabled)]
           : []),
       ],
-      content: initialContent,
+      content: persistedContentRef.current || initialContent,
       editable: !readOnly,
       onUpdate: ({ editor }) => {
         const htmlContent = editor.getHTML();
@@ -89,6 +89,12 @@ const useTipTapEditor = ({
         }
       },
       onCreate: ({ editor }) => {
+        // Restore content if we have persisted content from config change
+        if (persistedContentRef.current) {
+          editor.commands.setContent(persistedContentRef.current);
+          persistedContentRef.current = null; // Clear after restoring
+        }
+
         if (onReady) {
           onReady(editor);
         }
@@ -96,6 +102,17 @@ const useTipTapEditor = ({
     },
     [mentionsConfig.enabled]
   );
+
+  // Save content before mentions config changes
+  useEffect(() => {
+    if (
+      previousMentionsEnabledRef.current !== mentionsConfig.enabled &&
+      editor
+    ) {
+      persistedContentRef.current = editor.getHTML();
+    }
+    previousMentionsEnabledRef.current = mentionsConfig.enabled;
+  }, [mentionsConfig.enabled, editor]);
 
   const getContent = useCallback((): EditorContentType => {
     if (!editor) {
