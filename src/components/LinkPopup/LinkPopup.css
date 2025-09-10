@@ -59,7 +59,7 @@
 
 .link-popup-label {
   display: block;
-  font-size: 14px;
+  font-size: 12px;
   color: #666;
   font-weight: 500;
 }
@@ -74,7 +74,7 @@
 
 .link-popup-input {
   width: 100%;
-  padding: 12px;
+  padding: 8px;
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 14px;
@@ -93,12 +93,12 @@
 
 .link-popup-cancel-button {
   flex: 1;
-  padding: 8px 16px;
+  padding: 6px 14px;
   background: transparent;
   color: #222222;
   border: 1px solid #222222;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 12px;
   font-family: inherit;
   cursor: pointer;
   font-weight: bold;
@@ -117,12 +117,12 @@
 
 .link-popup-submit-button {
   flex: 1;
-  padding: 8px 16px;
+  padding: 6px 14px;
   background: #222222;
   color: white;
   border: none;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 12px;
   font-family: inherit;
   cursor: pointer;
   font-weight: bold;
