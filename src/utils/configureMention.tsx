@@ -10,7 +10,8 @@ import { QueryTimeoutError } from '../errors';
  * Requires MentionProvider to be set up in the app tree
  */
 export function configureMention(
-  queryMentions: (query: string) => Promise<any[]>
+  queryMentions: (query: string) => Promise<any[]>,
+  getMentionsEnabled?: () => boolean
 ) {
   return Mention.extend({
     addNodeView() {
@@ -20,6 +21,8 @@ export function configureMention(
     HTMLAttributes: { class: 'gorgias-mention' },
     suggestion: {
       items: async ({ query }) => {
+        // Check if mentions are disabled
+
         try {
           // Use the passed-in queryMentions function from context
           const results = await queryMentions(query);
@@ -29,7 +32,9 @@ export function configureMention(
             return [
               {
                 id: 'no-results',
-                name: query ? `No users found for "${query}"` : 'Type user name',
+                name: query
+                  ? `No users found for "${query}"`
+                  : 'Type user name',
                 username: '',
                 isError: true,
                 errorType: 'no-results',
@@ -73,7 +78,9 @@ export function configureMention(
               props,
               editor: props.editor,
             });
-
+            if (getMentionsEnabled && !getMentionsEnabled()) {
+              return;
+            }
             if (!props.clientRect) {
               return;
             }

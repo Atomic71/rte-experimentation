@@ -30,7 +30,7 @@ const useTipTapEditor = ({
   // async - listen for debounced content
   onUpdate,
 }: UseTipTapEditorProps) => {
-  const { queryMentions } = useMentionContext();
+  const { queryMentions, mentionsConfig } = useMentionContext();
 
   const debouncedContentUpdate = useMemo(
     () =>
@@ -51,46 +51,51 @@ const useTipTapEditor = ({
     };
   }, [debouncedContentUpdate]);
 
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Underline,
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class: 'text-blue-500 underline',
-        },
-      }),
-      Placeholder.configure({
-        placeholder: placeholder || 'Start typing...',
-      }),
-      TextDirection.configure({
-        types: ['heading', 'paragraph'],
-        defaultDirection: null, // Auto-detect direction based on content
-      }),
-      configureMention(queryMentions),
-    ],
-    content: initialContent,
-    editable: !readOnly,
-    onUpdate: ({ editor }) => {
-      const htmlContent = editor.getHTML();
+  const editor = useEditor(
+    {
+      extensions: [
+        StarterKit,
+        Underline,
+        Link.configure({
+          openOnClick: false,
+          HTMLAttributes: {
+            class: 'text-blue-500 underline',
+          },
+        }),
+        Placeholder.configure({
+          placeholder: placeholder || 'Start typing...',
+        }),
+        TextDirection.configure({
+          types: ['heading', 'paragraph'],
+          defaultDirection: null, // Auto-detect direction based on content
+        }),
+        ...(mentionsConfig.enabled
+          ? [configureMention(queryMentions, () => mentionsConfig.enabled)]
+          : []),
+      ],
+      content: initialContent,
+      editable: !readOnly,
+      onUpdate: ({ editor }) => {
+        const htmlContent = editor.getHTML();
 
-      // Call the debounced function with the latest content
-      debouncedContentUpdate(htmlContent);
+        // Call the debounced function with the latest content
+        debouncedContentUpdate(htmlContent);
 
-      if (onContentChange) {
-        onContentChange({
-          format: 'html',
-          data: htmlContent,
-        });
-      }
+        if (onContentChange) {
+          onContentChange({
+            format: 'html',
+            data: htmlContent,
+          });
+        }
+      },
+      onCreate: ({ editor }) => {
+        if (onReady) {
+          onReady(editor);
+        }
+      },
     },
-    onCreate: ({ editor }) => {
-      if (onReady) {
-        onReady(editor);
-      }
-    },
-  });
+    [mentionsConfig.enabled]
+  );
 
   const getContent = useCallback((): EditorContentType => {
     if (!editor) {

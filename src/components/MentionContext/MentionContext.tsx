@@ -18,7 +18,6 @@ interface MentionQuery {
 }
 
 export interface MentionContextValue {
-  mentionsEnabled: boolean;
   mentionsConfig: MentionsConfig;
   setMentionsConfig: (config: Partial<MentionsConfig>) => void;
   queryMentions: (query: string) => Promise<MentionUser[]>;
@@ -44,9 +43,8 @@ interface MentionProviderProps {
 export const MentionProvider: React.FC<MentionProviderProps> = ({
   children,
 }) => {
-  const [mentionsEnabled, setMentionsEnabled] = useState(true);
   const [mentionsConfig, setMentionsConfigState] = useState<MentionsConfig>({
-    enabled: true,
+    enabled: false,
     allowedTriggers: ['@'],
     maxResults: 10,
     debounceMs: 800,
@@ -93,8 +91,11 @@ export const MentionProvider: React.FC<MentionProviderProps> = ({
 
     // Listen for config updates (including channel changes)
     webViewBridge.callbacks.onMentionsConfigUpdate = (config) => {
-      setMentionsEnabled(config.enabled);
-      setMentionsConfigState((prev) => ({ ...prev, ...config }));
+      webViewBridge.postMessage('DEBUG', {
+        step: 'mentions_config_update',
+        config,
+      });
+      setMentionsConfigState((prev) => ({ ...prev, enabled: config.enabled }));
     };
 
     webViewBridge.postMessage('DEBUG', {
@@ -123,10 +124,6 @@ export const MentionProvider: React.FC<MentionProviderProps> = ({
 
   const queryMentions = useCallback(
     (query: string): Promise<MentionUser[]> => {
-      if (!mentionsEnabled) {
-        return Promise.resolve([]);
-      }
-
       const { minQueryLength, allowSpaces } = mentionsConfig;
 
       const isValidQueryLength = query.length >= (minQueryLength || 0);
@@ -208,13 +205,12 @@ export const MentionProvider: React.FC<MentionProviderProps> = ({
         }, debounceMs);
       });
     },
-    [mentionsEnabled, mentionsConfig]
+    [mentionsConfig]
   );
 
   return (
     <MentionContext.Provider
       value={{
-        mentionsEnabled,
         mentionsConfig,
         setMentionsConfig,
         queryMentions,
