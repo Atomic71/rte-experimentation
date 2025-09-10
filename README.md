@@ -1,6 +1,6 @@
 # Rich Text Editor Playground
 
-TipTap-based rich text editor with React Native WebView integration.
+TipTap-based rich text editor with React Native WebView integration and mentions support.
 
 ## Quick Start
 
@@ -115,10 +115,12 @@ npm run link:local  # Auto-updates all linked projects
 
 ## Editor Features
 
-- **TipTap Editor**: Modern, extensible rich text editor
-- **WebView Bridge**: Direct communication between App.tsx and WebView
-- **Mentions System**: @ mentions with user search and dropdown
+- **TipTap Editor**: Modern, extensible rich text editor framework
+- **WebView Bridge**: Bidirectional communication protocol for React Native
+- **Mentions System**: @ mentions with configurable user search and dropdown
 - **Formatting Toolbar**: Bold, italic, underline, strikethrough, links
+- **Link Management**: Insert and edit links with popup interface
+- **RTL/LTR Support**: Automatic text direction handling
 
 ## WebView Integration
 
@@ -142,30 +144,46 @@ npm run link:local  # Auto-updates all linked projects
 - `GET_CONTENT` - Content response
 - `EXPORT_HTML` - HTML export response
 - `ERROR` - Error occurred
+- `MENTION_QUERY` - User search request for mentions
+- `MENTION_SELECT` - Mention selected event
 
 **React Native → Web**:
 - `SET_CONTENT` - Set editor content
-- `COMMAND` - Execute command
-- `GET_CONTENT` - Request content
-- `EXPORT_HTML` - Request HTML
+- `EXECUTE_COMMAND` - Execute formatting command
+- `GET_CONTENT` - Request current content
+- `EXPORT_HTML` - Request HTML export
 - `IMPORT_HTML` - Import HTML content
+- `MENTION_RESULTS` - Return user search results
+- `SET_MENTIONS_CONFIG` - Configure mentions behavior
 
 ## Features
 
-- Rich text formatting (bold, italic, underline, lists, headings)
-- @mention system with user search  
-- Link insertion and editing
-- RTL/LTR text direction support
-- HTML import/export
-- TypeScript support
+- Rich text formatting (bold, italic, underline, strikethrough)
+- Lists (ordered, unordered) and headings (H1-H6)
+- @mention system with configurable user search
+- Link insertion and editing with popup interface
+- RTL/LTR automatic text direction support
+- HTML import/export with sanitization
+- Full TypeScript support with strict mode
+- WebView message protocol for React Native integration
 
 ## Architecture
 
-- **App.tsx**: Root component that initializes WebView bridge
-- **TipTapEditor.tsx**: Main editor component with extensions
-- **webview-bridge.ts**: Message protocol handling for React Native
-- **Extensions**: Mentions, links, text formatting
-- **Components**: Toolbar, MentionList, LinkPopup
+### Core Components
+- **App.tsx**: Root component with WebView bridge initialization
+- **TipTapEditor.tsx**: Main editor component with TipTap extensions
+- **webview-bridge.ts**: Message protocol handler for React Native communication
+
+### TipTap Extensions
+- **Mentions**: User mentions with @ trigger and dropdown
+- **Links**: URL insertion with validation and popup editing
+- **Text Formatting**: Bold, italic, underline, strikethrough
+- **Lists & Headings**: Ordered/unordered lists, H1-H6 support
+
+### UI Components
+- **Toolbar**: Formatting controls and command buttons
+- **MentionList**: Searchable user dropdown for mentions
+- **LinkPopup**: Link URL input and editing interface
 
 ## Deployment Notes
 
@@ -178,10 +196,12 @@ The project is optimized for Vercel hosting:
 
 ### Performance Optimizations
 
-- **Single-file HTML**: All assets inlined (no network requests)
-- **Optimized for WebView**: Uses `file://` protocol friendly paths
-- **Tree-shaking**: Vite removes unused code
-- **Minification**: Production builds are minified
+- **Single-file HTML**: All JS/CSS inlined for zero network requests
+- **WebView Optimized**: Compatible with `file://` protocol restrictions
+- **Tree-shaking**: Vite eliminates dead code automatically
+- **Minification**: Production builds fully minified and compressed
+- **Fast Refresh**: HMR support for instant development feedback
+- **Bundle Analysis**: Built-in size analysis for optimization
 
 ## Troubleshooting
 

@@ -38,22 +38,44 @@ Rich text editor built with TipTap and WebView communication API for React Nativ
 
 ```
 src/
-├── tiptap/              # TipTap editor implementation
-│   ├── components/      # UI components (Toolbar, MentionList, LinkPopup)
-│   ├── extensions/      # TipTap extensions (mentions)
-│   ├── styles/          # CSS styles
-│   ├── webview-bridge.ts       # WebView communication
-│   └── TipTapEditor.tsx        # Main editor component
-├── data/                # Static data (users for mentions)
-└── App.tsx              # Root app component (handles WebView bridge integration)
+├── components/          # UI components
+│   ├── EditorToolbar/   # Formatting toolbar
+│   ├── LinkPopup/       # Link editing popup
+│   ├── MentionList/     # Mentions dropdown
+│   └── TipTapEditor.tsx # Main editor component
+├── hooks/               # Custom React hooks
+│   ├── useMentions.ts   # Mentions logic
+│   └── useWebViewBridge.ts # WebView communication
+├── utils/               # Utility functions
+│   ├── webview-bridge.ts # Message protocol
+│   └── mentions.ts      # Mention helpers
+├── errors/              # Error handling
+└── App.tsx              # Root app component
 ```
 
 ### WebView Integration
 
-The primary use case is React Native WebView integration. The built [`dist/index.html`](dist/index.html) file can be loaded in a WebView. The editor implements this message protocol:
+The primary use case is React Native WebView integration. The built `dist/index.html` file can be loaded in a WebView.
 
-- **Web → React Native**: `READY`, `CHANGE`, `GET_CONTENT`, `EXPORT_HTML`, `ERROR`, `MENTION_QUERY`, `MENTION_SELECT`
-- **React Native → Web**: `SET_CONTENT`, `EXECUTE_COMMAND`, `GET_CONTENT`, `EXPORT_HTML`, `IMPORT_HTML`, `MENTION_RESULTS`, `SET_MENTIONS_CONFIG`
+#### Message Protocol
+
+**Web → React Native**:
+- `READY` - Editor initialized and ready
+- `CHANGE` - Content changed (includes HTML and text)
+- `GET_CONTENT` - Response to content request
+- `EXPORT_HTML` - HTML export response
+- `ERROR` - Error occurred with details
+- `MENTION_QUERY` - User search for mentions
+- `MENTION_SELECT` - User selected a mention
+
+**React Native → Web**:
+- `SET_CONTENT` - Set editor HTML content
+- `EXECUTE_COMMAND` - Execute formatting command
+- `GET_CONTENT` - Request current content
+- `EXPORT_HTML` - Request HTML export
+- `IMPORT_HTML` - Import HTML content
+- `MENTION_RESULTS` - Return mention search results
+- `SET_MENTIONS_CONFIG` - Configure mentions behavior
 
 ### Build Outputs
 
@@ -63,10 +85,11 @@ The primary use case is React Native WebView integration. The built [`dist/index
 
 ### Key Features
 
-- RTL/LTR text direction support
-- Rich text formatting (bold, italic, underline, strikethrough)
-- Headings and lists
-- Mentions support with dropdown
-- Link insertion and editing
-- HTML import/export
-- Extensible plugin system
+- **Text Formatting**: Bold, italic, underline, strikethrough
+- **Block Elements**: Headings (H1-H6), ordered/unordered lists
+- **Mentions**: @ trigger with user search and selection
+- **Links**: URL insertion with validation and popup editing
+- **Direction Support**: Automatic RTL/LTR text direction
+- **HTML Operations**: Import/export with sanitization
+- **WebView Bridge**: Full bidirectional communication
+- **TypeScript**: Strict mode with full type safety
