@@ -125,6 +125,10 @@ export default class WebviewBridge {
         this.setMentionsConfig(message.payload);
         break;
 
+      case 'FOCUS_EDITOR':
+        this.callbacks.onFocusEditor?.();
+        break;
+
       default:
         this.postDebugMessage({
           step: 'unknown_message_type',

@@ -32,6 +32,9 @@ const useWebViewBridge = () => {
             editorRef.current?.getContent() || { format: 'html', data: '' }
           );
         },
+        onFocusEditor: () => {
+          editorRef.current?.focusEditor();
+        },
       });
 
       // Notify React Native that editor is ready

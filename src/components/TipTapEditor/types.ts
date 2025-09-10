@@ -5,6 +5,7 @@ export interface TipTapEditorHandle {
   getContent: () => EditorContentType;
   setContent: (content: EditorContentType) => void;
   clearContent: () => void;
+  focusEditor: () => void;
   getEditor: () => Editor | null;
 }
 

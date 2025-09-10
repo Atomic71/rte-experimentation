@@ -128,7 +128,12 @@ const useTipTapEditor = ({
     editor.commands.clearContent();
   }, [editor]);
 
-  return { editor, getContent, setContent, clearContent };
+  const focusEditor = useCallback(() => {
+    if (!editor) return;
+    editor.commands.focus();
+  }, [editor]);
+
+  return { editor, getContent, setContent, clearContent, focusEditor };
 };
 
 export default useTipTapEditor;

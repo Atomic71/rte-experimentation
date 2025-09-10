@@ -36,6 +36,7 @@ export interface WebViewMessage {
     | 'MENTION_ADD'
     | 'MENTION_REMOVE'
     | 'SET_MENTIONS_CONFIG'
+    | 'FOCUS_EDITOR'
     | 'SEND'
     | 'DEBUG';
   payload?: any;
@@ -46,6 +47,7 @@ export interface EditorCallbacks {
   onSetContent?: (content: EditorContent) => void;
   onClearContent?: () => void;
   onGetContent?: () => EditorContent;
+  onFocusEditor?: () => void;
   onError?: (error: string) => void;
   onMentionQuery?: (query: string) => void;
   onMentionResults?: (results: MentionUser[], query: string) => void;

@@ -19,7 +19,7 @@ const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
     },
     ref
   ) => {
-    const { editor, getContent, setContent, clearContent } = useTipTapEditor({
+    const { editor, getContent, setContent, clearContent, focusEditor } = useTipTapEditor({
       initialContent,
       placeholder,
       onContentChange,
@@ -34,9 +34,10 @@ const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
         getContent,
         setContent,
         clearContent,
+        focusEditor,
         getEditor: () => editor,
       }),
-      [getContent, setContent, clearContent, editor]
+      [getContent, setContent, clearContent, focusEditor, editor]
     );
 
     if (!editor) {
