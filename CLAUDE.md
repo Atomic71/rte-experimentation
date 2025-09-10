@@ -32,24 +32,30 @@ Rich text editor built with TipTap and WebView communication API for React Nativ
 - **TipTap Editor**: Modern, extensible rich text editor framework
 - **WebView API**: Message protocol for React Native WebView communication
 - **Direct Routing**: TipTap editor served directly at root path (`/`)
-- **WebView Bridge**: Communication layer in [`/src/tiptap/webview-bridge.ts`](src/tiptap/webview-bridge.ts)
+- **WebView Bridge**: Communication layer in [`/src/utils/WebviewBridge/WebviewBridge.ts`](src/utils/WebviewBridge/WebviewBridge.ts)
 
 ### Directory Structure
 
 ```
 src/
 ├── components/          # UI components
-│   ├── EditorToolbar/   # Formatting toolbar
 │   ├── LinkPopup/       # Link editing popup
+│   ├── MentionContext/  # Mention context provider
 │   ├── MentionList/     # Mentions dropdown
-│   └── TipTapEditor.tsx # Main editor component
+│   ├── MentionNode/     # Mention node component
+│   ├── TipTapEditor/    # Main editor component
+│   └── Toolbar/         # Formatting toolbar
 ├── hooks/               # Custom React hooks
-│   ├── useMentions.ts   # Mentions logic
-│   └── useWebViewBridge.ts # WebView communication
+│   ├── useDebouncedValue.ts # Debounced value hook
+│   ├── useTipTapEditor.ts   # TipTap editor logic
+│   ├── useTipTapRef.ts      # TipTap editor ref hook
+│   └── useWebViewBridge.ts  # WebView communication
 ├── utils/               # Utility functions
-│   ├── webview-bridge.ts # Message protocol
-│   └── mentions.ts      # Mention helpers
+│   ├── WebviewBridge/   # Message protocol components
+│   ├── configureMention.tsx # Mention configuration
+│   └── eventHelpers.ts  # Event utility functions
 ├── errors/              # Error handling
+│   └── QueryTimeoutError.ts # Timeout error class
 └── App.tsx              # Root app component
 ```
 
@@ -80,7 +86,8 @@ The primary use case is React Native WebView integration. The built `dist/index.
 ### Build Outputs
 
 - [`dist/index.html`](dist/index.html) - Single-file build for WebView integration
-- `dist/index.js|mjs` - Library exports for npm consumption
+- `dist/html.js` - HTML exported as JS string for React Native
+- Library components available via TypeScript compilation in `dist/`
 - Library can be consumed via npm or linked locally with [yalc](https://github.com/wclr/yalc)
 
 ### Key Features
