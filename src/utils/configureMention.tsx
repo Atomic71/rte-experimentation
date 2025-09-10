@@ -29,7 +29,7 @@ export function configureMention(
             return [
               {
                 id: 'no-results',
-                name: `No users found for "${query}"`,
+                name: query ? `No users found for "${query}"` : 'Type user name',
                 username: '',
                 isError: true,
                 errorType: 'no-results',

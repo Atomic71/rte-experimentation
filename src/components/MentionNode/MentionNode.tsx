@@ -1,6 +1,6 @@
+import { webViewBridge } from '@/utils/WebviewBridge';
 import { NodeViewProps, NodeViewWrapper } from '@tiptap/react';
 import { useEffect } from 'react';
-import { webViewBridge } from '@/utils/WebviewBridge';
 
 export function MentionNode(props: NodeViewProps) {
   const { id, userId, label, username } = props.node.attrs;
@@ -8,15 +8,8 @@ export function MentionNode(props: NodeViewProps) {
 
   useEffect(() => {
     // On mount - mention was added
-    const mentionData = {
-      id: mentionId,
-      mentionText: label || `@${username}`,
-      start: props.getPos?.() || 0,
-      end: (props.getPos?.() || 0) + props.node.nodeSize,
-    };
-    
-    console.log('Mention added:', mentionData);
-    webViewBridge.sendMentionAdded(mentionData);
+
+    webViewBridge.sendMentionAdded(mentionId);
 
     // On unmount - mention was removed
     return () => {
@@ -26,8 +19,14 @@ export function MentionNode(props: NodeViewProps) {
   }, [mentionId]); // Only re-run if mentionId changes
 
   return (
-    <NodeViewWrapper className="mention" as="span">
-      <span className="mention" data-mention-id={mentionId}>
+    <NodeViewWrapper
+      className='mention'
+      as='span'
+    >
+      <span
+        className='mention'
+        data-mention-id={mentionId}
+      >
         {label || `@${username}`}
       </span>
     </NodeViewWrapper>
