@@ -1,5 +1,12 @@
-import { Editor } from '@tiptap/react';
-import React, { useState } from 'react';
+import { Editor, useEditorState } from '@tiptap/react';
+import React, { useCallback, useState } from 'react';
+import {
+  MdFormatBold,
+  MdFormatItalic,
+  MdFormatUnderlined,
+  MdLink,
+  MdSend,
+} from 'react-icons/md';
 import { LinkPopup } from '../LinkPopup/LinkPopup';
 import { ToolbarButton } from './ToolbarButton';
 import { createPreventDefaultHandlers } from '../../utils/eventHelpers';
@@ -13,46 +20,81 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
   const [showLinkPopup, setShowLinkPopup] = useState(false);
   const [linkData, setLinkData] = useState({ text: '', url: '' });
 
-  const handleLinkClick = () => {
-    const { href } = editor.getAttributes('link');
-    const selectedText = editor.state.doc.textBetween(
-      editor.state.selection.from,
-      editor.state.selection.to,
-      ' '
-    );
-
+  const { selection, href, isLink, isItalic, isBold, isUnderline } =
+    useEditorState({
+      editor,
+      selector: (ctx) => ({
+        isLink: ctx.editor.isActive('link'),
+        href: ctx.editor.getAttributes('link').href,
+        isItalic: ctx.editor.isActive('italic'),
+        isBold: ctx.editor.isActive('bold'),
+        isUnderline: ctx.editor.isActive('underline'),
+        selection: ctx.editor.state.selection,
+      }),
+    });
+  const handleLinkClick = useCallback(() => {
+    // if inside a link, we want to extend the selection to the entirety of the link
+    // it's hacky is because it's based on this thread https://github.com/ueberdosis/tiptap/discussions/4716
+    // docs don't exactly specify how to resolve situation of selecting inside a link
+    // but this seems sensible... although the thread has no official solution yet
     if (href) {
-      // Editing existing link
+      editor.chain().focus().extendMarkRange('link').run();
+      const { from, to } = editor.state.selection;
+      const selectedText = editor.state.doc.textBetween(from, to, ' ');
       setLinkData({
-        text: selectedText || href,
+        text: selectedText,
         url: href,
       });
     } else {
-      // Creating new link
+      const { from, to } = editor.state.selection;
+      if (from !== to) {
+        // nothing is selected
+        const selectedText = editor.state.doc.textBetween(from, to, ' ');
+        setLinkData({
+          text: selectedText,
+          url: 'https://',
+        });
+      }
       setLinkData({
-        text: selectedText,
-        url: '',
+        text: '',
+        url: 'https://',
       });
     }
 
     setShowLinkPopup(true);
-  };
+  }, [selection, href, editor, setLinkData, setShowLinkPopup]);
 
-  const handleSaveLink = (url: string, text: string) => {
-    if (url) {
-      // If we have selected text, just add the link
-      if (editor.state.selection.from !== editor.state.selection.to) {
-        editor.chain().focus().setLink({ href: url }).run();
-      } else {
-        // Insert text with link
-        editor
-          .chain()
-          .focus()
-          .insertContent(`<a href="${url}">${text}</a>`)
-          .run();
+  const handleSaveLink = useCallback(
+    (url: string, text: string) => {
+      console.log(url, text);
+
+      if (url) {
+        setLinkData({ url: '', text: '' });
+        // If we have selected text, just add the link
+        if (selection.from !== selection.to) {
+          editor
+            .chain()
+            // leaving setLink for reference because it could also work
+            // although docs are not so explicit on this matter
+            // .setLink({ href: url })
+            .insertContentAt(
+              { from: selection.from, to: selection.to },
+              `<a href="${url}">${text}</a> `
+            )
+            .focus()
+            .run();
+        } else {
+          // Insert text with link
+          editor
+            .chain()
+            .focus()
+            .insertContent(`<a href="${url}">${text}</a> `)
+            .run();
+        }
       }
-    }
-  };
+    },
+    [selection, editor]
+  );
 
   const handleSend = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -65,31 +107,31 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
       <div className='toolbar-left'>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
-          isActive={editor.isActive('bold')}
+          isActive={isBold}
           title='Bold (Cmd+B)'
         >
-          <strong>B</strong>
+          <MdFormatBold size={20} />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          isActive={editor.isActive('italic')}
+          isActive={isItalic}
           title='Italic (Cmd+I)'
         >
-          <em>I</em>
+          <MdFormatItalic size={20} />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleUnderline().run()}
-          isActive={editor.isActive('underline')}
+          isActive={isUnderline}
           title='Underline (Cmd+U)'
         >
-          <u>U</u>
+          <MdFormatUnderlined size={20} />
         </ToolbarButton>
         <ToolbarButton
           onClick={handleLinkClick}
-          isActive={editor.isActive('link')}
+          isActive={isLink}
           title='Link'
         >
-          🔗
+          <MdLink size={20} />
         </ToolbarButton>
 
         <LinkPopup
@@ -107,7 +149,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
           {...createPreventDefaultHandlers()}
           onClick={handleSend}
         >
-          Send
+          <MdSend size={18} />
         </button>
       </div>
     </div>

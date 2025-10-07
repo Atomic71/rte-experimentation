@@ -55,11 +55,45 @@ const useTipTapEditor = ({
   const editor = useEditor(
     {
       extensions: [
-        StarterKit,
-        Link.configure({
-          openOnClick: false,
-          HTMLAttributes: {
-            class: 'text-blue-500 underline',
+        StarterKit.configure({
+          link: {
+            openOnClick: false,
+            autolink: true,
+            enableClickSelection: true,
+
+            defaultProtocol: 'https',
+            protocols: ['http', 'https'],
+            HTMLAttributes: {
+              class: 'text-blue-500 underline',
+            },
+            isAllowedUri: (url, ctx) => {
+              try {
+                // Construct URL with default protocol if needed
+                const parsedUrl = url.includes(':')
+                  ? new URL(url)
+                  : new URL(`${ctx.defaultProtocol}://${url}`);
+
+                // Use TipTap's default validation
+                if (!ctx.defaultValidate(parsedUrl.href)) {
+                  return false;
+                }
+
+                // Only allow protocols specified in ctx.protocols
+                const allowedProtocols = ctx.protocols.map((p) =>
+                  typeof p === 'string' ? p : p.scheme
+                );
+                const protocol = parsedUrl.protocol.replace(':', '');
+
+                if (!allowedProtocols.includes(protocol)) {
+                  return false;
+                }
+
+                // All checks passed
+                return true;
+              } catch {
+                return false;
+              }
+            },
           },
         }),
         Placeholder.configure({
@@ -103,6 +137,7 @@ const useTipTapEditor = ({
     [mentionsConfig.enabled]
   );
 
+  console.log({ a: editor.$doc.querySelectorAll('a') });
   // Save content before mentions config changes
   useEffect(() => {
     if (
