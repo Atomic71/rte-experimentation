@@ -54,11 +54,12 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
           text: selectedText,
           url: 'https://',
         });
+      } else {
+        setLinkData({
+          text: '',
+          url: 'https://',
+        });
       }
-      setLinkData({
-        text: '',
-        url: 'https://',
-      });
     }
 
     setShowLinkPopup(true);
