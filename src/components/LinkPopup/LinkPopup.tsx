@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import validator from 'validator';
 import './LinkPopup.css';
 
@@ -9,6 +9,26 @@ interface LinkPopupProps {
   initialUrl?: string;
   initialText?: string;
 }
+
+const isValidUrl = (url: string): boolean => {
+  if (!url.trim()) return false;
+
+  // If it contains a colon, it must be http:// or https://
+  if (url.includes(':')) {
+    const hasValidProtocol =
+      url.startsWith('http://') || url.startsWith('https://');
+    if (!hasValidProtocol) return false;
+  }
+
+  // Use validator.js with strict options
+  return validator.isURL(url, {
+    protocols: ['http', 'https'],
+    require_protocol: false,
+    require_valid_protocol: true,
+    allow_underscores: false,
+    allow_protocol_relative_urls: false,
+  });
+};
 
 export const LinkPopup: React.FC<LinkPopupProps> = ({
   isOpen,
@@ -34,20 +54,28 @@ export const LinkPopup: React.FC<LinkPopupProps> = ({
     setText(initialText);
   }, [initialUrl, initialText]);
 
+  const isUrlValid = useMemo(() => isValidUrl(url), [url]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (url && text && validator.isURL(url, { require_protocol: false })) {
+    if (url && text && isUrlValid) {
       onSubmit(url, text);
       // Clear the form after successful submission
       setUrl('');
       setText('');
+      onClose();
     }
+  };
+
+  const handleCancel = () => {
+    setUrl('');
+    setText('');
     onClose();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
-      onClose();
+      handleCancel();
     }
   };
 
@@ -76,6 +104,7 @@ export const LinkPopup: React.FC<LinkPopupProps> = ({
                 onKeyDown={handleKeyDown}
                 placeholder='Enter link text'
                 className='link-popup-input'
+                autoCapitalize='none'
               />
             </div>
 
@@ -95,6 +124,7 @@ export const LinkPopup: React.FC<LinkPopupProps> = ({
                 onKeyDown={handleKeyDown}
                 placeholder='https://example.com'
                 className='link-popup-input'
+                autoCapitalize='none'
               />
             </div>
           </div>
@@ -102,13 +132,14 @@ export const LinkPopup: React.FC<LinkPopupProps> = ({
           <div className='link-popup-button-container'>
             <button
               type='button'
-              onClick={onClose}
+              onClick={handleCancel}
               className='link-popup-cancel-button'
             >
               Cancel
             </button>
             <button
               type='submit'
+              disabled={!text.trim() || !isUrlValid}
               className='link-popup-submit-button'
             >
               OK

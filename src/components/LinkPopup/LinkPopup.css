@@ -138,3 +138,17 @@
 .link-popup-submit-button:active {
   background: #222222;
 }
+
+.link-popup-submit-button:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.link-popup-submit-button:disabled:hover {
+  background: #cccccc;
+}
+
+.link-popup-submit-button:disabled:active {
+  background: #cccccc;
+}
