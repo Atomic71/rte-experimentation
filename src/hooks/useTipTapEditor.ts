@@ -109,6 +109,16 @@ const useTipTapEditor = ({
       ],
       content: persistedContentRef.current || initialContent,
       editable: !readOnly,
+      editorProps: {
+        handleClick: (view, pos, event) => {
+          // Prevent link clicks from opening
+          if (event.target instanceof HTMLAnchorElement) {
+            event.preventDefault();
+            return true;
+          }
+          return false;
+        },
+      },
       onUpdate: ({ editor }) => {
         const htmlContent = editor.getHTML();
 

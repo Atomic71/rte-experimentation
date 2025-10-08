@@ -1,10 +1,8 @@
 .toolbar-button {
   display: flex;
+  padding: 4px;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
   border: none;
   background: white;
   border-radius: 4px;

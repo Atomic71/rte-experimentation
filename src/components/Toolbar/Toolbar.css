@@ -13,7 +13,7 @@
 
 .toolbar-left {
   display: flex;
-  gap: 4px;
+  gap: 14px;
   align-items: center;
   flex: 1;
   overflow-x: auto;
