@@ -20,7 +20,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
   const [showLinkPopup, setShowLinkPopup] = useState(false);
   const [linkData, setLinkData] = useState({ text: '', url: '' });
 
-  const { selection, href, isLink, isItalic, isBold, isUnderline } =
+  const { selection, href, isLink, isItalic, isBold, isUnderline, isEmpty } =
     useEditorState({
       editor,
       selector: (ctx) => ({
@@ -30,6 +30,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
         isBold: ctx.editor.isActive('bold'),
         isUnderline: ctx.editor.isActive('underline'),
         selection: ctx.editor.state.selection,
+        isEmpty: ctx.editor.isEmpty,
       }),
     });
   const handleLinkClick = useCallback(() => {
@@ -111,28 +112,28 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
           isActive={isBold}
           title='Bold (Cmd+B)'
         >
-          <MdFormatBold size={20} />
+          <MdFormatBold size={24} />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleItalic().run()}
           isActive={isItalic}
           title='Italic (Cmd+I)'
         >
-          <MdFormatItalic size={20} />
+          <MdFormatItalic size={24} />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleUnderline().run()}
           isActive={isUnderline}
           title='Underline (Cmd+U)'
         >
-          <MdFormatUnderlined size={20} />
+          <MdFormatUnderlined size={24} />
         </ToolbarButton>
         <ToolbarButton
           onClick={handleLinkClick}
           isActive={isLink}
           title='Link'
         >
-          <MdLink size={20} />
+          <MdLink size={24} />
         </ToolbarButton>
 
         <LinkPopup
@@ -149,8 +150,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
           className='toolbar-send-button'
           {...createPreventDefaultHandlers()}
           onClick={handleSend}
+          disabled={isEmpty}
         >
-          <MdSend size={18} />
+          <MdSend size={28} />
         </button>
       </div>
     </div>
