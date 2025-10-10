@@ -99,8 +99,8 @@ const MentionList = forwardRef<any, MentionListProps>((props, ref) => {
 
   return (
     <div className='mention-list'>
-      {(isLoadingMentions || isTyping) && (
-        <button className='mention-list-item error selected'>
+      {isTypingOrLoading && (
+        <button className='mention-list-item error-loading selected mention-list-item-error-loading'>
           <span className='error-icon'>
             <MdSearch size={20} />
           </span>

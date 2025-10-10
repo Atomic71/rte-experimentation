@@ -132,11 +132,11 @@ export const MentionProvider: React.FC<MentionProviderProps> = ({
         return Promise.resolve([]);
       }
 
-      const isValidQuerySpaces = allowSpaces || !query.includes(' ');
+      // const isValidQuerySpaces = allowSpaces || !query.includes(' ');
 
-      if (!isValidQuerySpaces) {
-        return Promise.resolve([]);
-      }
+      // if (!isValidQuerySpaces) {
+      //   return Promise.resolve([]);
+      // }
 
       return new Promise<MentionUser[]>((resolve, reject) => {
         webViewBridge.postMessage('DEBUG', {
