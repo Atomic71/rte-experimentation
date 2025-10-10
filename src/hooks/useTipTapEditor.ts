@@ -147,7 +147,6 @@ const useTipTapEditor = ({
     [mentionsConfig.enabled]
   );
 
-  console.log({ a: editor.$doc.querySelectorAll('a') });
   // Save content before mentions config changes
   useEffect(() => {
     if (
@@ -155,6 +154,7 @@ const useTipTapEditor = ({
       editor
     ) {
       persistedContentRef.current = editor.getHTML();
+      editor.commands.focus();
     }
     previousMentionsEnabledRef.current = mentionsConfig.enabled;
   }, [mentionsConfig.enabled, editor]);
