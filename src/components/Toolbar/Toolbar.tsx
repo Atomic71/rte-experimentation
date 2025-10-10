@@ -138,7 +138,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor }) => {
 
         <LinkPopup
           isOpen={showLinkPopup}
-          onClose={() => setShowLinkPopup(false)}
+          onClose={() => {
+            setShowLinkPopup(false);
+            setLinkData({ text: '', url: '' });
+            editor.chain().focus().run();
+          }}
           onSubmit={handleSaveLink}
           initialUrl={linkData.url}
           initialText={linkData.text}
