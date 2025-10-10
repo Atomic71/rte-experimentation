@@ -185,3 +185,18 @@
   font-style: italic;
 }
 
+
+.tiptap-editor-content .ProseMirror span.mention {
+  background-color: rgb(221, 221, 221);
+  color: #222222;
+  font-weight: 900;
+  padding: 2px;
+  border-radius: 2px;
+}
+.tiptap-editor-content .ProseMirror span.mention:hover {
+  background-color: rgb(221, 221, 221);
+  color: #222222;
+  font-weight: 900;
+  padding: 2px;
+  border-radius: 2px;
+}
