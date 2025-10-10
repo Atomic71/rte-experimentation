@@ -2,7 +2,7 @@
 .mention-list {
   background: white;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 4px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   padding: 4px;
   max-height: 200px;
@@ -11,17 +11,24 @@
 }
 
 .mention-list-empty {
-  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   color: #718096;
-  text-align: center;
   font-size: 14px;
 }
 
 .mention-list-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   padding: 8px 12px;
+  padding-left: 4px;
   border: none;
   background: transparent;
   width: 100%;
@@ -33,12 +40,9 @@
 
 .mention-list-item:hover,
 .mention-list-item.selected {
-  background: #f7fafc;
+  background: #eeeeee;
 }
 
-.mention-list-item.selected {
-  background: #edf2f7;
-}
 
 .mention-avatar {
   width: 24px;
@@ -66,11 +70,11 @@
 .mention-list-loading {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px;
+  gap: 4px 12px;
+  padding: 8px;
   background: white;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 4px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   color: #718096;
   font-size: 14px;
@@ -78,9 +82,9 @@
 
 .mention-list-loading-item {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   gap: 8px;
-  padding: 8px 12px;
+  /* padding: 8px 12px; */
   background: #f7fafc;
   border-radius: 4px;
   color: #718096;
@@ -90,11 +94,17 @@
 }
 
 .loading-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid #e2e8f0;
-  border-top: 2px solid #4299e1;
-  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* border-left: 3px solid #222222;
+  
+  border-right: 3px solid #222222;
+  border-bottom: 3px solid #222222; */
+  border: 3px solid #222222;
+  border-radius: 150%;
   animation: spin 1s linear infinite;
 }
 
@@ -118,7 +128,7 @@
 }
 
 .mention-list-item.error-no-results:hover {
-  background: #e6fffa;
+  background: #dddddd;
 }
 
 .mention-error {
@@ -128,7 +138,8 @@
 }
 
 .error-icon {
-  font-size: 16px;
+  /* font-size: 16px; */
+  display: flex;
 }
 
 .error-message {
@@ -137,11 +148,12 @@
 }
 
 .mention-list-item.error-timeout .error-message {
-  color: #d69e2e;
+  color: #6a6a6a;
 }
 
 .mention-list-item.error-no-results .error-message {
-  color: #319795;
+  /* color: #319795; */
+  color: #6a6a6a
 }
 
 .mention-list-item.error-loading .error-message {
@@ -166,9 +178,10 @@
   padding: 12px;
   background: white;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 4px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   color: #4a5568;
   font-size: 14px;
   font-style: italic;
 }
+

@@ -112,8 +112,6 @@ export function configureMention(
           },
 
           onUpdate: (props) => {
-            console.log('onUpdate', props);
-
             component?.updateProps(props);
 
             if (!props.clientRect) {
@@ -155,6 +153,9 @@ export function configureMention(
           },
         };
       },
+    },
+    renderHTML(options) {
+      return options.node.attrs.label || `@${options.node.attrs.username}`;
     },
   });
 }
