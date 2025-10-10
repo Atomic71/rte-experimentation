@@ -20,6 +20,7 @@ export function configureMention(
   }).configure({
     HTMLAttributes: { class: 'gorgias-mention' },
     suggestion: {
+      allowSpaces: true,
       items: async ({ query }) => {
         // Check if mentions are disabled
 
