@@ -147,16 +147,23 @@ const useTipTapEditor = ({
     [mentionsConfig.enabled]
   );
 
-  // Save content before mentions config changes
   useEffect(() => {
     if (
       previousMentionsEnabledRef.current !== mentionsConfig.enabled &&
       editor
     ) {
       persistedContentRef.current = editor.getHTML();
-      editor.commands.focus();
+      try {
+        editor.commands.focus();
+        previousMentionsEnabledRef.current = mentionsConfig.enabled;
+      } catch (error) {
+        // when mention config changes, editor re-creates, so on the first run - it fails, because editor is not ready yet
+        // but the config is different.
+        // so we wait for the second useEffect run by just catching the error and doing nothing.
+        // that's why only on success - we set the previousMentionsEnabledRef to the new config.
+        console.error(error);
+      }
     }
-    previousMentionsEnabledRef.current = mentionsConfig.enabled;
   }, [mentionsConfig.enabled, editor]);
 
   const getContent = useCallback((): EditorContentType => {
