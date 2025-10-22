@@ -4,12 +4,12 @@ import {
   MentionsConfig,
   WebViewMessage,
 } from './types';
+import { __DEV__, isDebugEnabled } from '../debug';
 
 export default class WebviewBridge {
   public callbacks: EditorCallbacks = {};
   private isReactNative: boolean = false;
   private messageListener?: () => void;
-  private isDebugMode: boolean = false;
   private mentionsConfig: MentionsConfig = {
     enabled: true,
     allowedTriggers: ['@'],
@@ -19,26 +19,28 @@ export default class WebviewBridge {
 
   constructor() {
     this.isReactNative = !!window.ReactNativeWebView;
-    this.isDebugMode =
-      new URLSearchParams(window.location.search).get('debug') === 'true';
     this.setupMessageListener();
   }
 
   initialize(callbacks: EditorCallbacks) {
     // Merge new callbacks with existing ones instead of replacing
-    this.postDebugMessage({
-      step: 'webview_bridge_initialize',
-      existingCallbacks: Object.keys(this.callbacks),
-      newCallbacks: Object.keys(callbacks),
-    });
+    if (__DEV__) {
+      this.postDebugMessage({
+        step: 'webview_bridge_initialize',
+        existingCallbacks: Object.keys(this.callbacks),
+        newCallbacks: Object.keys(callbacks),
+      });
+    }
     this.callbacks = {
       ...this.callbacks,
       ...callbacks,
     };
-    this.postDebugMessage({
-      step: 'webview_bridge_initialize_complete',
-      finalCallbacks: Object.keys(this.callbacks),
-    });
+    if (__DEV__) {
+      this.postDebugMessage({
+        step: 'webview_bridge_initialize_complete',
+        finalCallbacks: Object.keys(this.callbacks),
+      });
+    }
     this.postMessage('READY');
   }
 
@@ -51,16 +53,22 @@ export default class WebviewBridge {
 
   private setupMessageListener() {
     const handleMessage = (event: MessageEvent) => {
-      this.postDebugMessage({ step: 'received_message', data: event.data });
+      if (__DEV__) {
+        this.postDebugMessage({ step: 'received_message', data: event.data });
+      }
       try {
         const message = this.parseMessage(event);
-        this.postDebugMessage({ step: 'parsed_message', message });
+        if (__DEV__) {
+          this.postDebugMessage({ step: 'parsed_message', message });
+        }
         this.handleIncomingMessage(message);
       } catch (error) {
-        this.postDebugMessage({
-          step: 'parse_error',
-          error: error instanceof Error ? error.message : String(error),
-        });
+        if (__DEV__) {
+          this.postDebugMessage({
+            step: 'parse_error',
+            error: error instanceof Error ? error.message : String(error),
+          });
+        }
         this.callbacks.onError?.('Failed to parse message');
       }
     };
@@ -78,19 +86,26 @@ export default class WebviewBridge {
     const data =
       typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
 
-    return {
+    const message: WebViewMessage = {
       type: data.type,
       payload: data.payload,
-      timestamp: data.timestamp || Date.now(),
     };
+
+    if (__DEV__) {
+      message.timestamp = data.timestamp || Date.now();
+    }
+
+    return message;
   }
 
   private handleIncomingMessage(message: WebViewMessage) {
-    this.postDebugMessage({
-      step: 'handling_message',
-      type: message.type,
-      payload: message.payload,
-    });
+    if (__DEV__) {
+      this.postDebugMessage({
+        step: 'handling_message',
+        type: message.type,
+        payload: message.payload,
+      });
+    }
 
     switch (message.type) {
       case 'SET_CONTENT':
@@ -109,12 +124,14 @@ export default class WebviewBridge {
         break;
 
       case 'MENTION_RESULTS':
-        this.postDebugMessage({
-          step: 'processing_mention_results',
-          query: message.payload?.query,
-          users: message.payload?.users,
-          callbackExists: !!this.callbacks.onMentionResults,
-        });
+        if (__DEV__) {
+          this.postDebugMessage({
+            step: 'processing_mention_results',
+            query: message.payload?.query,
+            users: message.payload?.users,
+            callbackExists: !!this.callbacks.onMentionResults,
+          });
+        }
         this.callbacks.onMentionResults?.(
           message.payload.users,
           message.payload.query
@@ -130,10 +147,12 @@ export default class WebviewBridge {
         break;
 
       default:
-        this.postDebugMessage({
-          step: 'unknown_message_type',
-          type: message.type,
-        });
+        if (__DEV__) {
+          this.postDebugMessage({
+            step: 'unknown_message_type',
+            type: message.type,
+          });
+        }
     }
   }
 
@@ -141,8 +160,11 @@ export default class WebviewBridge {
     const message: WebViewMessage = {
       type,
       payload,
-      timestamp: Date.now(),
     };
+
+    if (__DEV__) {
+      message.timestamp = Date.now();
+    }
 
     if (this.isReactNative) {
       try {
@@ -157,7 +179,9 @@ export default class WebviewBridge {
   }
 
   private postDebugMessage(payload: any) {
-    if (this.isDebugMode) {
+    // This method should only be called from __DEV__ blocks
+    // Additional runtime check for URL parameter
+    if (isDebugEnabled()) {
       this.postMessage('DEBUG', payload);
     }
   }
