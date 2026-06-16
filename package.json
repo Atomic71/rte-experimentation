@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "preview": "vite build && vite preview",
     "build": "vite build && node scripts/make-html-export.mjs",
     "build:lib": "tsc -p tsconfig.lib.json",
     "lint": "eslint .",

@@ -26,7 +26,8 @@
     "src/index.ts",
     "src/utils.ts",
     "src/editors/**/*",
-    "src/App.tsx"
+    "src/App.tsx",
+    "src/vite-env.d.ts"
   ],
   "exclude": [
     "src/**/*.test.ts",

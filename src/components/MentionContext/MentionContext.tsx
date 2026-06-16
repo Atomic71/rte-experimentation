@@ -9,6 +9,7 @@ import React, {
 import { webViewBridge } from '@/utils/WebviewBridge';
 import { QueryTimeoutError } from '@/errors';
 import { MentionsConfig, MentionUser } from '@/utils/WebviewBridge/types';
+import { MentionsDebugger } from '@/utils/MentionsDebugger';
 
 interface MentionQuery {
   query: string;
@@ -62,45 +63,35 @@ export const MentionProvider: React.FC<MentionProviderProps> = ({
   useEffect(() => {
     // Listen for results from React Native
     webViewBridge.callbacks.onMentionResults = (users, query) => {
-      webViewBridge.postMessage('DEBUG', {
-        step: 'context_received_mention_results',
+      MentionsDebugger.receivedMentionResults(
         users,
         query,
-        currentQueryExists: !!currentQueryRef.current,
-      });
+        !!currentQueryRef.current
+      );
 
       // Only resolve if this matches the current query
       if (currentQueryRef.current?.query === query) {
-        webViewBridge.postMessage('DEBUG', {
-          step: 'resolving_current_query',
-          query,
-        });
+        MentionsDebugger.resolvingQuery(query);
         clearTimeout(currentQueryRef.current.timeoutId);
         setIsLoadingMentions(false);
         setIsTyping(false);
         currentQueryRef.current.resolve(users);
         currentQueryRef.current = null;
       } else {
-        webViewBridge.postMessage('DEBUG', {
-          step: 'query_mismatch_or_stale',
-          query: `${query}+${currentQueryRef.current?.query}`,
-          currentQuery: currentQueryRef.current?.query,
-        });
+        MentionsDebugger.queryMismatchOrStale(
+          query,
+          currentQueryRef.current?.query
+        );
       }
     };
 
     // Listen for config updates (including channel changes)
     webViewBridge.callbacks.onMentionsConfigUpdate = (config) => {
-      webViewBridge.postMessage('DEBUG', {
-        step: 'mentions_config_update',
-        config,
-      });
+      MentionsDebugger.configUpdate(config);
       setMentionsConfigState((prev) => ({ ...prev, enabled: config.enabled }));
     };
 
-    webViewBridge.postMessage('DEBUG', {
-      step: 'context_mention_callback_setup_complete',
-    });
+    MentionsDebugger.callbacksSetupComplete();
 
     // Cleanup on unmount
     return () => {
@@ -139,11 +130,7 @@ export const MentionProvider: React.FC<MentionProviderProps> = ({
       // }
 
       return new Promise<MentionUser[]>((resolve, reject) => {
-        webViewBridge.postMessage('DEBUG', {
-          step: 'setting_up_promise',
-          query,
-          willSetLoading: true,
-        });
+        MentionsDebugger.settingUpPromise(query);
 
         // Cancel previous query if exists
         if (currentQueryRef.current) {
@@ -162,19 +149,12 @@ export const MentionProvider: React.FC<MentionProviderProps> = ({
         setCurrentQuery(query);
         setIsLoadingMentions(false);
 
-        webViewBridge.postMessage('DEBUG', {
-          step: 'typing_state_set',
-          query,
-          isTyping: true,
-        });
+        MentionsDebugger.typingStateSet(query, true);
 
         // Set up timeout for the entire flow
         const timeoutId = setTimeout(() => {
           if (currentQueryRef.current?.query === query) {
-            webViewBridge.postMessage('DEBUG', {
-              step: 'mention_query_timeout',
-              query,
-            });
+            MentionsDebugger.queryTimeout(query);
             setIsLoadingMentions(false);
             setIsTyping(false);
             reject(new QueryTimeoutError(query));
@@ -193,10 +173,7 @@ export const MentionProvider: React.FC<MentionProviderProps> = ({
         const debounceMs = mentionsConfig.debounceMs || 800;
         debounceTimeoutRef.current = setTimeout(() => {
           if (currentQueryRef.current?.query === query) {
-            webViewBridge.postMessage('DEBUG', {
-              step: 'debounce_finished_sending_query',
-              query,
-            });
+            MentionsDebugger.debounceFinished(query);
             // User stopped typing - now we're searching
             setIsTyping(false);
             setIsLoadingMentions(true);
